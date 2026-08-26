@@ -1,0 +1,71 @@
+@import "tailwindcss";
+
+:root {
+  --background: #f7f1e8;
+  --foreground: #1f1a14;
+  --surface: #fffdf8;
+  --surface-strong: #fff7ea;
+  --muted: #5c5348;
+  --border: #e4d8c4;
+  --accent: #c45c26;
+  --accent-strong: #9a3f12;
+  --focus: #0f6b5c;
+  --pass: #1f6b4a;
+  --pass-surface: #e6f4ec;
+  --fail: #9b2c2c;
+  --fail-surface: #fde8e8;
+  --verify: #8a5a12;
+  --verify-surface: #fff3d6;
+  --shadow: 0 10px 30px rgba(55, 34, 10, 0.08);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-surface: var(--surface);
+  --color-surface-strong: var(--surface-strong);
+  --color-muted: var(--muted);
+  --color-border: var(--border);
+  --color-accent: var(--accent);
+  --color-accent-strong: var(--accent-strong);
+  --color-focus: var(--focus);
+  --color-pass: var(--pass);
+  --color-pass-surface: var(--pass-surface);
+  --color-fail: var(--fail);
+  --color-fail-surface: var(--fail-surface);
+  --color-verify: var(--verify);
+  --color-verify-surface: var(--verify-surface);
+  --font-sans: var(--font-plus-jakarta);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+html {
+  background: var(--background);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-plus-jakarta), ui-sans-serif, system-ui, sans-serif;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 3px;
+}
+
+a {
+  color: inherit;
+}

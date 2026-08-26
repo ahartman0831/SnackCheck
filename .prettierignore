@@ -1,0 +1,11 @@
+node_modules
+.next
+out
+build
+coverage
+pnpm-lock.yaml
+playwright-report
+test-results
+supabase/.temp
+packages/db-types/src/database.types.ts
+apps/web/next-env.d.ts
