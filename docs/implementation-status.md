@@ -13,20 +13,25 @@ A phase is not complete because interfaces, placeholder pages, or a published-lo
 
 ## Current work
 
-Master-plan **Phase 5** is `COMPLETE` on authorized Ubuntu CI. The barcode camera lives on `codex/phase-5-barcode-camera` as PR [#2](https://github.com/ahartman0831/SnackCheck/pull/2). Required jobs `verify`, `database`, and `e2e-webkit` are green on `eac7e6b` ([run 33212276731](https://github.com/ahartman0831/SnackCheck/actions/runs/33212276731)). The camera flag stays off in committed env examples. The PR is open and unmerged.
+Master-plan **Phase 5** is `PARTIAL`. Implementation and required Ubuntu CI are green on `codex/phase-5-barcode-camera` as PR [#2](https://github.com/ahartman0831/SnackCheck/pull/2) (`eac7e6b`, [run 33212276731](https://github.com/ahartman0831/SnackCheck/actions/runs/33212276731)). The camera flag stays off in committed env examples.
 
-**Host and device limitations:**
+**Why not `COMPLETE`:**
+
+- Real iPhone Safari camera testing is unverified.
+- Real Android Chrome camera testing is unverified.
+- Local desktop Chrome and Ubuntu WebKit only covered mocked permission and MediaDevices paths.
+
+**Host limitations:**
 
 - This Mac still cannot run `supabase db reset` or pgTAP: Docker is not installed.
-- Playwright WebKit still cannot be installed here: `Playwright does not support webkit on mac13-arm64`. Ubuntu CI ran flag-off WebKit and camera-on WebKit.
-- Local desktop Chrome exercised mocked permission paths. Real iPhone Safari and Android Chrome camera lighting was not tested in this session.
+- Playwright WebKit still cannot be installed here: `Playwright does not support webkit on mac13-arm64`.
 
 **Carried gates (unchanged):**
 
 - **P0-5 remains red** — forgeable `${id}.*` submission cookie. Owned by Phase 6. CI asserts this test still fails.
 - **P0-7 remains `BLOCKED`** — unsigned regulatory review. This session did not publish the Arizona ruleset or approve aliases.
 
-Phases 6–11 are `NOT STARTED`. Do not merge the pull request or start photo/submission work until approved.
+Phases 6–11 are `NOT STARTED`. Do not start photo/submission work. Do not enable production camera flags.
 
 ## Master plan phases
 
@@ -38,7 +43,7 @@ Phases 6–11 are `NOT STARTED`. Do not merge the pull request or start photo/su
 | 3     | Rebrand to SnackCheck                                                                                 | `COMPLETE`    |
 | 4     | Public UI / design system                                                                             | `COMPLETE`    |
 | 4C    | Preserve and close the completed remediation                                                          | `COMPLETE`    |
-| 5     | Production-quality barcode camera                                                                     | `COMPLETE`    |
+| 5     | Production-quality barcode camera                                                                     | `PARTIAL`     |
 | 6     | Secure ingredient-photo submission pipeline                                                           | `NOT STARTED` |
 | 7     | Extraction orchestration, confirmation, and persistence                                               | `NOT STARTED` |
 | 8     | Admin operations                                                                                      | `NOT STARTED` |
@@ -144,9 +149,8 @@ Not deployed. Domain remains pending via `NEXT_PUBLIC_APP_URL`.
 
 ## Remaining operator tasks
 
-1. Review and approve PR [#2](https://github.com/ahartman0831/SnackCheck/pull/2). Do not merge until you explicitly authorize merge.
-2. Keep `FEATURE_BARCODE_CAMERA` and `NEXT_PUBLIC_FEATURE_BARCODE_CAMERA` false in production until you choose to enable the camera independently.
-3. Manually verify the camera on current iPhone Safari and Android Chrome before calling the feature production-ready on phones.
-4. Do not apply `0016`/`0017`/`0018` to the linked production Supabase project.
-5. Sign `docs/regulatory-review.md` before calling publish. Do not approve pending aliases.
-6. Do not start Phase 6 photo/submission work until this Phase 5 result is approved.
+1. Complete physical-device camera tests on current iPhone Safari and Android Chrome before calling Phase 5 `COMPLETE`.
+2. Keep `FEATURE_BARCODE_CAMERA` and `NEXT_PUBLIC_FEATURE_BARCODE_CAMERA` false in production until those tests pass and you choose to enable the camera independently.
+3. Do not apply `0016`/`0017`/`0018` to the linked production Supabase project.
+4. Sign `docs/regulatory-review.md` before calling publish. Do not approve pending aliases.
+5. Do not start Phase 6 photo/submission work.
