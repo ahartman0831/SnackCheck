@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="SnackCheck">
+  <rect width="60" height="60" x="2" y="2" rx="15" fill="none" stroke="black" stroke-width="3"/>
+  <path d="M16 22V18h8M48 22V18h-8M16 42v4h8M48 42v4h-8" fill="none" stroke="black" stroke-width="3" stroke-linecap="round"/>
+  <path d="M24 33.2l5.2 5.2 10.6-11" fill="none" stroke="black" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

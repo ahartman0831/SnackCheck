@@ -1,4 +1,12 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Can I Bring This?">
-  <rect width="512" height="512" rx="96" fill="#c45c26"/>
-  <text x="50%" y="56%" text-anchor="middle" font-size="220" fill="#fffdf8" font-family="system-ui, sans-serif">?</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="SnackCheck">
+  <defs>
+    <linearGradient id="snackcheck-mark" x1="8" y1="6" x2="56" y2="58">
+      <stop offset="0%" stop-color="#4F46E5"/>
+      <stop offset="100%" stop-color="#06B6D4"/>
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="16" fill="url(#snackcheck-mark)"/>
+  <path d="M16 22V18h8M48 22V18h-8M16 42v4h8M48 42v4h-8" fill="none" stroke="white" stroke-width="3.2" stroke-linecap="round"/>
+  <rect x="22" y="24" width="20" height="16" rx="3" fill="white" opacity="0.92"/>
+  <path d="M26 32.2l4.1 4.1 8.2-8.6" fill="none" stroke="#4F46E5" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>
