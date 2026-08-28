@@ -1,87 +1,142 @@
 # Implementation status
 
-Last updated: 2026-08-26
+Last updated: 2026-08-28
+Baseline detail: [`docs/remediation-baseline.md`](remediation-baseline.md)
+Plan: [`docs/SnackCheck-Cursor-Master-Build-Plan.md`](SnackCheck-Cursor-Master-Build-Plan.md)
+Prior plan: [`docs/SnackCheck-Cursor-Remediation-Build-Plan-v2.md`](SnackCheck-Cursor-Remediation-Build-Plan-v2.md)
+Design system: [`docs/design-system.md`](design-system.md)
+Review checklist: [`docs/phase-4c-review-checklist.md`](phase-4c-review-checklist.md)
 
-## Current phase
+Allowed states only: `COMPLETE` | `PARTIAL` | `BLOCKED` | `NOT STARTED`.
 
-Phases 0–10 implemented in code. Human regulatory review and production deploy remain gated.
+A phase is not complete because interfaces, placeholder pages, or a published-looking seed exist.
 
-## Phase 0 — Repository bootstrap
+## Current work
 
-Complete. pnpm monorepo, Next.js 16.3.3, public shell, CI, ADR-0001.
+Master-plan **Phase 4C** is `COMPLETE` on authorized Ubuntu CI. The Phase 0–4 working tree is on `codex/phase-4c-closeout` as PR [#1](https://github.com/ahartman0831/SnackCheck/pull/1). Required jobs `verify`, `database`, and `e2e-webkit` are green on `ad9d7d8` ([run 33204223073](https://github.com/ahartman0831/SnackCheck/actions/runs/33204223073)). P0-5 remains an intentional failure until Phase 6. The PR is open and unmerged.
 
-Commands: `pnpm install`, `pnpm typecheck`, `pnpm lint`, `pnpm test`, `pnpm build`, `pnpm format:check`.
+**Host limitations that remain (proven on CI instead):**
 
-## Phase 1 — Supabase foundation
+- This Mac still cannot run `supabase db reset` or pgTAP: Docker is not installed.
+- Playwright WebKit still cannot be installed here: `Playwright does not support webkit on mac13-arm64`.
+- Types in `packages/db-types/src/database.types.ts` were taken from `supabase gen types --local` on the CI `database` job, then committed. They were not generated with `--linked`.
 
-Migrations `0001`–`0015` committed, including Arizona sources, 11 statutory substances, mechanical aliases only enabled, pending aliases disabled, RLS, search RPC, and triggers.
+**Carried gates (unchanged):**
 
-`pnpm db:check-provenance` and `pnpm db:verify-seed` pass.
+- **P0-5 remains red** — forgeable `${id}.*` submission cookie. Owned by Phase 6. CI asserts this test still fails.
+- **P0-7 remains `BLOCKED`** — unsigned regulatory review. This session did not publish the Arizona ruleset or approve aliases.
 
-`supabase db reset` could not run here: Docker daemon is not available (ADR-0002).
+Phases 5–11 are `NOT STARTED`. Stop before Phase 5. Do not merge the pull request until approved.
 
-Generated Database types are hand-aligned to the schema and replaced by `pnpm db:types` when local Supabase is running.
+## Master plan phases
 
-**Human gate:** `docs/regulatory-review.md` is unsigned. The seeded ruleset is for evaluation, not a signed production publication.
+| Phase | Name                                                                                                  | Status        |
+| ----- | ----------------------------------------------------------------------------------------------------- | ------------- |
+| 0     | Baseline and truthful status                                                                          | `COMPLETE`    |
+| 1     | Regulatory fail-closed hardening (`0016`, no production fixture fallback, parser warnings block PASS) | `COMPLETE`    |
+| 2     | Public product projection / import (`0017`, search status, approved query, fixture isolation)         | `COMPLETE`    |
+| 3     | Rebrand to SnackCheck                                                                                 | `COMPLETE`    |
+| 4     | Public UI / design system                                                                             | `COMPLETE`    |
+| 4C    | Preserve and close the completed remediation                                                          | `COMPLETE`    |
+| 5     | Production-quality barcode camera                                                                     | `NOT STARTED` |
+| 6     | Secure ingredient-photo submission pipeline                                                           | `NOT STARTED` |
+| 7     | Extraction orchestration, confirmation, and persistence                                               | `NOT STARTED` |
+| 8     | Admin operations                                                                                      | `NOT STARTED` |
+| 9     | Affiliates                                                                                            | `NOT STARTED` |
+| 10    | Observability, PWA, CI                                                                                | `NOT STARTED` |
+| 11    | Launch catalog and production deploy                                                                  | `NOT STARTED` |
 
-## Phase 2 — Compliance engine
+Phase 4C closeout for this session:
 
-`packages/compliance` implements normalize, parse, match, quality gates, hashes, and `evaluateCompliance`. Isolation test forbids Next/Supabase/OpenAI imports.
+- Logical commits from `docs/phase-4c-review-checklist.md` are on `codex/phase-4c-closeout`. They were not pushed to `main`.
+- `scripts/generate-db-types.ts` no longer calls `supabase gen types --linked`. A regression test forbids that flag. CI generates types from a local instance only.
+- `verify` runs unit tests except P0-5, then `pnpm test:p0-5-open` so an accidental P0-5 pass fails CI.
+- `database` starts local Supabase on `ubuntu-latest`, resets through `0018`, runs pgTAP, generates local types, fails if committed types drift, resets again, and runs pgTAP again. It does not link or push.
+- `0018` only fixes publication-guard array appends, child-immutability trigger typing, and `search_path`/`digest` qualification so clone works under a locked search_path. It does not publish AZ-HSA.
+- `e2e-webkit` installs Playwright WebKit on Ubuntu and runs `mobile-webkit`.
 
-`pnpm --filter @snackcheck/compliance test` — 29+ tests including all 11 statutory names, false-positive foods, stale/conflict/OCR precedence, precautionary VERIFY, parent-own-child independence.
+## Original scaffold inventory
 
-CLI: `pnpm check-ingredients "Sugar, Red dye 40"`.
+### Repository bootstrap — `PARTIAL`
 
-## Phase 3 — Catalog and public pages
+pnpm monorepo, Next.js 16.3.3, SnackCheck public shell, CI, ADR-0001 exist. This Phase 4C run used Node `v22.22.0`.
 
-Product repository, home/search/product/rules pages, status and context panels. No page calls AI.
+### Supabase foundation — `PARTIAL`
 
-Dev catalog is loaded only when `DEV_CATALOG_ENABLED=true` and `NODE_ENV !== production`. Fixtures are labeled `[DEV FIXTURE]`.
+`0016`/`0017`/`0018` remain unapplied to production and unexecuted on this host. Ubuntu CI applied them locally, ran pgTAP twice, and regenerated types with `--local`. P0-7 remains a human gate.
 
-## Phase 4 — Barcode and providers
+### Compliance engine — `PARTIAL`
 
-GTIN checksum/expand, `/api/v1/upc/:gtin`, Open Food Facts exact lookup with kill switch, cache, internal-first chain. Invalid GTIN never reaches providers.
+Unchanged. Search, import, approved browsing, and compliance determinations do not call an LLM.
 
-## Phase 5 — Ingredient pipeline
+### Catalog and public pages — `PARTIAL`
 
-Signed upload creation, ownership cookie, extract/confirm routes, paste fallback, deterministic evaluation after confirmation. Production extraction refuses missing rate-limiter/secrets.
+Public route architecture is redesigned. Live catalog content still depends on a published ruleset and sourced import.
 
-Vision provider is behind an interface; mocked/out-of-schema model output is rejected by Zod.
+### Barcode and providers — `PARTIAL`
 
-## Phase 6 — Approved, PWA, sharing
+P0-6 is green via honest manual-entry copy. Camera lookup is not implemented.
 
-`/approved` only lists current PASS from the approved query. Manifest, robots, sitemap, offline page that does not present stale PASS as current. Security headers in `next.config.ts`.
+### Ingredient pipeline — `PARTIAL`
 
-## Phase 7 — Admin
+P0-9 is green via paste-only public copy. P0-5 remains open and is owned by Phase 6.
 
-Admin routes and role helper. Magic-link callback. RLS denies anon base-table access. Reviewer cannot enable aliases (database trigger + RLS write policy limited to regulatory/super admin).
+### Approved, PWA, sharing — `PARTIAL`
 
-## Phase 8 — Launch dataset
+Approved browsing, product share, sitemap, and metadata are redesigned. Offline/PWA work is not production-complete.
 
-Import CSV template and `scripts/import-products.ts` refuse invented rows. No production product seed exists.
+### Admin — `PARTIAL`
 
-**Human gate:** launch-data sample and `docs/regulatory-review.md` still required.
+Unchanged operations scaffold. Admin and confirmation routes are noindexed.
 
-## Phase 9 — Observability and rehearsal
+### Launch dataset — `BLOCKED`
 
-Allowlisted analytics events, HMAC anonymous key, incident and launch runbooks, production extraction circuit breaker. Load tests and restore rehearsal need a deployed environment.
+No fabricated production catalog was imported.
 
-## Phase 10 — Production launch
+### Observability and rehearsal — `PARTIAL`
 
-Not deployed. Domain, Vercel, production Supabase, alerts, and phone smoke tests remain operator work. Rollback steps are in `docs/launch-runbook.md`.
+CI `verify`, `database`, and `e2e-webkit` are green on PR [#1](https://github.com/ahartman0831/SnackCheck/pull/1) run [33204223073](https://github.com/ahartman0831/SnackCheck/actions/runs/33204223073).
 
-## Known limitations
+### Production launch — `NOT STARTED`
 
-- Docker/Supabase local reset not run in this environment.
-- Camera `@zxing` live stream is scaffolded behind the barcode route; manual entry is the verified path in automated tests.
-- Serwist runtime caching is documented; a conservative offline page ships instead of caching private routes.
-- No real launch products.
-- Regulatory review unsigned.
+Not deployed. Domain remains pending via `NEXT_PUBLIC_APP_URL`.
+
+## Command snapshot (Phase 4C closeout)
+
+| Command                               | Result                                                                                                      |
+| ------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| `pnpm format:check`                   | Passed                                                                                                      |
+| `pnpm lint`                           | Passed                                                                                                      |
+| `pnpm typecheck`                      | Passed                                                                                                      |
+| `pnpm test:types-policy`              | Passed after removing `--linked`                                                                            |
+| `pnpm test:unit`                      | Passed — compliance 38, contracts 3, web 59                                                                 |
+| `pnpm test:p0-5-open`                 | Passed — P0-5 still fails as required                                                                       |
+| `pnpm test:integration`               | Passed — 2 tests                                                                                            |
+| `git diff --check`                    | Clean                                                                                                       |
+| `supabase db reset --yes`             | Failed locally — Docker daemon unavailable                                                                  |
+| `pnpm exec playwright install webkit` | Failed locally — `Playwright does not support webkit on mac13-arm64`                                        |
+| GitHub Actions `verify`               | Passed — [98961038663](https://github.com/ahartman0831/SnackCheck/actions/runs/33204223073/job/98961038663) |
+| GitHub Actions `database`             | Passed — [98961038776](https://github.com/ahartman0831/SnackCheck/actions/runs/33204223073/job/98961038776) |
+| GitHub Actions `e2e-webkit`           | Passed — [98961038687](https://github.com/ahartman0831/SnackCheck/actions/runs/33204223073/job/98961038687) |
+
+## P0 map after Phase 4C
+
+| ID   | Status  | Notes                                                                             |
+| ---- | ------- | --------------------------------------------------------------------------------- |
+| P0-1 | Green   | Phase 1 — no production fixture ruleset                                           |
+| P0-2 | Green   | Phase 1 — parser warnings cannot PASS                                             |
+| P0-3 | Green   | Phase 2 — finished public search cards never emit `ingredientStatus: null`        |
+| P0-4 | Green   | Phase 2 — production DB miss is not-found, never labeled fixtures                 |
+| P0-5 | Red     | Phase 6 — forgeable `${id}.*` submission cookie. CI asserts this test still fails |
+| P0-6 | Green   | Phase 4 — barcode page no longer advertises camera scanning while the flag is off |
+| P0-7 | Blocked | Human gate — unsigned regulatory review; do not publish or approve aliases        |
+| P0-8 | Green   | Phase 2 — approved catalog uses the live query when Supabase is configured        |
+| P0-9 | Green   | Phase 4 — public UI no longer advertises scan/photo while extract is paste-only   |
 
 ## Remaining operator tasks
 
-1. Start Docker and run `supabase db reset` twice.
-2. Sign `docs/regulatory-review.md`.
-3. Import sourced products only.
-4. Configure production secrets and Upstash.
-5. Deploy CanIBringThis.com and complete the launch checklist.
+1. Review and approve PR [#1](https://github.com/ahartman0831/SnackCheck/pull/1). Do not merge until you explicitly authorize merge.
+2. Do not apply `0016`/`0017`/`0018` to the linked production Supabase project.
+3. Sign `docs/regulatory-review.md` before calling publish. Do not approve pending aliases.
+4. Import sourced products only. Do not invent catalog rows.
+5. Do not start Phase 5 until this Phase 4C result is approved.

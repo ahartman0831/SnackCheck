@@ -38,42 +38,72 @@ export function hashFormulation(
   });
 }
 
-export function hashRuleset(ruleset: PublishedRulesetSnapshot): string {
-  return hashCanonicalJson({
-    id: ruleset.id,
+export function rulesetHashPayload(
+  ruleset: Pick<
+    PublishedRulesetSnapshot,
+    | "id"
+    | "code"
+    | "version"
+    | "effectiveFrom"
+    | "effectiveUntil"
+    | "freshnessCurrentDays"
+    | "freshnessAgingDays"
+    | "contexts"
+    | "substances"
+  >,
+): Record<string, unknown> {
+  return {
     code: ruleset.code,
-    version: ruleset.version,
-    effectiveFrom: ruleset.effectiveFrom,
-    effectiveUntil: ruleset.effectiveUntil,
-    freshnessCurrentDays: ruleset.freshnessCurrentDays,
-    freshnessAgingDays: ruleset.freshnessAgingDays,
-    sourceIds: [...ruleset.sourceIds].sort(),
     contexts: ruleset.contexts
       .filter((context) => context.enabled)
       .map((context) => ({
-        context: context.context,
         applicabilityStatus: context.applicabilityStatus,
+        context: context.context,
         regulatorySourceId: context.regulatorySourceId,
       }))
       .sort((a, b) => a.context.localeCompare(b.context)),
+    effectiveFrom: ruleset.effectiveFrom,
+    effectiveUntil: ruleset.effectiveUntil,
+    freshnessAgingDays: ruleset.freshnessAgingDays,
+    freshnessCurrentDays: ruleset.freshnessCurrentDays,
+    id: ruleset.id,
+    sourceIds: [
+      ...new Set(
+        ruleset.substances
+          .filter((substance) => substance.enabled)
+          .map((substance) => substance.regulatorySourceId),
+      ),
+    ].sort(),
     substances: ruleset.substances
       .filter((substance) => substance.enabled)
       .map((substance) => ({
-        id: substance.id,
-        canonicalNormalized: substance.canonicalNormalized,
-        statutoryOrdinal: substance.statutoryOrdinal,
         aliases: substance.aliases
           .filter((alias) => alias.enabled)
           .map((alias) => ({
             id: alias.id,
-            normalizedAlias: alias.normalizedAlias,
             matchMode: alias.matchMode,
+            normalizedAlias: alias.normalizedAlias,
             pattern: alias.pattern ?? null,
           }))
           .sort((a, b) => a.normalizedAlias.localeCompare(b.normalizedAlias)),
+        canonicalNormalized: substance.canonicalNormalized,
+        id: substance.id,
+        statutoryOrdinal: substance.statutoryOrdinal,
       }))
       .sort((a, b) => a.statutoryOrdinal - b.statutoryOrdinal),
-  });
+    version: ruleset.version,
+  };
+}
+
+export function hashRuleset(ruleset: PublishedRulesetSnapshot): string {
+  return hashCanonicalJson(rulesetHashPayload(ruleset));
+}
+
+export function rulesetHashMatches(
+  ruleset: PublishedRulesetSnapshot,
+  expectedHash: string,
+): boolean {
+  return expectedHash.length > 0 && hashRuleset(ruleset) === expectedHash;
 }
 
 export function hashEvaluationKey(input: {

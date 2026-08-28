@@ -1,11 +1,15 @@
+import type { Metadata } from "next";
+import { OfflineState } from "@/components/public/page-states";
+import { pageMetadata } from "@/lib/seo";
+
+export const metadata: Metadata = pageMetadata({
+  title: "Offline",
+  path: "/offline",
+  index: false,
+  description:
+    "SnackCheck needs a connection to check a package against the published ruleset.",
+});
+
 export default function OfflinePage() {
-  return (
-    <div className="flex flex-col gap-3">
-      <h1 className="text-3xl font-semibold">You are offline</h1>
-      <p className="text-muted">
-        Cached product answers are not shown as current without their verification date.
-        Reconnect to check a package.
-      </p>
-    </div>
-  );
+  return <OfflineState />;
 }

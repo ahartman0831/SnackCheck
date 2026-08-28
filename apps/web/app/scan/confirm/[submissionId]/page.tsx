@@ -1,3 +1,10 @@
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  robots: { index: false, follow: false },
+  title: "Confirm extraction",
+};
+
 export default async function ConfirmPage({
   params,
 }: {

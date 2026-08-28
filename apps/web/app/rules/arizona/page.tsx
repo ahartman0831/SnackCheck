@@ -1,61 +1,145 @@
-const sources = [
-  {
-    title: "A.R.S. § 15-242.01",
-    href: "https://www.azleg.gov/ars/15/00242-01.htm",
-    kind: "Statute",
-  },
-  {
-    title: "Arizona Laws 2025, Chapter 52 / HB 2164",
-    href: "https://www.azleg.gov/legtext/57Leg/1R/laws/0052.pdf",
-    kind: "Statute",
-  },
-  {
-    title: "ADE May 5, 2026 compliance memorandum",
-    href: "https://www.azed.gov/sites/default/files/2026/05/Arizona%20Healthy%20Schools%20Act.pdf",
-    kind: "Agency guidance",
-  },
-  {
-    title: "ADE May 2026 administrator resource and FAQ",
-    href: "https://www.azed.gov/sites/default/files/2026/01/The%20Basics%20of%20the%20Arizona%20Healthy%20Schools%20Act%20Resource%20for%20School%20Administrators.pdf",
-    kind: "Agency guidance",
-  },
-];
+import type { Metadata } from "next";
+import { UnavailableRulesetState } from "@/components/public/page-states";
+import { Card } from "@/components/ui/card";
+import { LOCAL_RULES_DISCLAIMER } from "@/lib/copy";
+import {
+  isUsablePublishedRuleset,
+  loadArizonaSources,
+  loadPublishedArizonaRuleset,
+} from "@/lib/rules/arizona";
+import { pageMetadata } from "@/lib/seo";
 
-export default function ArizonaRulesPage() {
+export const metadata: Metadata = pageMetadata({
+  title: "Arizona Healthy Schools Act",
+  path: "/rules/arizona",
+  description:
+    "Plain-language overview of Arizona’s school packaged-food ingredient restriction and the sources SnackCheck uses.",
+});
+
+export default async function ArizonaRulesPage() {
+  const ruleset = await loadPublishedArizonaRuleset();
+  const sources = await loadArizonaSources();
+  const usable = isUsablePublishedRuleset(ruleset);
+  const classroom = ruleset.contexts.find(
+    (item) => item.context === "CLASSROOM_DISTRIBUTION",
+  );
+  const ownChild = ruleset.contexts.find((item) => item.context === "PARENT_OWN_CHILD");
+
   return (
-    <article className="flex max-w-3xl flex-col gap-6">
+    <article className="print-rules flex max-w-3xl flex-col gap-6">
       <h1 className="text-3xl font-semibold">Arizona Healthy Schools Act</h1>
       <p>
         Beginning with the 2026–27 school year, A.R.S. § 15-242.01 restricts covered
         ultraprocessed food at schools that participate in a federally funded or assisted
         meal program. The statute names 11 ingredients.
       </p>
-      <p>
-        ADE’s May 2026 guidance states that compliance is campus-wide and includes
-        classroom-based food distribution. The statute itself also says a parent or
-        guardian may still provide covered food to that parent’s own student. This
-        application keeps those sources distinct.
-      </p>
-      <p>
-        Passing the Arizona ingredient check is not a school-policy approval, an allergy
-        determination, or a nutrition grade.
-      </p>
+      {usable ? (
+        <p className="font-mono text-sm">
+          Effective {ruleset.effectiveFrom}
+          {ruleset.effectiveUntil ? ` through ${ruleset.effectiveUntil}` : ""} · version{" "}
+          {ruleset.version} · {ruleset.rulesetHash}
+        </p>
+      ) : (
+        <UnavailableRulesetState />
+      )}
+
+      <section>
+        <h2 className="text-2xl font-semibold">Classroom vs own child</h2>
+        <div className="mt-3 grid gap-3 md:grid-cols-2">
+          <Card>
+            <h3 className="font-semibold">Classroom distribution</h3>
+            <p className="text-muted mt-2">
+              {classroom?.publicSummary ??
+                "ADE guidance treats campus-wide classroom distribution as in scope."}
+            </p>
+          </Card>
+          <Card>
+            <h3 className="font-semibold">Your child’s own lunch or snack</h3>
+            <p className="text-muted mt-2">
+              {ownChild?.publicSummary ??
+                "A parent or guardian may still provide covered food to that parent’s own student."}
+            </p>
+          </Card>
+        </div>
+      </section>
+
+      <section>
+        <h2 className="text-2xl font-semibold">Canonical substances</h2>
+        {usable ? (
+          <ol className="mt-3 list-decimal space-y-2 pl-5">
+            {ruleset.substances
+              .slice()
+              .sort((a, b) => a.statutoryOrdinal - b.statutoryOrdinal)
+              .map((substance) => (
+                <li key={substance.id}>
+                  <p className="font-semibold">{substance.canonicalName}</p>
+                  {substance.aliases.length > 0 ? (
+                    <p className="text-muted text-sm">
+                      Reviewed aliases:{" "}
+                      {substance.aliases.map((alias) => alias.alias).join(", ")}
+                    </p>
+                  ) : null}
+                </li>
+              ))}
+          </ol>
+        ) : (
+          <p className="text-muted">
+            The 11 statutory names will appear here after a signed published ruleset is
+            available. They are not shown from a development fixture.
+          </p>
+        )}
+      </section>
+
+      <section>
+        <h2 className="text-2xl font-semibold">What PASS, FAIL, and VERIFY mean</h2>
+        <ul className="text-muted mt-3 list-disc space-y-2 pl-5">
+          <li>PASS: the current formulation did not match a prohibited ingredient.</li>
+          <li>FAIL: a prohibited ingredient was matched on the package text.</li>
+          <li>VERIFY: the evidence is incomplete, stale, conflicted, or unconfirmed.</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2 className="text-2xl font-semibold">What SnackCheck does not decide</h2>
+        <p className="text-muted mt-2">
+          SnackCheck does not decide allergy safety, nutrition, school participation, or
+          whether a specific campus will accept a food. AI never returns PASS, FAIL, or
+          VERIFY.
+        </p>
+      </section>
+
       <section>
         <h2 className="text-2xl font-semibold">Primary sources</h2>
-        <ul className="mt-3 list-disc space-y-2 pl-5">
-          {sources.map((source) => (
-            <li key={source.href}>
-              <span className="text-muted text-sm font-semibold uppercase tracking-wide">
-                {source.kind}
-              </span>
-              <br />
-              <a href={source.href} className="font-medium underline underline-offset-2">
-                {source.title}
-              </a>
+        <ul className="mt-3 grid gap-3">
+          {(sources.length > 0 ? sources : fallbackSources).map((source) => (
+            <li key={source.url}>
+              <Card>
+                <p className="text-muted text-sm font-semibold uppercase tracking-wide">
+                  {source.sourceType}
+                </p>
+                <a href={source.url} className="font-medium underline underline-offset-2">
+                  {source.title}
+                </a>
+                <p className="text-muted mt-2 font-mono text-sm">
+                  Published {source.publishedAt ?? "date not on file"} · retrieved{" "}
+                  {source.retrievedAt}
+                </p>
+              </Card>
             </li>
           ))}
         </ul>
       </section>
+      <p className="text-muted text-sm">{LOCAL_RULES_DISCLAIMER}</p>
     </article>
   );
 }
+
+const fallbackSources = [
+  {
+    title: "A.R.S. § 15-242.01",
+    url: "https://www.azleg.gov/ars/15/00242-01.htm",
+    sourceType: "STATUTE",
+    publishedAt: null,
+    retrievedAt: "see source page",
+  },
+];

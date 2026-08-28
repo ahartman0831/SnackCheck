@@ -43,6 +43,7 @@ export async function POST(request: Request) {
     ruleset,
     context: parsed.data.context,
     evaluationDate: new Date().toISOString().slice(0, 10),
+    parserWarnings: ingredients.warnings,
   });
   return NextResponse.json(ok(result, id));
 }

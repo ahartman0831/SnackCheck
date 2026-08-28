@@ -32,14 +32,15 @@ select throws_ok(
   'enabled aliases must have an approved review status'
 );
 
-select lives_ok(
-  $$update public.rulesets set notes = 'deactivation note', effective_until = '2027-06-30' where id = '33333333-3333-3333-3333-333333333333'$$,
-  'published ruleset may update deactivation metadata'
+select is(
+  (select is_published from public.rulesets where id = '33333333-3333-3333-3333-333333333333'),
+  false,
+  'unsigned seed remains a draft after regulatory hardening'
 );
 
 select throws_ok(
-  $$update public.rulesets set title = 'changed' where id = '33333333-3333-3333-3333-333333333333'$$,
-  'published rulesets are immutable except deactivation metadata'
+  $$update public.rulesets set is_published = true, published_at = now() where id = '33333333-3333-3333-3333-333333333333'$$,
+  'ruleset publication requirements are not met'
 );
 
 select * from finish();

@@ -56,7 +56,7 @@ export function IngredientConfirmForm() {
       <button
         type="submit"
         disabled={busy}
-        className="bg-accent min-h-12 rounded-2xl font-semibold text-white"
+        className="bg-accent text-on-accent min-h-12 rounded-2xl font-semibold"
       >
         {busy ? "Checking…" : "Yes, check it"}
       </button>

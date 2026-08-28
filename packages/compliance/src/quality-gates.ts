@@ -92,6 +92,10 @@ export function applyQualityGates(input: ComplianceInput): QualityFlag[] {
     flags.push("RULESET_UNAVAILABLE");
   }
 
+  if (input.parserWarnings && input.parserWarnings.length > 0) {
+    flags.push("PARSER_WARNING");
+  }
+
   return flags;
 }
 

@@ -1,22 +1,54 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
-  --background: #f7f1e8;
-  --foreground: #1f1a14;
-  --surface: #fffdf8;
-  --surface-strong: #fff7ea;
-  --muted: #5c5348;
-  --border: #e4d8c4;
-  --accent: #c45c26;
-  --accent-strong: #9a3f12;
-  --focus: #0f6b5c;
-  --pass: #1f6b4a;
-  --pass-surface: #e6f4ec;
-  --fail: #9b2c2c;
-  --fail-surface: #fde8e8;
-  --verify: #8a5a12;
-  --verify-surface: #fff3d6;
-  --shadow: 0 10px 30px rgba(55, 34, 10, 0.08);
+  --background: #f4f6fb;
+  --foreground: #0f172a;
+  --surface: #ffffff;
+  --surface-strong: #eef2ff;
+  --muted: #475569;
+  --border: #e2e8f0;
+  --accent: #4f46e5;
+  --accent-strong: #0891b2;
+  --on-accent: #ffffff;
+  --focus: #0891b2;
+  --pass: #047857;
+  --pass-surface: #d1fae5;
+  --fail: #b91c1c;
+  --fail-surface: #fee2e2;
+  --verify: #b45309;
+  --verify-surface: #fef3c7;
+  --shadow: 0 10px 28px rgba(15, 23, 42, 0.08);
+  --highlight: inset 0 1px 0 rgba(255, 255, 255, 0.72);
+  --radius-sm: 14px;
+  --radius-md: 16px;
+  --radius-lg: 20px;
+  --brand-from: #4f46e5;
+  --brand-to: #06b6d4;
+  --grid-line: rgba(79, 70, 229, 0.08);
+}
+
+.dark {
+  --background: #0b1220;
+  --foreground: #f8fafc;
+  --surface: #111827;
+  --surface-strong: #1e1b4b;
+  --muted: #94a3b8;
+  --border: #1f2937;
+  --accent: #818cf8;
+  --accent-strong: #22d3ee;
+  --on-accent: #0b1220;
+  --focus: #22d3ee;
+  --pass: #6ee7b7;
+  --pass-surface: #064e3b;
+  --fail: #fca5a5;
+  --fail-surface: #7f1d1d;
+  --verify: #fcd34d;
+  --verify-surface: #78350f;
+  --shadow: 0 12px 32px rgba(2, 6, 23, 0.45);
+  --highlight: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  --grid-line: rgba(34, 211, 238, 0.08);
 }
 
 @theme inline {
@@ -28,6 +60,7 @@
   --color-border: var(--border);
   --color-accent: var(--accent);
   --color-accent-strong: var(--accent-strong);
+  --color-on-accent: var(--on-accent);
   --color-focus: var(--focus);
   --color-pass: var(--pass);
   --color-pass-surface: var(--pass-surface);
@@ -35,7 +68,8 @@
   --color-fail-surface: var(--fail-surface);
   --color-verify: var(--verify);
   --color-verify-surface: var(--verify-surface);
-  --font-sans: var(--font-plus-jakarta);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -56,9 +90,37 @@ html {
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-plus-jakarta), ui-sans-serif, system-ui, sans-serif;
+  font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
   font-size: 1rem;
   line-height: 1.5;
+}
+
+.font-mono,
+code,
+kbd,
+samp {
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  font-variant-numeric: tabular-nums;
+}
+
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+.brand-grid {
+  background-image:
+    linear-gradient(var(--grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+.brand-noise {
+  background-image: radial-gradient(rgba(15, 23, 42, 0.04) 0.6px, transparent 0.6px);
+  background-size: 3px 3px;
+}
+
+.dark .brand-noise {
+  background-image: radial-gradient(rgba(248, 250, 252, 0.05) 0.6px, transparent 0.6px);
 }
 
 :focus-visible {
@@ -66,6 +128,24 @@ body {
   outline-offset: 3px;
 }
 
-a {
+a:not([class]) {
   color: inherit;
+}
+
+.touch-target {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+@media print {
+  header,
+  footer,
+  nav[aria-label="Mobile"] {
+    display: none !important;
+  }
+
+  .print-rules {
+    color: #000;
+    background: #fff;
+  }
 }

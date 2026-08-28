@@ -1,4 +1,5 @@
 import type { MetadataRoute } from "next";
+import { publicAppUrl } from "@/lib/brand";
 
 export default function robots(): MetadataRoute.Robots {
   return {
@@ -6,9 +7,9 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: "*",
         allow: "/",
-        disallow: ["/admin", "/api", "/auth", "/scan/confirm"],
+        disallow: ["/admin", "/api", "/auth", "/scan/confirm", "/dev"],
       },
     ],
-    sitemap: "https://canibringthis.com/sitemap.xml",
+    sitemap: `${publicAppUrl()}/sitemap.xml`,
   };
 }

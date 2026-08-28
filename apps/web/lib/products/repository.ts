@@ -4,15 +4,70 @@ import {
   hashFormulation,
   parseIngredients,
 } from "@snackcheck/compliance";
+import type { PublicProductCard } from "@snackcheck/contracts";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { loadPublishedArizonaRuleset } from "@/lib/rules/arizona";
+import {
+  isUsablePublishedRuleset,
+  loadPublishedArizonaRuleset,
+} from "@/lib/rules/arizona";
 import {
   findDevByGtin,
   findDevProduct,
   listDevProducts,
   searchDevProducts,
 } from "./dev-catalog";
+import { freshnessState, isApprovedEligible } from "./approved-eligibility";
+import {
+  approvedCatalogSource,
+  isDevCatalogAllowed,
+  productMissFallback,
+} from "./lookup-policy";
+import { mapLiveSearchCard } from "./public-search-card";
+import { clampSearchLimit } from "./search-query";
 import type { FormulationRecord, ProductPageModel, ProductRecord } from "./types";
+
+function nodeEnv(): string {
+  return process.env.NODE_ENV ?? "development";
+}
+
+function devCatalogOn(): boolean {
+  return isDevCatalogAllowed(nodeEnv(), process.env.DEV_CATALOG_ENABLED);
+}
+
+function resolveMiss(hasAdminClient: boolean, dbHit: boolean) {
+  const decision = productMissFallback({
+    nodeEnv: nodeEnv(),
+    hasAdminClient,
+    dbHit,
+  });
+  return decision === "dev-catalog" && devCatalogOn() ? "dev-catalog" : "not-found";
+}
+
+function cardFromDev(item: ProductPageModel): PublicProductCard {
+  const lastVerifiedAt = item.formulation?.lastVerifiedAt ?? null;
+  return {
+    id: item.product.id,
+    slug: item.product.slug,
+    brand: item.product.brand,
+    name: item.product.name,
+    variant: item.product.variant,
+    size: item.product.size,
+    category: item.product.category,
+    imageUrl: item.product.imageUrl,
+    imageAttribution: item.product.imageAttribution,
+    ingredientStatus: item.classroom.ingredientStatus,
+    verificationStatus: item.formulation?.verificationStatus ?? null,
+    lastVerifiedAt,
+    freshnessState: freshnessState({
+      lastVerifiedAt,
+      evaluationDate: new Date().toISOString().slice(0, 10),
+      freshnessCurrentDays: 180,
+      freshnessAgingDays: 365,
+    }),
+    formulationConflict: item.product.formulationConflict,
+    rulesetHash: item.classroom.rulesetHash || null,
+  };
+}
 
 function mapProduct(row: {
   id: string;
@@ -50,7 +105,7 @@ function mapProduct(row: {
 export async function getProductBySlug(slug: string): Promise<ProductPageModel | null> {
   const admin = createAdminClient();
   if (!admin) {
-    return findDevProduct(slug);
+    return resolveMiss(false, false) === "dev-catalog" ? findDevProduct(slug) : null;
   }
 
   const { data: product } = await admin
@@ -60,7 +115,7 @@ export async function getProductBySlug(slug: string): Promise<ProductPageModel |
     .eq("active", true)
     .maybeSingle();
   if (!product) {
-    return findDevProduct(slug);
+    return resolveMiss(true, false) === "dev-catalog" ? findDevProduct(slug) : null;
   }
 
   const { data: formulation } = await admin
@@ -68,54 +123,51 @@ export async function getProductBySlug(slug: string): Promise<ProductPageModel |
     .select("*")
     .eq("product_id", product.id)
     .eq("active", true)
-    .order("last_verified_at", { ascending: false })
+    .order("last_verified_at", { ascending: false, nullsFirst: false })
+    .order("last_observed_at", { ascending: false })
+    .order("version", { ascending: false })
+    .order("id", { ascending: false })
     .limit(1)
     .maybeSingle();
 
   return hydrate(mapProduct(product), formulation);
 }
 
-export async function searchProducts(query: string) {
+export async function searchProducts(
+  query: string,
+  options?: {
+    limit?: number;
+    offset?: number;
+    cursorId?: string;
+    cursorRank?: number;
+    cursorName?: string;
+  },
+): Promise<PublicProductCard[]> {
   const admin = createAdminClient();
   if (!admin) {
-    return searchDevProducts(query).map((item) => ({
-      id: item.product.id,
-      slug: item.product.slug,
-      brand: item.product.brand,
-      name: item.product.name,
-      variant: item.product.variant,
-      category: item.product.category,
-      imageUrl: item.product.imageUrl,
-      ingredientStatus: item.classroom.ingredientStatus,
-      verificationStatus: item.formulation?.verificationStatus ?? null,
-      lastVerifiedAt: item.formulation?.lastVerifiedAt ?? null,
-    }));
+    return resolveMiss(false, false) === "dev-catalog"
+      ? searchDevProducts(query).map(cardFromDev)
+      : [];
   }
 
-  const { data } = await admin.rpc("search_products", {
+  const { data, error } = await admin.rpc("search_public_products", {
     query,
-    result_limit: 24,
-    result_offset: 0,
+    result_limit: clampSearchLimit(options?.limit),
+    result_offset: Math.max(options?.offset ?? 0, 0),
+    cursor_rank: options?.cursorRank,
+    cursor_name: options?.cursorName,
+    cursor_id: options?.cursorId,
   });
-
-  return (data ?? []).map((row) => ({
-    id: row.id,
-    slug: row.slug,
-    brand: row.brand,
-    name: row.name,
-    variant: row.variant,
-    category: row.category,
-    imageUrl: row.image_url,
-    ingredientStatus: null as null,
-    verificationStatus: null,
-    lastVerifiedAt: null,
-  }));
+  if (error) {
+    return [];
+  }
+  return (data ?? []).map((row) => mapLiveSearchCard(row));
 }
 
 export async function getProductByGtin(gtin14: string): Promise<ProductPageModel | null> {
   const admin = createAdminClient();
   if (!admin) {
-    return findDevByGtin(gtin14);
+    return resolveMiss(false, false) === "dev-catalog" ? findDevByGtin(gtin14) : null;
   }
   const { data: identifier } = await admin
     .from("product_identifiers")
@@ -123,7 +175,7 @@ export async function getProductByGtin(gtin14: string): Promise<ProductPageModel
     .eq("normalized_gtin14", gtin14)
     .maybeSingle();
   if (!identifier) {
-    return findDevByGtin(gtin14);
+    return resolveMiss(true, false) === "dev-catalog" ? findDevByGtin(gtin14) : null;
   }
   const { data: product } = await admin
     .from("products")
@@ -138,6 +190,10 @@ export async function getProductByGtin(gtin14: string): Promise<ProductPageModel
     .select("*")
     .eq("product_id", product.id)
     .eq("active", true)
+    .order("last_verified_at", { ascending: false, nullsFirst: false })
+    .order("last_observed_at", { ascending: false })
+    .order("version", { ascending: false })
+    .order("id", { ascending: false })
     .limit(1)
     .maybeSingle();
   return hydrate(mapProduct(product), formulation);
@@ -146,22 +202,63 @@ export async function getProductByGtin(gtin14: string): Promise<ProductPageModel
 export async function listApprovedProducts(filters?: {
   category?: string;
   brand?: string;
-}) {
-  const models = createAdminClient()
-    ? []
-    : listDevProducts().filter(
-        (item) =>
-          item.classroom.ingredientStatus === "PASS" &&
-          !item.product.formulationConflict &&
-          item.formulation?.verificationStatus !== "STALE" &&
-          item.formulation?.verificationStatus !== "CONFLICT",
-      );
-
-  return models.filter((item) => {
-    if (filters?.category && item.product.category !== filters.category) return false;
-    if (filters?.brand && item.product.brand !== filters.brand) return false;
-    return true;
+  offset?: number;
+}): Promise<PublicProductCard[]> {
+  const source = approvedCatalogSource({
+    hasAdminClient: Boolean(createAdminClient()),
+    nodeEnv: nodeEnv(),
+    devCatalogFlag: process.env.DEV_CATALOG_ENABLED,
   });
+  if (source === "dev-catalog") {
+    const ruleset = await loadPublishedArizonaRuleset();
+    const currentHash = isUsablePublishedRuleset(ruleset) ? ruleset.rulesetHash : null;
+    return listDevProducts()
+      .map(cardFromDev)
+      .filter((card) =>
+        isApprovedEligible({
+          ingredientStatus: card.ingredientStatus,
+          verificationStatus: card.verificationStatus,
+          freshnessState: card.freshnessState,
+          formulationConflict: card.formulationConflict,
+          rulesetHash: card.rulesetHash,
+          currentPublishedRulesetHash: currentHash,
+        }),
+      )
+      .filter((card) => {
+        if (filters?.category && card.category !== filters.category) return false;
+        if (filters?.brand && card.brand !== filters.brand) return false;
+        return true;
+      });
+  }
+
+  const admin = createAdminClient();
+  if (!admin) {
+    return [];
+  }
+  const { data, error } = await admin.rpc("list_approved_public_products", {
+    filter_category: filters?.category,
+    filter_brand: filters?.brand,
+    result_limit: 100,
+    result_offset: Math.max(filters?.offset ?? 0, 0),
+  });
+  if (error) {
+    return [];
+  }
+  return (data ?? []).map((row) => mapLiveSearchCard(row));
+}
+
+export async function listPublicSitemapEntries(): Promise<
+  Array<{ kind: string; path: string }>
+> {
+  const admin = createAdminClient();
+  if (!admin) {
+    return [];
+  }
+  const { data, error } = await admin.rpc("list_public_sitemap_entries");
+  if (error || !data) {
+    return [];
+  }
+  return data;
 }
 
 async function hydrate(
@@ -177,6 +274,7 @@ async function hydrate(
     confidence: number | null;
     last_verified_at: string | null;
     first_observed_at: string;
+    last_observed_at?: string | null;
   } | null,
 ): Promise<ProductPageModel> {
   const ruleset = await loadPublishedArizonaRuleset();
@@ -196,12 +294,14 @@ async function hydrate(
       ruleset,
       context: "CLASSROOM_DISTRIBUTION",
       evaluationDate: new Date().toISOString().slice(0, 10),
+      parserWarnings: [],
     });
     const ownChild = evaluateCompliance({
       formulation: empty,
       ruleset,
       context: "PARENT_OWN_CHILD",
       evaluationDate: new Date().toISOString().slice(0, 10),
+      parserWarnings: [],
     });
     return { product, formulation: null, classroom, ownChild };
   }
@@ -223,6 +323,7 @@ async function hydrate(
       formulationRow.confidence === null ? null : Number(formulationRow.confidence),
     lastVerifiedAt: formulationRow.last_verified_at,
     firstObservedAt: formulationRow.first_observed_at,
+    lastObservedAt: formulationRow.last_observed_at ?? null,
     conflict: product.formulationConflict,
     sourceType: "ADMIN_ENTRY",
     sourceTitle: null,
@@ -241,6 +342,7 @@ async function hydrate(
     },
     ruleset,
     evaluationDate: new Date().toISOString().slice(0, 10),
+    parserWarnings: parsed.warnings,
   };
   return {
     product,

@@ -7,11 +7,6 @@ export type Json =
   | Json[]
 
 export type Database = {
-  // Allows to automatically instantiate createClient with right options
-  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
-  __InternalSupabase: {
-    PostgrestVersion: "14.17"
-  }
   graphql_public: {
     Tables: {
       [_ in never]: never
@@ -1104,6 +1099,11 @@ export type Database = {
           jurisdiction_id: string
           notes: string | null
           published_at: string | null
+          published_by: string | null
+          review_document_hash: string | null
+          review_document_url: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
           ruleset_hash: string | null
           title: string
           version: number
@@ -1121,6 +1121,11 @@ export type Database = {
           jurisdiction_id: string
           notes?: string | null
           published_at?: string | null
+          published_by?: string | null
+          review_document_hash?: string | null
+          review_document_url?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
           ruleset_hash?: string | null
           title: string
           version: number
@@ -1138,6 +1143,11 @@ export type Database = {
           jurisdiction_id?: string
           notes?: string | null
           published_at?: string | null
+          published_by?: string | null
+          review_document_hash?: string | null
+          review_document_url?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
           ruleset_hash?: string | null
           title?: string
           version?: number
@@ -1330,10 +1340,137 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      canonical_json: { Args: { value: Json }; Returns: string }
+      clone_ruleset_to_draft: {
+        Args: { source_ruleset_id: string }
+        Returns: string
+      }
+      current_published_arizona_ruleset: {
+        Args: never
+        Returns: {
+          freshness_aging_days: number
+          freshness_current_days: number
+          id: string
+          ruleset_hash: string
+        }[]
+      }
+      escape_like_pattern: { Args: { input: string }; Returns: string }
+      formulation_freshness_state: {
+        Args: {
+          aging_days: number
+          current_days: number
+          last_verified_at: string
+        }
+        Returns: string
+      }
+      import_catalog_row: {
+        Args: {
+          p_brand: string
+          p_category: string
+          p_gtin14: string
+          p_identifier_type: string
+          p_ingredient_text_sha256: string
+          p_name: string
+          p_normalized_ingredient_text: string
+          p_notes: string
+          p_observed_at: string
+          p_primary_upc: string
+          p_raw_ingredients: string
+          p_size: string
+          p_slug: string
+          p_source_title: string
+          p_source_type: Database["public"]["Enums"]["source_type"]
+          p_source_url: string
+          p_variant: string
+          p_verification_status: Database["public"]["Enums"]["verification_status"]
+        }
+        Returns: string
+      }
       is_active_admin: { Args: { required_roles?: string[] }; Returns: boolean }
+      latest_public_formulation_id: {
+        Args: { target_product_id: string }
+        Returns: string
+      }
+      list_approved_public_products: {
+        Args: {
+          filter_brand?: string
+          filter_category?: string
+          result_limit?: number
+          result_offset?: number
+        }
+        Returns: {
+          brand: string
+          category: string
+          formulation_conflict: boolean
+          freshness_state: string
+          id: string
+          image_attribution: string
+          image_url: string
+          ingredient_status: Database["public"]["Enums"]["ingredient_status"]
+          last_verified_at: string
+          name: string
+          ruleset_hash: string
+          size: string
+          slug: string
+          variant: string
+          verification_status: Database["public"]["Enums"]["verification_status"]
+        }[]
+      }
+      list_public_sitemap_entries: {
+        Args: never
+        Returns: {
+          kind: string
+          path: string
+        }[]
+      }
+      public_product_card: {
+        Args: { target_product_id: string }
+        Returns: {
+          brand: string
+          category: string
+          formulation_conflict: boolean
+          freshness_state: string
+          id: string
+          image_attribution: string
+          image_url: string
+          ingredient_status: Database["public"]["Enums"]["ingredient_status"]
+          last_verified_at: string
+          name: string
+          ruleset_hash: string
+          size: string
+          slug: string
+          variant: string
+          verification_status: Database["public"]["Enums"]["verification_status"]
+        }[]
+      }
+      publish_ruleset: {
+        Args: { publisher_id: string; target_ruleset_id: string }
+        Returns: undefined
+      }
       refresh_product_search_document: {
         Args: { target_product_id: string }
         Returns: undefined
+      }
+      review_ruleset: {
+        Args: {
+          document_hash: string
+          document_url: string
+          reviewer_id: string
+          target_ruleset_id: string
+        }
+        Returns: undefined
+      }
+      ruleset_canonical_hash: {
+        Args: { target_ruleset_id: string }
+        Returns: string
+      }
+      ruleset_canonical_payload: {
+        Args: { target_ruleset_id: string }
+        Returns: Json
+      }
+      ruleset_publication_blockers: {
+        Args: { target_ruleset_id: string }
+        Returns: string[]
       }
       search_products: {
         Args: { query: string; result_limit?: number; result_offset?: number }
@@ -1347,6 +1484,35 @@ export type Database = {
           similarity: number
           slug: string
           variant: string
+        }[]
+      }
+      search_public_products: {
+        Args: {
+          cursor_id?: string
+          cursor_name?: string
+          cursor_rank?: number
+          query: string
+          result_limit?: number
+          result_offset?: number
+        }
+        Returns: {
+          brand: string
+          category: string
+          formulation_conflict: boolean
+          freshness_state: string
+          id: string
+          image_attribution: string
+          image_url: string
+          ingredient_status: Database["public"]["Enums"]["ingredient_status"]
+          last_verified_at: string
+          name: string
+          rank: number
+          ruleset_hash: string
+          similarity: number
+          size: string
+          slug: string
+          variant: string
+          verification_status: Database["public"]["Enums"]["verification_status"]
         }[]
       }
       show_limit: { Args: never; Returns: number }
@@ -1589,3 +1755,4 @@ export const Constants = {
     },
   },
 } as const
+

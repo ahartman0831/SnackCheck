@@ -8,6 +8,7 @@ import {
 } from "@snackcheck/compliance";
 import { fail, ok, requestId } from "@/lib/api/envelope";
 import { loadPublishedArizonaRuleset } from "@/lib/rules/arizona";
+import { isAuthorizedSubmissionCookie } from "@/lib/submissions/submission-token";
 
 const BodySchema = z.object({
   correctedText: z.string().min(1).max(10_000),
@@ -21,7 +22,7 @@ export async function POST(
   const { id } = await context.params;
   const store = await cookies();
   const token = store.get("sc_submission")?.value ?? "";
-  if (!token.startsWith(`${id}.`)) {
+  if (!isAuthorizedSubmissionCookie(token, id)) {
     return NextResponse.json(
       fail("FORBIDDEN", "This submission is not yours to confirm.", { id: reqId }),
       {
@@ -58,6 +59,7 @@ export async function POST(
     ruleset,
     context: "CLASSROOM_DISTRIBUTION",
     evaluationDate: new Date().toISOString().slice(0, 10),
+    parserWarnings: ingredients.warnings,
   });
 
   return NextResponse.json(ok({ result, confirmed: true }, reqId));

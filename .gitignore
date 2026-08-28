@@ -22,3 +22,4 @@ supabase/.branches
 .vscode/*
 !.vscode/extensions.json
 apps/web/next-env.d.ts
+exports/*.zip

@@ -20,6 +20,7 @@ export const QualityFlagSchema = z.enum([
   "RULESET_UNAVAILABLE",
   "PRECAUTIONARY_MATCH_ONLY",
   "AGING_EVIDENCE",
+  "PARSER_WARNING",
 ]);
 export type QualityFlag = z.infer<typeof QualityFlagSchema>;
 
@@ -121,6 +122,7 @@ export const ComplianceInputSchema = z.object({
   context: EvaluationContextSchema,
   evaluationDate: z.string(),
   schoolContext: VerifiedSchoolContextSchema.optional(),
+  parserWarnings: z.array(z.string()).optional(),
 });
 export type ComplianceInput = z.infer<typeof ComplianceInputSchema>;
 
