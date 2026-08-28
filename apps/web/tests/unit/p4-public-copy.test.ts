@@ -3,6 +3,7 @@ import {
   APPROVED_FORBIDDEN,
   APPROVED_HEADING,
   barcodeActionLabel,
+  barcodePageDescription,
   barcodePageTitle,
   ingredientActionLabel,
   ingredientPageTitle,
@@ -14,6 +15,8 @@ describe("feature-flag public wording", () => {
     expect(barcodeActionLabel(env)).toBe("Enter a barcode");
     expect(barcodePageTitle(env)).toBe("Enter a barcode");
     expect(barcodeActionLabel({ FEATURE_BARCODE_CAMERA: "true" })).toBe("Scan a barcode");
+    expect(barcodePageDescription(env)).toMatch(/Type or paste/);
+    expect(barcodePageDescription({ FEATURE_BARCODE_CAMERA: "true" })).toMatch(/camera/i);
   });
 
   it("uses paste copy when ingredient photo flags are off", () => {

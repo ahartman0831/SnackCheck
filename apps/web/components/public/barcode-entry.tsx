@@ -4,6 +4,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Field, Input } from "@/components/ui/field";
+import { lookupNormalizedGtin, routeForLookup } from "@/lib/barcode/lookup";
 import { normalizeGtin } from "@/lib/gtin";
 
 function groupDigits(value: string): string {
@@ -11,10 +12,10 @@ function groupDigits(value: string): string {
   return digits.replace(/(\d{4})(?=\d)/g, "$1 ");
 }
 
-export function BarcodeEntry() {
+export function BarcodeEntry({ prefill }: { prefill?: string }) {
   const router = useRouter();
   const params = useSearchParams();
-  const [value, setValue] = useState(params.get("gtin") ?? "");
+  const [value, setValue] = useState(prefill ?? params.get("gtin") ?? "");
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
@@ -29,30 +30,23 @@ export function BarcodeEntry() {
     }
     setBusy(true);
     setError(null);
-    try {
-      const response = await fetch(
-        `/api/v1/upc/${encodeURIComponent(normalized.gtin14)}`,
-      );
-      const payload = await response.json();
-      if (!response.ok) {
-        setError(payload.error?.message ?? "That barcode could not be checked.");
-        return;
+    const result = await lookupNormalizedGtin(normalized.gtin14, {
+      online: navigator.onLine,
+    });
+    setBusy(false);
+    if (result.status === "found" || result.status === "unknown") {
+      const href = routeForLookup(result);
+      if (href) {
+        router.push(href);
       }
-      const slug = payload.data?.lookup?.result?.slug;
-      if (slug) {
-        router.push(`/product/${slug}`);
-        return;
-      }
-      router.push(`/scan/ingredients?gtin=${encodeURIComponent(normalized.gtin14)}`);
-    } catch {
-      setError("Lookup is unavailable. Your numbers were kept.");
-    } finally {
-      setBusy(false);
+      return;
     }
+    setError(result.message);
   }
 
   return (
     <form onSubmit={submit} className="flex flex-col gap-4">
+      <h2 className="text-lg font-semibold">Type the numbers</h2>
       <Field
         id="manual-barcode"
         label="Barcode numbers"

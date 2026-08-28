@@ -66,7 +66,7 @@ Desktop: wordmark, Search, What I can bring, Barcode (or Scan when the camera fl
 
 Mobile: Home, Search, prominent Barcode/Scan, Browse, Rules. Hidden on `/scan/*`, `/admin/*`, and `/auth/*`. Safe-area insets and content padding keep the bar from covering page content.
 
-Scan copy must follow existing feature flags. The current Barcode action opens manual entry. Do not advertise camera or photo extraction until those flags are on.
+Scan copy must follow existing feature flags. When `FEATURE_BARCODE_CAMERA` is off, the Barcode action opens manual entry only. When the flag is on, the same page can start a rear camera after a user gesture and still keeps typed entry. Do not advertise photo extraction until that flag is on.
 
 ## Gallery
 

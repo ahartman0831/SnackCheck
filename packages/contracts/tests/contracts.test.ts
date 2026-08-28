@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  AnalyticsEventSchema,
   IngredientStatusSchema,
   INGREDIENT_STATUS_LABELS,
   PublicProductCardSchema,
@@ -16,6 +17,21 @@ describe("shared contracts", () => {
     expect(INGREDIENT_STATUS_LABELS.PASS).toBe("Passes AZ ingredient check");
     expect(INGREDIENT_STATUS_LABELS.FAIL).toBe("Doesn't pass AZ ingredient check");
     expect(INGREDIENT_STATUS_LABELS.VERIFY).toBe("Verify this package");
+  });
+
+  it("accepts privacy-safe barcode camera events", () => {
+    expect(
+      AnalyticsEventSchema.parse({
+        name: "barcode_scan_failed",
+        properties: { failureCode: "permission_denied" },
+      }).name,
+    ).toBe("barcode_scan_failed");
+    expect(
+      AnalyticsEventSchema.parse({
+        name: "barcode_scan_fallback",
+        properties: { category: "manual" },
+      }).name,
+    ).toBe("barcode_scan_fallback");
   });
 
   it("requires a finished public product card status", () => {
