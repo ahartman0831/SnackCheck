@@ -10,6 +10,16 @@ export function barcodePageTitle(env?: FeatureEnv): string {
   return barcodeActionLabel(env);
 }
 
+export function barcodeUsesCamera(env?: FeatureEnv): boolean {
+  return isBarcodeCameraEnabled(env);
+}
+
+export function barcodePageDescription(env?: FeatureEnv): string {
+  return isBarcodeCameraEnabled(env)
+    ? "Point the camera at the barcode, or type the numbers printed below it."
+    : "Type or paste the numbers printed below the barcode on the package.";
+}
+
 export function ingredientActionLabel(env?: FeatureEnv): string {
   return isIngredientPhotoEnabled(env) ? "Photograph ingredients" : "Paste ingredients";
 }
