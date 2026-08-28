@@ -110,3 +110,10 @@ jobs:
         env:
           CI: true
           DEV_CATALOG_ENABLED: "true"
+      - name: Run camera WebKit
+        run: pnpm test:e2e:camera
+        env:
+          CI: true
+          DEV_CATALOG_ENABLED: "true"
+          FEATURE_BARCODE_CAMERA: "true"
+          NEXT_PUBLIC_FEATURE_BARCODE_CAMERA: "true"

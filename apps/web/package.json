@@ -10,7 +10,8 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:integration": "vitest run --config vitest.integration.config.ts",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "test:e2e:camera": "playwright test --config=playwright.camera.config.ts"
   },
   "dependencies": {
     "@radix-ui/react-accordion": "^1.2.20",
