@@ -1,3 +1,12 @@
+/**
+ * Canonical Database types.
+ * Phase 2 RPCs (`search_public_products`, `list_approved_public_products`,
+ * `list_public_sitemap_entries`, `import_catalog_row`) are hand-aligned to
+ * `supabase/migrations/0017_public_product_projection.sql` until
+ * `pnpm db:types` can run against a local instance with 0016+0017 applied.
+ * Do not regenerate from the linked production project until those
+ * migrations are explicitly authorized.
+ */
 export type Json =
   | string
   | number
@@ -1104,6 +1113,11 @@ export type Database = {
           jurisdiction_id: string
           notes: string | null
           published_at: string | null
+          published_by: string | null
+          review_document_hash: string | null
+          review_document_url: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
           ruleset_hash: string | null
           title: string
           version: number
@@ -1121,6 +1135,11 @@ export type Database = {
           jurisdiction_id: string
           notes?: string | null
           published_at?: string | null
+          published_by?: string | null
+          review_document_hash?: string | null
+          review_document_url?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
           ruleset_hash?: string | null
           title: string
           version: number
@@ -1138,6 +1157,11 @@ export type Database = {
           jurisdiction_id?: string
           notes?: string | null
           published_at?: string | null
+          published_by?: string | null
+          review_document_hash?: string | null
+          review_document_url?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
           ruleset_hash?: string | null
           title?: string
           version?: number
@@ -1330,10 +1354,87 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      clone_ruleset_to_draft: {
+        Args: { source_ruleset_id: string }
+        Returns: string
+      }
       is_active_admin: { Args: { required_roles?: string[] }; Returns: boolean }
+      publish_ruleset: {
+        Args: { publisher_id: string; target_ruleset_id: string }
+        Returns: undefined
+      }
       refresh_product_search_document: {
         Args: { target_product_id: string }
         Returns: undefined
+      }
+      review_ruleset: {
+        Args: {
+          document_hash: string
+          document_url: string
+          reviewer_id: string
+          target_ruleset_id: string
+        }
+        Returns: undefined
+      }
+      ruleset_canonical_hash: { Args: { target_ruleset_id: string }; Returns: string }
+      ruleset_publication_blockers: {
+        Args: { target_ruleset_id: string }
+        Returns: string[]
+      }
+      import_catalog_row: {
+        Args: {
+          p_brand: string
+          p_category?: string | null
+          p_gtin14: string
+          p_identifier_type: string
+          p_ingredient_text_sha256: string
+          p_name: string
+          p_normalized_ingredient_text: string
+          p_notes?: string | null
+          p_observed_at: string
+          p_primary_upc?: string | null
+          p_raw_ingredients: string
+          p_size?: string | null
+          p_slug: string
+          p_source_title?: string | null
+          p_source_type: Database["public"]["Enums"]["source_type"]
+          p_source_url: string
+          p_variant?: string | null
+          p_verification_status: Database["public"]["Enums"]["verification_status"]
+        }
+        Returns: string
+      }
+      list_approved_public_products: {
+        Args: {
+          filter_brand?: string | null
+          filter_category?: string | null
+          result_limit?: number
+          result_offset?: number
+        }
+        Returns: {
+          brand: string
+          category: string
+          formulation_conflict: boolean
+          freshness_state: string
+          id: string
+          image_attribution: string
+          image_url: string
+          ingredient_status: Database["public"]["Enums"]["ingredient_status"]
+          last_verified_at: string
+          name: string
+          ruleset_hash: string
+          size: string
+          slug: string
+          variant: string
+          verification_status: Database["public"]["Enums"]["verification_status"]
+        }[]
+      }
+      list_public_sitemap_entries: {
+        Args: never
+        Returns: {
+          kind: string
+          path: string
+        }[]
       }
       search_products: {
         Args: { query: string; result_limit?: number; result_offset?: number }
@@ -1347,6 +1448,35 @@ export type Database = {
           similarity: number
           slug: string
           variant: string
+        }[]
+      }
+      search_public_products: {
+        Args: {
+          cursor_id?: string | null
+          cursor_name?: string | null
+          cursor_rank?: number | null
+          query: string
+          result_limit?: number
+          result_offset?: number
+        }
+        Returns: {
+          brand: string
+          category: string
+          formulation_conflict: boolean
+          freshness_state: string
+          id: string
+          image_attribution: string
+          image_url: string
+          ingredient_status: Database["public"]["Enums"]["ingredient_status"]
+          last_verified_at: string
+          name: string
+          rank: number
+          ruleset_hash: string
+          similarity: number
+          size: string
+          slug: string
+          variant: string
+          verification_status: Database["public"]["Enums"]["verification_status"]
         }[]
       }
       show_limit: { Args: never; Returns: number }

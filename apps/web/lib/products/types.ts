@@ -28,6 +28,7 @@ export interface FormulationRecord {
   confidence: number | null;
   lastVerifiedAt: string | null;
   firstObservedAt: string;
+  lastObservedAt: string | null;
   conflict: boolean;
   sourceType: string;
   sourceTitle: string | null;

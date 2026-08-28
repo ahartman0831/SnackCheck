@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { fail, ok, requestId } from "@/lib/api/envelope";
 import { recordEvent } from "@/lib/analytics/events";
+import { clampSearchLimit, normalizeSearchQuery } from "@/lib/products/search-query";
 import { searchProducts } from "@/lib/products/repository";
 import { getRateLimiter } from "@/lib/rate-limit";
 
@@ -21,23 +22,32 @@ export async function GET(request: Request) {
   }
 
   const url = new URL(request.url);
-  const q = (url.searchParams.get("q") ?? "").replace(/[\u0000-\u001F]/g, "").trim();
-  if (q.length < 2) {
+  const parsed = normalizeSearchQuery(url.searchParams.get("q") ?? "");
+  if ("error" in parsed) {
     return NextResponse.json(
-      fail("INVALID_QUERY", "Type at least two characters.", { id }),
+      fail(
+        "INVALID_QUERY",
+        parsed.error === "too_long"
+          ? "That search is too long."
+          : "Type at least two characters.",
+        { id },
+      ),
       { status: 400 },
     );
   }
-  if (q.length > 80) {
-    return NextResponse.json(fail("INVALID_QUERY", "That search is too long.", { id }), {
-      status: 400,
-    });
-  }
 
-  const results = await searchProducts(q);
+  const results = await searchProducts(parsed.query, {
+    limit: clampSearchLimit(Number(url.searchParams.get("limit") ?? 24)),
+    offset: Math.max(Number(url.searchParams.get("offset") ?? 0), 0),
+    cursorId: url.searchParams.get("cursorId") ?? undefined,
+    cursorRank: url.searchParams.get("cursorRank")
+      ? Number(url.searchParams.get("cursorRank"))
+      : undefined,
+    cursorName: url.searchParams.get("cursorName") ?? undefined,
+  });
   await recordEvent({
     name: results.length === 0 ? "search_zero_results" : "search_performed",
-    properties: { queryLength: q.length, resultCount: results.length },
+    properties: { queryLength: parsed.query.length, resultCount: results.length },
   });
   return NextResponse.json(ok(results, id));
 }

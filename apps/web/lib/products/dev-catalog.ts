@@ -5,6 +5,7 @@ import {
   hashFormulation,
   parseIngredients,
 } from "@snackcheck/compliance";
+import { isDevCatalogAllowed } from "./lookup-policy";
 import type { ProductPageModel, ProductRecord } from "./types";
 
 /**
@@ -34,6 +35,17 @@ const DEV_PRODUCTS: ProductPageModel[] = [
     ingredients: "Corn syrup, sugar, fruit puree, Red dye 40, citric acid",
     verificationStatus: "PACKAGE_VERIFIED",
   }),
+  createFixture({
+    id: "dev-verify-chips",
+    slug: "dev-fixture-unconfirmed-chips",
+    brand: "[DEV FIXTURE] East Mesa",
+    name: "Unconfirmed Chips",
+    category: "chips",
+    gtin14: "00000000000024",
+    primaryUpc: "000000000002",
+    ingredients: "Potatoes, oil, salt",
+    verificationStatus: "COMMUNITY_SUBMITTED",
+  }),
 ];
 
 function createFixture(input: {
@@ -45,7 +57,7 @@ function createFixture(input: {
   gtin14: string;
   primaryUpc: string;
   ingredients: string;
-  verificationStatus: "VERIFIED" | "PACKAGE_VERIFIED";
+  verificationStatus: "VERIFIED" | "PACKAGE_VERIFIED" | "COMMUNITY_SUBMITTED";
 }): ProductPageModel {
   const parsed = parseIngredients(input.ingredients);
   const hash = hashFormulation({
@@ -63,6 +75,7 @@ function createFixture(input: {
     confidence: 1,
     lastVerifiedAt: "2026-08-01T00:00:00.000Z",
     firstObservedAt: "2026-08-01T00:00:00.000Z",
+    lastObservedAt: "2026-08-01T00:00:00.000Z",
     conflict: false,
     sourceType: "ADMIN_ENTRY",
     sourceTitle: "Local development fixture — not real product data",
@@ -107,9 +120,7 @@ function createFixture(input: {
 }
 
 export function devCatalogEnabled(): boolean {
-  return (
-    process.env.NODE_ENV !== "production" && process.env.DEV_CATALOG_ENABLED === "true"
-  );
+  return isDevCatalogAllowed(process.env.NODE_ENV, process.env.DEV_CATALOG_ENABLED);
 }
 
 export function listDevProducts(): ProductPageModel[] {
