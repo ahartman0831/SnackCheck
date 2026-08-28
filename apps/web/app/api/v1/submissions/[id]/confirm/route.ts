@@ -8,7 +8,8 @@ import {
 } from "@snackcheck/compliance";
 import { fail, ok, requestId } from "@/lib/api/envelope";
 import { loadPublishedArizonaRuleset } from "@/lib/rules/arizona";
-import { isAuthorizedSubmissionCookie } from "@/lib/submissions/submission-token";
+import { ownsSubmission } from "@/lib/submissions/submission-ownership";
+import { createAdminClient } from "@/lib/supabase/admin";
 
 const BodySchema = z.object({
   correctedText: z.string().min(1).max(10_000),
@@ -22,7 +23,7 @@ export async function POST(
   const { id } = await context.params;
   const store = await cookies();
   const token = store.get("sc_submission")?.value ?? "";
-  if (!isAuthorizedSubmissionCookie(token, id)) {
+  if (!(await ownsSubmission(token, id))) {
     return NextResponse.json(
       fail("FORBIDDEN", "This submission is not yours to confirm.", { id: reqId }),
       {
@@ -62,5 +63,40 @@ export async function POST(
     parserWarnings: ingredients.warnings,
   });
 
-  return NextResponse.json(ok({ result, confirmed: true }, reqId));
+  const admin = createAdminClient();
+  if (!admin) {
+    return NextResponse.json(
+      fail("SUBMISSIONS_DISABLED", "Ingredient submissions are unavailable.", {
+        id: reqId,
+      }),
+      { status: 503 },
+    );
+  }
+  const confirmed = await admin
+    .from("submissions")
+    .update({
+      status: "CONFIRMED",
+      corrected_text: parsed.data.correctedText,
+      anonymous_key_hash: null,
+    })
+    .eq("id", id)
+    .eq("status", "NEEDS_CONFIRMATION")
+    .select("id")
+    .maybeSingle();
+  if (confirmed.error || !confirmed.data) {
+    return NextResponse.json(
+      fail("SUBMISSION_STATE", "This submission cannot be confirmed.", { id: reqId }),
+      { status: 409 },
+    );
+  }
+
+  const response = NextResponse.json(ok({ result, confirmed: true }, reqId));
+  response.cookies.set("sc_submission", "", {
+    httpOnly: true,
+    sameSite: "lax",
+    secure: process.env.NODE_ENV === "production",
+    path: "/api/v1/submissions/",
+    maxAge: 0,
+  });
+  return response;
 }

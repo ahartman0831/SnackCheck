@@ -33,19 +33,19 @@ pnpm dev
 
 ## Commands
 
-| Command                | Purpose                                                   |
-| ---------------------- | --------------------------------------------------------- |
-| `pnpm dev`             | Next.js app at http://localhost:3000                      |
-| `pnpm lint`            | ESLint                                                    |
-| `pnpm typecheck`       | TypeScript across the workspace                           |
-| `pnpm test`            | Unit tests (P0-5 is an intentional failure until Phase 6) |
-| `pnpm test:unit`       | Unit tests excluding the open P0-5 gate                   |
-| `pnpm test:p0-5-open`  | Confirms P0-5 is still red                                |
-| `pnpm test:e2e`        | Playwright (Chromium and WebKit)                          |
-| `pnpm test:e2e:webkit` | Playwright mobile WebKit                                  |
-| `pnpm test:db`         | Local Supabase pgTAP                                      |
-| `pnpm build`           | Production build                                          |
-| `pnpm format`          | Prettier                                                  |
+| Command                | Purpose                                   |
+| ---------------------- | ----------------------------------------- |
+| `pnpm dev`             | Next.js app at http://localhost:3000      |
+| `pnpm lint`            | ESLint                                    |
+| `pnpm typecheck`       | TypeScript across the workspace           |
+| `pnpm test`            | All package tests                         |
+| `pnpm test:unit`       | Compliance, contracts, and web unit tests |
+| `pnpm test:p0-5`       | Secure submission-ownership regression    |
+| `pnpm test:e2e`        | Playwright (Chromium and WebKit)          |
+| `pnpm test:e2e:webkit` | Playwright mobile WebKit                  |
+| `pnpm test:db`         | Local Supabase pgTAP                      |
+| `pnpm build`           | Production build                          |
+| `pnpm format`          | Prettier                                  |
 
 ## Principles
 

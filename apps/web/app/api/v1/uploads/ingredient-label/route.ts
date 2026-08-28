@@ -4,21 +4,17 @@ import { fail, ok, requestId } from "@/lib/api/envelope";
 import { getRateLimiter } from "@/lib/rate-limit";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { env } from "@/lib/env";
+import {
+  createSubmissionToken,
+  hashSubmissionToken,
+} from "@/lib/submissions/submission-token";
+import { isIngredientPhotoEnabled } from "@/lib/features";
 
 export async function POST() {
   const id = requestId();
-  try {
-    if (env.NODE_ENV === "production") {
-      const { assertProductionExtractionReady } = await import("@/lib/env");
-      assertProductionExtractionReady();
-    }
-  } catch (error) {
+  if (!env.SUBMISSION_TOKEN_SECRET) {
     return NextResponse.json(
-      fail(
-        "EXTRACTION_DISABLED",
-        error instanceof Error ? error.message : "Extraction unavailable",
-        { id },
-      ),
+      fail("SUBMISSIONS_DISABLED", "Ingredient submissions are not configured.", { id }),
       { status: 503 },
     );
   }
@@ -34,27 +30,76 @@ export async function POST() {
 
   const submissionId = randomUUID();
   const path = `${submissionId}/${randomUUID()}`;
+  const { token, payload } = createSubmissionToken({
+    submissionId,
+    secret: env.SUBMISSION_TOKEN_SECRET,
+  });
   const admin = createAdminClient();
+  if (!admin) {
+    return NextResponse.json(
+      fail("SUBMISSIONS_DISABLED", "Ingredient submissions are not configured.", {
+        id,
+      }),
+      { status: 503 },
+    );
+  }
+
   let uploadUrl: string | null = null;
 
-  if (admin) {
-    await admin.from("submissions").insert({
-      id: submissionId,
-      status: "UPLOAD_PENDING",
-    });
+  const inserted = await admin.from("submissions").insert({
+    id: submissionId,
+    status: "UPLOAD_PENDING",
+    anonymous_key_hash: hashSubmissionToken(token),
+    token_version: payload.version,
+    token_expires_at: new Date(payload.expiresAt * 1000).toISOString(),
+    raw_object_path: isIngredientPhotoEnabled() ? path : null,
+    retention_until: new Date(payload.expiresAt * 1000).toISOString(),
+  } as never);
+  if (inserted.error) {
+    return NextResponse.json(
+      fail("SUBMISSION_CREATE_FAILED", "The submission could not be started.", {
+        retryable: true,
+        id,
+      }),
+      { status: 503 },
+    );
+  }
+
+  if (isIngredientPhotoEnabled()) {
     const signed = await admin.storage.from("submission-raw").createSignedUploadUrl(path);
+    if (signed.error || !signed.data?.signedUrl) {
+      await admin
+        .from("submissions")
+        .update({ status: "FAILED", failure_code: "SIGNED_UPLOAD_FAILED" })
+        .eq("id", submissionId);
+      return NextResponse.json(
+        fail("UPLOAD_UNAVAILABLE", "Photo upload is temporarily unavailable.", {
+          retryable: true,
+          id,
+        }),
+        { status: 503 },
+      );
+    }
     uploadUrl = signed.data?.signedUrl ?? null;
   }
 
   const response = NextResponse.json(
-    ok({ submissionId, path, uploadUrl, maxBytes: env.MAX_UPLOAD_BYTES }, id),
+    ok(
+      {
+        submissionId,
+        path: uploadUrl ? path : null,
+        uploadUrl,
+        maxBytes: env.MAX_UPLOAD_BYTES,
+      },
+      id,
+    ),
   );
-  response.cookies.set("sc_submission", `${submissionId}.${id}`, {
+  response.cookies.set("sc_submission", token, {
     httpOnly: true,
     sameSite: "lax",
     secure: env.NODE_ENV === "production",
-    path: "/",
-    maxAge: 60 * 60,
+    path: "/api/v1/submissions/",
+    maxAge: payload.expiresAt - payload.issuedAt,
   });
   return response;
 }

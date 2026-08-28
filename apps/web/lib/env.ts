@@ -8,6 +8,11 @@ const optionalUrl = z.preprocess(emptyToUndefined, z.string().url().optional());
 
 const optionalString = z.preprocess(emptyToUndefined, z.string().min(1).optional());
 
+const optionalSecret = z.preprocess(
+  emptyToUndefined,
+  z.string().min(32, "must be at least 32 characters").optional(),
+);
+
 const envSchema = z.object({
   NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
   NEXT_PUBLIC_APP_URL: z.string().url().default("http://localhost:3000"),
@@ -29,7 +34,7 @@ const envSchema = z.object({
   UPSTASH_REDIS_REST_URL: optionalUrl,
   UPSTASH_REDIS_REST_TOKEN: optionalString,
   ANONYMOUS_KEY_HMAC_SECRET: optionalString,
-  SUBMISSION_TOKEN_SECRET: optionalString,
+  SUBMISSION_TOKEN_SECRET: optionalSecret,
   SENTRY_DSN: optionalString,
   LOG_LEVEL: z.enum(["debug", "info", "warn", "error"]).default("info"),
   MAX_UPLOAD_BYTES: z.coerce.number().int().positive().default(12_582_912),
