@@ -154,9 +154,9 @@ export async function searchProducts(
     query,
     result_limit: clampSearchLimit(options?.limit),
     result_offset: Math.max(options?.offset ?? 0, 0),
-    cursor_rank: options?.cursorRank ?? null,
-    cursor_name: options?.cursorName ?? null,
-    cursor_id: options?.cursorId ?? null,
+    cursor_rank: options?.cursorRank,
+    cursor_name: options?.cursorName,
+    cursor_id: options?.cursorId,
   });
   if (error) {
     return [];
@@ -236,8 +236,8 @@ export async function listApprovedProducts(filters?: {
     return [];
   }
   const { data, error } = await admin.rpc("list_approved_public_products", {
-    filter_category: filters?.category ?? null,
-    filter_brand: filters?.brand ?? null,
+    filter_category: filters?.category,
+    filter_brand: filters?.brand,
     result_limit: 100,
     result_offset: Math.max(filters?.offset ?? 0, 0),
   });
