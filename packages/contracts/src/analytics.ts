@@ -5,6 +5,8 @@ export const AnalyticsEventNameSchema = z.enum([
   "search_zero_results",
   "barcode_scan_started",
   "barcode_scan_succeeded",
+  "barcode_scan_failed",
+  "barcode_scan_fallback",
   "barcode_unknown",
   "ingredient_upload_started",
   "ingredient_extraction_succeeded",
