@@ -13,21 +13,20 @@ A phase is not complete because interfaces, placeholder pages, or a published-lo
 
 ## Current work
 
-Master-plan **Phase 4C** is `PARTIAL`. The Phase 0–4 working tree is preserved as local logical commits. CI now has an authorized non-production Supabase/pgTAP job and a Ubuntu WebKit job. P0-5 remains an intentional failure until Phase 6. Nothing was pushed.
+Master-plan **Phase 4C** is `COMPLETE` on authorized Ubuntu CI. The Phase 0–4 working tree is on `codex/phase-4c-closeout` as PR [#1](https://github.com/ahartman0831/SnackCheck/pull/1). Required jobs `verify`, `database`, and `e2e-webkit` are green on `ad9d7d8` ([run 33204223073](https://github.com/ahartman0831/SnackCheck/actions/runs/33204223073)). P0-5 remains an intentional failure until Phase 6. The PR is open and unmerged.
 
-**Why not `COMPLETE`:**
+**Host limitations that remain (proven on CI instead):**
 
-- This host still cannot run `supabase db reset` or pgTAP: Docker is not installed.
+- This Mac still cannot run `supabase db reset` or pgTAP: Docker is not installed.
 - Playwright WebKit still cannot be installed here: `Playwright does not support webkit on mac13-arm64`.
-- The new GitHub Actions jobs have not executed because push is not authorized. Their first green run on `ubuntu-latest` is still required.
-- Local type generation from a running Supabase instance was not possible. CI is configured to generate from `--local` only and to fail if that cannot run.
+- Types in `packages/db-types/src/database.types.ts` were taken from `supabase gen types --local` on the CI `database` job, then committed. They were not generated with `--linked`.
 
 **Carried gates (unchanged):**
 
 - **P0-5 remains red** — forgeable `${id}.*` submission cookie. Owned by Phase 6. CI asserts this test still fails.
 - **P0-7 remains `BLOCKED`** — unsigned regulatory review. This session did not publish the Arizona ruleset or approve aliases.
 
-Phases 5–11 are `NOT STARTED`. Stop before Phase 5.
+Phases 5–11 are `NOT STARTED`. Stop before Phase 5. Do not merge the pull request until approved.
 
 ## Master plan phases
 
@@ -38,7 +37,7 @@ Phases 5–11 are `NOT STARTED`. Stop before Phase 5.
 | 2     | Public product projection / import (`0017`, search status, approved query, fixture isolation)         | `COMPLETE`    |
 | 3     | Rebrand to SnackCheck                                                                                 | `COMPLETE`    |
 | 4     | Public UI / design system                                                                             | `COMPLETE`    |
-| 4C    | Preserve and close the completed remediation                                                          | `PARTIAL`     |
+| 4C    | Preserve and close the completed remediation                                                          | `COMPLETE`    |
 | 5     | Production-quality barcode camera                                                                     | `NOT STARTED` |
 | 6     | Secure ingredient-photo submission pipeline                                                           | `NOT STARTED` |
 | 7     | Extraction orchestration, confirmation, and persistence                                               | `NOT STARTED` |
@@ -49,10 +48,11 @@ Phases 5–11 are `NOT STARTED`. Stop before Phase 5.
 
 Phase 4C closeout for this session:
 
-- Logical local commits were created from `docs/phase-4c-review-checklist.md`. They were not pushed.
+- Logical commits from `docs/phase-4c-review-checklist.md` are on `codex/phase-4c-closeout`. They were not pushed to `main`.
 - `scripts/generate-db-types.ts` no longer calls `supabase gen types --linked`. A regression test forbids that flag. CI generates types from a local instance only.
 - `verify` runs unit tests except P0-5, then `pnpm test:p0-5-open` so an accidental P0-5 pass fails CI.
-- `database` starts local Supabase on `ubuntu-latest`, resets through `0017`, runs pgTAP, generates local types, resets again, and runs pgTAP again. It does not link or push.
+- `database` starts local Supabase on `ubuntu-latest`, resets through `0018`, runs pgTAP, generates local types, fails if committed types drift, resets again, and runs pgTAP again. It does not link or push.
+- `0018` only fixes publication-guard array appends, child-immutability trigger typing, and `search_path`/`digest` qualification so clone works under a locked search_path. It does not publish AZ-HSA.
 - `e2e-webkit` installs Playwright WebKit on Ubuntu and runs `mobile-webkit`.
 
 ## Original scaffold inventory
@@ -63,7 +63,7 @@ pnpm monorepo, Next.js 16.3.3, SnackCheck public shell, CI, ADR-0001 exist. This
 
 ### Supabase foundation — `PARTIAL`
 
-`0016`/`0017` remain unapplied to production and unexecuted on this host. CI is now the intended non-production runner. P0-7 remains a human gate.
+`0016`/`0017`/`0018` remain unapplied to production and unexecuted on this host. Ubuntu CI applied them locally, ran pgTAP twice, and regenerated types with `--local`. P0-7 remains a human gate.
 
 ### Compliance engine — `PARTIAL`
 
@@ -95,7 +95,7 @@ No fabricated production catalog was imported.
 
 ### Observability and rehearsal — `PARTIAL`
 
-CI gained database and WebKit jobs. Those jobs have not yet run on GitHub.
+CI `verify`, `database`, and `e2e-webkit` are green on PR [#1](https://github.com/ahartman0831/SnackCheck/pull/1) run [33204223073](https://github.com/ahartman0831/SnackCheck/actions/runs/33204223073).
 
 ### Production launch — `NOT STARTED`
 
@@ -103,19 +103,21 @@ Not deployed. Domain remains pending via `NEXT_PUBLIC_APP_URL`.
 
 ## Command snapshot (Phase 4C closeout)
 
-| Command                                  | Result                                                       |
-| ---------------------------------------- | ------------------------------------------------------------ |
-| `pnpm format:check`                      | Passed                                                       |
-| `pnpm lint`                              | Passed                                                       |
-| `pnpm typecheck`                         | Passed                                                       |
-| `pnpm test:types-policy`                 | Passed after removing `--linked`                             |
-| `pnpm test:unit`                         | Passed — compliance 38, contracts 3, web 59                  |
-| `pnpm test:p0-5-open`                    | Passed — P0-5 still fails as required                        |
-| `pnpm test:integration`                  | Passed — 2 tests                                             |
-| `git diff --check`                       | Clean                                                        |
-| `supabase db reset --yes`                | Failed — Docker daemon unavailable                           |
-| `pnpm exec playwright install webkit`    | Failed — `Playwright does not support webkit on mac13-arm64` |
-| GitHub Actions `database` / `e2e-webkit` | Not run — no push                                            |
+| Command                               | Result                                                                                                      |
+| ------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| `pnpm format:check`                   | Passed                                                                                                      |
+| `pnpm lint`                           | Passed                                                                                                      |
+| `pnpm typecheck`                      | Passed                                                                                                      |
+| `pnpm test:types-policy`              | Passed after removing `--linked`                                                                            |
+| `pnpm test:unit`                      | Passed — compliance 38, contracts 3, web 59                                                                 |
+| `pnpm test:p0-5-open`                 | Passed — P0-5 still fails as required                                                                       |
+| `pnpm test:integration`               | Passed — 2 tests                                                                                            |
+| `git diff --check`                    | Clean                                                                                                       |
+| `supabase db reset --yes`             | Failed locally — Docker daemon unavailable                                                                  |
+| `pnpm exec playwright install webkit` | Failed locally — `Playwright does not support webkit on mac13-arm64`                                        |
+| GitHub Actions `verify`               | Passed — [98961038663](https://github.com/ahartman0831/SnackCheck/actions/runs/33204223073/job/98961038663) |
+| GitHub Actions `database`             | Passed — [98961038776](https://github.com/ahartman0831/SnackCheck/actions/runs/33204223073/job/98961038776) |
+| GitHub Actions `e2e-webkit`           | Passed — [98961038687](https://github.com/ahartman0831/SnackCheck/actions/runs/33204223073/job/98961038687) |
 
 ## P0 map after Phase 4C
 
@@ -133,8 +135,8 @@ Not deployed. Domain remains pending via `NEXT_PUBLIC_APP_URL`.
 
 ## Remaining operator tasks
 
-1. After you authorize a push, confirm the GitHub `database` and `e2e-webkit` jobs pass on `ubuntu-latest`.
-2. Do not apply `0016`/`0017` to the linked production Supabase project.
+1. Review and approve PR [#1](https://github.com/ahartman0831/SnackCheck/pull/1). Do not merge until you explicitly authorize merge.
+2. Do not apply `0016`/`0017`/`0018` to the linked production Supabase project.
 3. Sign `docs/regulatory-review.md` before calling publish. Do not approve pending aliases.
 4. Import sourced products only. Do not invent catalog rows.
-5. Do not start Phase 5 until this Phase 4C result is approved as `COMPLETE`.
+5. Do not start Phase 5 until this Phase 4C result is approved.
