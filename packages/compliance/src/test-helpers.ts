@@ -31,11 +31,13 @@ export function evaluateInput(
   rawIngredients: string,
   overrides: Partial<ComplianceInput> = {},
 ): ComplianceInput {
+  const parsed = parseIngredients(rawIngredients);
   return {
     formulation: formulationFromText(rawIngredients, overrides.formulation),
     ruleset: overrides.ruleset ?? arizonaRuleset(),
     context: overrides.context ?? "CLASSROOM_DISTRIBUTION",
     evaluationDate: overrides.evaluationDate ?? "2026-08-26",
     schoolContext: overrides.schoolContext,
+    parserWarnings: overrides.parserWarnings ?? parsed.warnings,
   };
 }

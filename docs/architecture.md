@@ -1,6 +1,6 @@
 # Architecture
 
-Can I Bring This? is a consumer utility that applies a versioned Arizona ruleset to a versioned product formulation.
+SnackCheck is a consumer utility that applies a versioned Arizona ruleset to a versioned product formulation. The initial scaffold used the working title _Can I Bring This?_; that name is historical only.
 
 **AI extracts. Rules decide. Sources prove. Database remembers.**
 

@@ -1,7 +1,11 @@
 import "server-only";
-import { arizonaRuleset } from "@snackcheck/compliance";
-import type { PublishedRulesetSnapshot } from "@snackcheck/contracts";
+import { rulesetHashMatches, unavailableRuleset } from "@snackcheck/compliance";
+import {
+  PublishedRulesetSnapshotSchema,
+  type PublishedRulesetSnapshot,
+} from "@snackcheck/contracts";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { decidePublishedRulesetLoad } from "@/lib/rules/ruleset-load-policy";
 
 export interface PublicRegulatorySource {
   id: string;
@@ -13,23 +17,137 @@ export interface PublicRegulatorySource {
   retrievedAt: string;
 }
 
+export function isUsablePublishedRuleset(ruleset: PublishedRulesetSnapshot): boolean {
+  return (
+    ruleset.isPublished &&
+    ruleset.substances.length > 0 &&
+    ruleset.rulesetHash.length > 0 &&
+    ruleset.id !== "unavailable"
+  );
+}
+
+function snapshotFromRows(
+  ruleset: {
+    id: string;
+    jurisdiction_id: string;
+    code: string;
+    version: number;
+    title: string;
+    effective_from: string;
+    effective_until: string | null;
+    published_at: string | null;
+    is_published: boolean;
+    ruleset_hash: string | null;
+    freshness_current_days: number;
+    freshness_aging_days: number;
+  },
+  substances: Array<{
+    id: string;
+    canonical_name: string;
+    canonical_normalized: string;
+    statutory_ordinal: number;
+    regulatory_source_id: string;
+    source_locator: string | null;
+    enabled: boolean;
+  }>,
+  aliases: Array<{
+    id: string;
+    prohibited_substance_id: string;
+    alias: string;
+    normalized_alias: string;
+    match_mode: PublishedRulesetSnapshot["substances"][number]["aliases"][number]["matchMode"];
+    review_status: string;
+    enabled: boolean;
+    regulatory_source_id: string | null;
+    pattern?: string | null;
+  }>,
+  contexts: Array<{
+    context: string;
+    applicability_status: PublishedRulesetSnapshot["contexts"][number]["applicabilityStatus"];
+    regulatory_source_id: string;
+    source_locator: string | null;
+    public_summary: string;
+    enabled: boolean;
+  }>,
+): PublishedRulesetSnapshot {
+  return {
+    id: ruleset.id,
+    jurisdictionId: ruleset.jurisdiction_id,
+    code: ruleset.code,
+    version: ruleset.version,
+    title: ruleset.title,
+    effectiveFrom: ruleset.effective_from,
+    effectiveUntil: ruleset.effective_until,
+    publishedAt: ruleset.published_at,
+    isPublished: ruleset.is_published,
+    rulesetHash: ruleset.ruleset_hash ?? "",
+    freshnessCurrentDays: ruleset.freshness_current_days,
+    freshnessAgingDays: ruleset.freshness_aging_days,
+    sourceIds: [...new Set(substances.map((row) => row.regulatory_source_id))],
+    substances: substances.map((substance) => ({
+      id: substance.id,
+      canonicalName: substance.canonical_name,
+      canonicalNormalized: substance.canonical_normalized,
+      statutoryOrdinal: substance.statutory_ordinal,
+      regulatorySourceId: substance.regulatory_source_id,
+      sourceLocator: substance.source_locator,
+      enabled: substance.enabled,
+      aliases: aliases
+        .filter(
+          (alias) => alias.prohibited_substance_id === substance.id && alias.enabled,
+        )
+        .flatMap((alias) =>
+          alias.review_status === "PENDING_REVIEW" || alias.review_status === "REJECTED"
+            ? []
+            : [
+                {
+                  id: alias.id,
+                  alias: alias.alias,
+                  normalizedAlias: alias.normalized_alias,
+                  matchMode: alias.match_mode,
+                  reviewStatus:
+                    alias.review_status as PublishedRulesetSnapshot["substances"][number]["aliases"][number]["reviewStatus"],
+                  enabled: true as const,
+                  regulatorySourceId: alias.regulatory_source_id,
+                  pattern: alias.pattern ?? undefined,
+                },
+              ],
+        ),
+    })),
+    contexts: contexts.map((context) => ({
+      context: context.context as PublishedRulesetSnapshot["contexts"][number]["context"],
+      applicabilityStatus: context.applicability_status,
+      regulatorySourceId: context.regulatory_source_id,
+      sourceLocator: context.source_locator,
+      publicSummary: context.public_summary,
+      enabled: context.enabled,
+    })),
+  };
+}
+
 export async function loadPublishedArizonaRuleset(): Promise<PublishedRulesetSnapshot> {
   const admin = createAdminClient();
-  if (!admin) {
-    return arizonaRuleset();
-  }
+  const { data: ruleset } = admin
+    ? await admin
+        .from("rulesets")
+        .select("*")
+        .eq("code", "AZ-HSA")
+        .eq("is_published", true)
+        .order("version", { ascending: false })
+        .limit(1)
+        .maybeSingle()
+    : { data: null };
 
-  const { data: ruleset } = await admin
-    .from("rulesets")
-    .select("*")
-    .eq("code", "AZ-HSA")
-    .eq("is_published", true)
-    .order("version", { ascending: false })
-    .limit(1)
-    .maybeSingle();
-
-  if (!ruleset) {
-    return arizonaRuleset();
+  if (
+    decidePublishedRulesetLoad({
+      nodeEnv: process.env.NODE_ENV ?? "development",
+      hasAdminClient: Boolean(admin),
+      hasPublishedRow: Boolean(ruleset),
+    }) !== "use-published" ||
+    !admin ||
+    !ruleset
+  ) {
+    return unavailableRuleset();
   }
 
   const [{ data: substances }, { data: aliases }, { data: contexts }] = await Promise.all(
@@ -44,57 +162,26 @@ export async function loadPublishedArizonaRuleset(): Promise<PublishedRulesetSna
     ],
   );
 
-  const snapshot: PublishedRulesetSnapshot = {
-    id: ruleset.id,
-    jurisdictionId: ruleset.jurisdiction_id,
-    code: ruleset.code,
-    version: ruleset.version,
-    title: ruleset.title,
-    effectiveFrom: ruleset.effective_from,
-    effectiveUntil: ruleset.effective_until,
-    publishedAt: ruleset.published_at,
-    isPublished: ruleset.is_published,
-    rulesetHash: ruleset.ruleset_hash ?? "",
-    freshnessCurrentDays: ruleset.freshness_current_days,
-    freshnessAgingDays: ruleset.freshness_aging_days,
-    sourceIds: [...new Set((substances ?? []).map((row) => row.regulatory_source_id))],
-    substances: (substances ?? []).map((substance) => ({
-      id: substance.id,
-      canonicalName: substance.canonical_name,
-      canonicalNormalized: substance.canonical_normalized,
-      statutoryOrdinal: substance.statutory_ordinal,
-      regulatorySourceId: substance.regulatory_source_id,
-      sourceLocator: substance.source_locator,
-      enabled: substance.enabled,
-      aliases: (aliases ?? [])
-        .filter(
-          (alias) => alias.prohibited_substance_id === substance.id && alias.enabled,
-        )
-        .flatMap((alias) =>
-          alias.review_status === "PENDING_REVIEW" || alias.review_status === "REJECTED"
-            ? []
-            : [
-                {
-                  id: alias.id,
-                  alias: alias.alias,
-                  normalizedAlias: alias.normalized_alias,
-                  matchMode: alias.match_mode,
-                  reviewStatus: alias.review_status,
-                  enabled: true as const,
-                  regulatorySourceId: alias.regulatory_source_id,
-                },
-              ],
-        ),
-    })),
-    contexts: (contexts ?? []).map((context) => ({
-      context: context.context as PublishedRulesetSnapshot["contexts"][number]["context"],
-      applicabilityStatus: context.applicability_status,
-      regulatorySourceId: context.regulatory_source_id,
-      sourceLocator: context.source_locator,
-      publicSummary: context.public_summary,
-      enabled: context.enabled,
-    })),
-  };
+  const snapshot = snapshotFromRows(
+    ruleset,
+    substances ?? [],
+    aliases ?? [],
+    contexts ?? [],
+  );
+  const parsed = PublishedRulesetSnapshotSchema.safeParse(snapshot);
+  const snapshotValid =
+    parsed.success && rulesetHashMatches(snapshot, snapshot.rulesetHash);
+
+  if (
+    decidePublishedRulesetLoad({
+      nodeEnv: process.env.NODE_ENV ?? "development",
+      hasAdminClient: true,
+      hasPublishedRow: true,
+      snapshotValid,
+    }) !== "use-published"
+  ) {
+    return unavailableRuleset();
+  }
 
   return snapshot;
 }
@@ -102,44 +189,7 @@ export async function loadPublishedArizonaRuleset(): Promise<PublishedRulesetSna
 export async function loadArizonaSources(): Promise<PublicRegulatorySource[]> {
   const admin = createAdminClient();
   if (!admin) {
-    return [
-      {
-        id: "ars",
-        title: "A.R.S. § 15-242.01",
-        citation: "A.R.S. § 15-242.01",
-        url: "https://www.azleg.gov/ars/15/00242-01.htm",
-        sourceType: "STATUTE",
-        publishedAt: "2025-05-12",
-        retrievedAt: "2026-08-25T00:00:00.000Z",
-      },
-      {
-        id: "hb2164",
-        title: "Arizona Laws 2025, Chapter 52 / HB 2164",
-        citation: "Ariz. Laws 2025, ch. 52",
-        url: "https://www.azleg.gov/legtext/57Leg/1R/laws/0052.pdf",
-        sourceType: "STATUTE",
-        publishedAt: "2025-05-12",
-        retrievedAt: "2026-08-25T00:00:00.000Z",
-      },
-      {
-        id: "ade-memo",
-        title: "ADE May 5, 2026 compliance memorandum",
-        citation: "Arizona Department of Education, May 5, 2026",
-        url: "https://www.azed.gov/sites/default/files/2026/05/Arizona%20Healthy%20Schools%20Act.pdf",
-        sourceType: "AGENCY_GUIDANCE",
-        publishedAt: "2026-05-05",
-        retrievedAt: "2026-08-25T00:00:00.000Z",
-      },
-      {
-        id: "ade-faq",
-        title: "ADE May 2026 administrator resource and FAQ",
-        citation: "Arizona Department of Education, May 2026",
-        url: "https://www.azed.gov/sites/default/files/2026/01/The%20Basics%20of%20the%20Arizona%20Healthy%20Schools%20Act%20Resource%20for%20School%20Administrators.pdf",
-        sourceType: "AGENCY_GUIDANCE",
-        publishedAt: "2026-05-01",
-        retrievedAt: "2026-08-25T00:00:00.000Z",
-      },
-    ];
+    return [];
   }
 
   const { data } = await admin

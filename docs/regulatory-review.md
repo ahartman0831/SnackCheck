@@ -1,6 +1,6 @@
 # Regulatory review
 
-**Status:** Not signed. Do not mark a ruleset production-published until this record is complete.
+**Status:** Not signed. Migration `0016` keeps the seeded AZ-HSA ruleset unpublished. Do not mark a ruleset production-published until this record is complete.
 
 ## Required review
 

@@ -182,6 +182,7 @@ export function parseIngredients(rawInput: string): ParseResult {
     precautionary: boolean,
   ) => {
     const segments = splitTopLevel(text);
+    let followingPrecautionary = precautionary;
     for (const segment of segments) {
       if (ingredients.length >= MAX_SEGMENTS) {
         warnings.push("SEGMENT_CAP_REACHED");
@@ -193,7 +194,10 @@ export function parseIngredients(rawInput: string): ParseResult {
         continue;
       }
 
-      const segmentPrecautionary = precautionary || isPrecautionary(body);
+      const segmentPrecautionary = followingPrecautionary || isPrecautionary(body);
+      if (segmentPrecautionary) {
+        followingPrecautionary = true;
+      }
       let stored = body;
       if (stored.length > MAX_SEGMENT_CHARS) {
         stored = stored.slice(0, MAX_SEGMENT_CHARS);
