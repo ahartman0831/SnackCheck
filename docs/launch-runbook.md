@@ -5,7 +5,7 @@ This file is completed in Phase 10.
 ## Runtime
 
 - Node.js 22+ is required (`package.json` `engines.node` and CI `setup-node` 22). This repository does not pin nvm, fnm, or Volta.
-- P0-5 is fixed on the Phase 6 branch with signed, expiring ownership tokens and stored token hashes. Do not enable ingredient-photo submissions until all remaining Phase 6 gates are green.
+- P0-5 is fixed on the Phase 6 branch with signed, expiring ownership tokens and stored token hashes. Phase 6 CI is green, but do not enable ingredient-photo submissions until Phase 7 is complete and rollout is separately approved.
 - Phase 5 is barcode camera only. It must not change submission tokens or the image pipeline.
 
 ## CI
