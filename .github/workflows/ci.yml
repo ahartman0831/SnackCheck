@@ -47,7 +47,7 @@ jobs:
         continue-on-error: true
       - name: Secret scan
         run: |
-          if git grep -nE 'sk-live-|BEGIN PRIVATE KEY|SERVICE_ROLE_KEY=[^[:space:]]+' -- ':!.env.example' ':!docs/**'; then
+          if git grep -nE 'sk-live-|BEGIN PRIVATE KEY|SERVICE_ROLE_KEY=[^[:space:]]+' -- ':!.env.example' ':!docs/**' ':!.github/workflows/ci.yml'; then
             echo "Possible secret material found"
             exit 1
           fi

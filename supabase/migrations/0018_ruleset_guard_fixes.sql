@@ -246,3 +246,21 @@ create trigger rule_aliases_published_immutable
   before insert or update or delete on public.rule_aliases
   for each row
   execute function public.enforce_published_alias_row_immutable();
+
+create or replace function public.ruleset_canonical_hash(target_ruleset_id uuid)
+returns text
+language sql
+stable
+as $$
+  select encode(
+    extensions.digest(
+      convert_to(public.canonical_json(public.ruleset_canonical_payload(target_ruleset_id)), 'utf8'),
+      'sha256'::text
+    ),
+    'hex'
+  );
+$$;
+
+alter function public.clone_ruleset_to_draft(uuid) set search_path = public, extensions;
+alter function public.review_ruleset(uuid, uuid, text, text) set search_path = public, extensions;
+alter function public.publish_ruleset(uuid, uuid) set search_path = public, extensions;
