@@ -43,15 +43,18 @@ export async function startBarcodeScan(options: StartScanOptions): Promise<ScanC
     BarcodeFormat.EAN_13,
   ];
   let controls: { stop: () => void } | null = null;
-  try {
-    controls = await reader.decodeFromStream(stream, options.video, (result) => {
+  void reader
+    .decodeFromStream(stream, options.video, (result) => {
       if (result) {
         options.onResult(result.getText());
       }
+    })
+    .then((next) => {
+      controls = next;
+    })
+    .catch(() => {
+      // A live preview can still be shown if the decoder cannot attach.
     });
-  } catch {
-    // A live preview can still be shown if the decoder cannot attach.
-  }
   return {
     stop() {
       controls?.stop();

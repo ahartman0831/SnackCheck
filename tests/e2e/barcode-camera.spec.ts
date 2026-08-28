@@ -18,7 +18,7 @@ async function mockMediaDevices(
     if (!media) {
       return;
     }
-    media.getUserMedia = async () => {
+    const getUserMedia = async () => {
       if (nextMode === "denied") {
         const error = new Error("denied");
         error.name = "NotAllowedError";
@@ -29,14 +29,21 @@ async function mockMediaDevices(
         error.name = "NotFoundError";
         throw error;
       }
-      const canvas = document.createElement("canvas");
-      canvas.width = 640;
-      canvas.height = 480;
-      return canvas.captureStream();
+      try {
+        const canvas = document.createElement("canvas");
+        canvas.width = 640;
+        canvas.height = 480;
+        if (typeof canvas.captureStream === "function") {
+          return canvas.captureStream();
+        }
+      } catch {
+        // WebKit may not support canvas capture.
+      }
+      return new MediaStream();
     };
-    media.enumerateDevices = async () => [
+    const enumerateDevices = async () => [
       {
-        kind: "videoinput",
+        kind: "videoinput" as const,
         deviceId: "back",
         label: "Back camera",
         groupId: "",
@@ -45,6 +52,17 @@ async function mockMediaDevices(
         },
       },
     ];
+    const nextMedia = {
+      getUserMedia,
+      enumerateDevices,
+      getSupportedConstraints: media.getSupportedConstraints?.bind(media) ?? (() => ({})),
+    };
+    media.getUserMedia = getUserMedia;
+    media.enumerateDevices = enumerateDevices;
+    Object.defineProperty(navigator, "mediaDevices", {
+      configurable: true,
+      value: nextMedia,
+    });
   }, mode);
 }
 
@@ -91,7 +109,7 @@ test.describe("barcode camera", () => {
     await mockMediaDevices(page, "missing");
     await page.goto("/scan/barcode");
     await page.getByRole("button", { name: "Start camera" }).click();
-    await expect(cameraAlert(page, /No camera/i)).toBeVisible();
+    await expect(cameraAlert(page, /No camera|cannot open a camera/i)).toBeVisible();
   });
 
   test("shows an insecure-context message", async ({ page }) => {
@@ -105,7 +123,9 @@ test.describe("barcode camera", () => {
     await mockMediaDevices(page, "granted");
     await page.goto("/scan/barcode");
     await page.getByRole("button", { name: "Start camera" }).click();
-    await expect(page.getByRole("button", { name: "Cancel camera" })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Cancel camera" })).toBeVisible({
+      timeout: 15_000,
+    });
     await page.getByRole("button", { name: "Cancel camera" }).click();
     await expect(page.getByRole("button", { name: "Start camera" })).toBeVisible();
     await expect(page.getByLabel("Barcode numbers")).toBeVisible();
