@@ -54,7 +54,7 @@ export async function POST() {
     token_expires_at: new Date(payload.expiresAt * 1000).toISOString(),
     raw_object_path: isIngredientPhotoEnabled() ? path : null,
     retention_until: new Date(payload.expiresAt * 1000).toISOString(),
-  } as never);
+  });
   if (inserted.error) {
     return NextResponse.json(
       fail("SUBMISSION_CREATE_FAILED", "The submission could not be started.", {

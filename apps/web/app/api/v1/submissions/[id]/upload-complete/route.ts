@@ -84,10 +84,9 @@ export async function POST(
       );
     }
 
-    const dailySlot = await admin.rpc(
-      "claim_photo_processing_slot" as never,
-      { p_limit: env.EXTRACTION_DAILY_LIMIT } as never,
-    );
+    const dailySlot = await admin.rpc("claim_photo_processing_slot", {
+      p_limit: env.EXTRACTION_DAILY_LIMIT,
+    });
     if (dailySlot.error || dailySlot.data !== true) {
       return NextResponse.json(
         fail("PHOTO_KILL_SWITCH", "Photo processing is temporarily paused.", {
@@ -213,7 +212,7 @@ export async function POST(
         sanitizer_version: sanitized.sanitizerVersion,
         sanitized_at: new Date().toISOString(),
         retention_until: retentionUntil,
-      } as never)
+      })
       .eq("id", id)
       .eq("status", "PROCESSING")
       .select("id")

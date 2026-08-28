@@ -49,7 +49,7 @@ export async function DELETE(
 
   const updated = await admin
     .from("submissions")
-    .update({ status: "CANCELLED", anonymous_key_hash: null } as never)
+    .update({ status: "CANCELLED", anonymous_key_hash: null })
     .eq("id", id)
     .select("id")
     .maybeSingle();

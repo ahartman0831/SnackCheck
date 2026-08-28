@@ -91,7 +91,7 @@ export async function POST(
       extraction_provider: "pasted-text",
     })
     .eq("id", id)
-    .in("status", ["UPLOAD_PENDING", "SANITIZED"] as never)
+    .in("status", ["UPLOAD_PENDING", "SANITIZED"])
     .select("id")
     .maybeSingle();
   if (updated.error || !updated.data) {
