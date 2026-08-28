@@ -2,7 +2,7 @@
   "name": "snackcheck",
   "private": true,
   "version": "0.0.0",
-  "description": "Can I Bring This? — Arizona Healthy Schools Act food compliance checker",
+  "description": "SnackCheck — Arizona Healthy Schools Act food compliance checker",
   "packageManager": "pnpm@10.33.0",
   "scripts": {
     "dev": "pnpm --filter web dev",
@@ -11,15 +11,21 @@
     "lint": "pnpm -r --if-present lint",
     "typecheck": "pnpm -r --if-present typecheck",
     "test": "pnpm -r --if-present test",
+    "test:unit": "pnpm --filter @snackcheck/compliance test && pnpm --filter @snackcheck/contracts test && pnpm --filter web exec vitest run --exclude tests/unit/p0-submission-token.test.ts",
+    "test:p0-5-open": "node scripts/assert-p0-5-open.mjs",
+    "test:types-policy": "node --test scripts/generate-db-types-policy.test.cjs",
     "test:coverage": "pnpm --filter @snackcheck/compliance test:coverage",
     "test:integration": "pnpm --filter web test:integration",
     "test:e2e": "pnpm --filter web test:e2e",
+    "test:e2e:webkit": "pnpm --filter web exec playwright test --project=mobile-webkit",
+    "test:db": "supabase test db",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "db:types": "pnpm exec tsx scripts/generate-db-types.ts",
     "db:verify-seed": "pnpm exec tsx scripts/verify-seed.ts",
     "db:check-provenance": "pnpm exec tsx scripts/check-regulatory-provenance.ts",
-    "check-ingredients": "pnpm exec tsx scripts/check-ingredients.ts"
+    "check-ingredients": "pnpm exec tsx scripts/check-ingredients.ts",
+    "import-products": "pnpm exec tsx scripts/import-products.ts"
   },
   "devDependencies": {
     "prettier": "^3.6.2",

@@ -23,7 +23,7 @@ export function SearchForm({ defaultValue = "", autoFocus = false }: SearchFormP
         />
         <button
           type="submit"
-          className="bg-accent hover:bg-accent-strong min-h-12 min-w-11 rounded-2xl px-5 text-base font-semibold text-white"
+          className="bg-accent hover:bg-accent-strong text-on-accent min-h-12 min-w-11 rounded-2xl px-5 text-base font-semibold"
         >
           Search
         </button>

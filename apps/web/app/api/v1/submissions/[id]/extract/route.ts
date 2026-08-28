@@ -4,6 +4,7 @@ import { IngredientExtractionSchema } from "@snackcheck/contracts";
 import { fail, ok, requestId } from "@/lib/api/envelope";
 import { getRateLimiter } from "@/lib/rate-limit";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { isAuthorizedSubmissionCookie } from "@/lib/submissions/submission-token";
 
 export async function POST(
   request: Request,
@@ -13,7 +14,7 @@ export async function POST(
   const { id } = await context.params;
   const store = await cookies();
   const token = store.get("sc_submission")?.value ?? "";
-  if (!token.startsWith(`${id}.`)) {
+  if (!isAuthorizedSubmissionCookie(token, id)) {
     return NextResponse.json(
       fail("FORBIDDEN", "This submission is not yours to process.", { id: reqId }),
       {

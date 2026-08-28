@@ -22,7 +22,9 @@ const envSchema = z.object({
     .default("true")
     .transform((value) => value === "true"),
   OPEN_FOOD_FACTS_BASE_URL: z.string().url().default("https://world.openfoodfacts.org"),
-  OPEN_FOOD_FACTS_USER_AGENT: z.string().default("CanIBringThis/0.1"),
+  OPEN_FOOD_FACTS_USER_AGENT: z
+    .string()
+    .default("SnackCheck/0.1 (http://localhost:3000)"),
   OPEN_FOOD_FACTS_CONTACT_EMAIL: optionalString,
   UPSTASH_REDIS_REST_URL: optionalUrl,
   UPSTASH_REDIS_REST_TOKEN: optionalString,
