@@ -144,6 +144,7 @@ export async function POST(
         { status: 409 },
       );
     }
+    const sanitizedSha256 = submission.sanitized_sha256;
     const providers = createExtractionProviders();
     if (providers.length === 0) {
       return NextResponse.json(
@@ -170,16 +171,15 @@ export async function POST(
       input: {
         bytes: Buffer.from(await image.data.arrayBuffer()),
         mediaType: "image/jpeg",
-        sanitizedSha256: submission.sanitized_sha256,
+        sanitizedSha256,
         submissionId: id,
       },
       providers,
       budget: {
         claim: async () => {
-          const claimed = await admin.rpc(
-            "claim_ai_extraction_slot" as never,
-            { p_limit: env.EXTRACTION_DAILY_LIMIT } as never,
-          );
+          const claimed = await admin.rpc("claim_ai_extraction_slot", {
+            p_limit: env.EXTRACTION_DAILY_LIMIT,
+          });
           return !claimed.error && claimed.data === true;
         },
       },
@@ -188,10 +188,10 @@ export async function POST(
       confidenceThreshold: env.EXTRACTION_CONFIDENCE_THRESHOLD,
       timeoutMs: env.AI_PROVIDER_TIMEOUT_MS,
     });
-    await admin.from("extraction_attempts" as never).upsert(
+    await admin.from("extraction_attempts").upsert(
       result.attempts.map((attempt, index) => ({
         submission_id: id,
-        sanitized_sha256: submission.sanitized_sha256,
+        sanitized_sha256: sanitizedSha256,
         attempt_ordinal: index + 1,
         provider: attempt.provider,
         model: attempt.model,
@@ -204,7 +204,7 @@ export async function POST(
         estimated_cost_usd: attempt.usage?.estimatedCostUsd ?? null,
         extraction_json:
           result.ok && index === result.attempts.length - 1 ? result.extraction : null,
-      })) as never,
+      })),
       { onConflict: "submission_id,attempt_ordinal" },
     );
     if (!result.ok) {

@@ -91,6 +91,24 @@ export type Database = {
         }
         Relationships: []
       }
+      ai_extraction_daily_counters: {
+        Row: {
+          accepted_count: number
+          occurred_on: string
+          updated_at: string
+        }
+        Insert: {
+          accepted_count?: number
+          occurred_on?: string
+          updated_at?: string
+        }
+        Update: {
+          accepted_count?: number
+          occurred_on?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       analytics_events: {
         Row: {
           anonymous_key_hash: string
@@ -411,6 +429,75 @@ export type Database = {
           width?: number | null
         }
         Relationships: []
+      }
+      extraction_attempts: {
+        Row: {
+          attempt_ordinal: number
+          created_at: string
+          estimated_cost_usd: number | null
+          extraction_json: Json | null
+          failure_code: string | null
+          id: string
+          input_tokens: number | null
+          latency_ms: number
+          model: string
+          outcome: string
+          output_tokens: number | null
+          prompt_version: string
+          provider: string
+          sanitized_sha256: string
+          submission_id: string
+        }
+        Insert: {
+          attempt_ordinal: number
+          created_at?: string
+          estimated_cost_usd?: number | null
+          extraction_json?: Json | null
+          failure_code?: string | null
+          id?: string
+          input_tokens?: number | null
+          latency_ms: number
+          model: string
+          outcome: string
+          output_tokens?: number | null
+          prompt_version: string
+          provider: string
+          sanitized_sha256: string
+          submission_id: string
+        }
+        Update: {
+          attempt_ordinal?: number
+          created_at?: string
+          estimated_cost_usd?: number | null
+          extraction_json?: Json | null
+          failure_code?: string | null
+          id?: string
+          input_tokens?: number | null
+          latency_ms?: number
+          model?: string
+          outcome?: string
+          output_tokens?: number | null
+          prompt_version?: string
+          provider?: string
+          sanitized_sha256?: string
+          submission_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "extraction_attempts_submission_id_fkey"
+            columns: ["submission_id"]
+            isOneToOne: false
+            referencedRelation: "expired_submission_assets"
+            referencedColumns: ["submission_id"]
+          },
+          {
+            foreignKeyName: "extraction_attempts_submission_id_fkey"
+            columns: ["submission_id"]
+            isOneToOne: false
+            referencedRelation: "submissions"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       formulation_ingredients: {
         Row: {
@@ -1275,8 +1362,11 @@ export type Database = {
       submissions: {
         Row: {
           anonymous_key_hash: string | null
+          confirmed_at: string | null
+          confirmed_formulation_hash: string | null
           corrected_text: string | null
           created_at: string
+          evaluation_result_json: Json | null
           evidence_asset_id: string | null
           extracted_ingredients: Json | null
           extracted_raw_text: string | null
@@ -1313,8 +1403,11 @@ export type Database = {
         }
         Insert: {
           anonymous_key_hash?: string | null
+          confirmed_at?: string | null
+          confirmed_formulation_hash?: string | null
           corrected_text?: string | null
           created_at?: string
+          evaluation_result_json?: Json | null
           evidence_asset_id?: string | null
           extracted_ingredients?: Json | null
           extracted_raw_text?: string | null
@@ -1351,8 +1444,11 @@ export type Database = {
         }
         Update: {
           anonymous_key_hash?: string | null
+          confirmed_at?: string | null
+          confirmed_formulation_hash?: string | null
           corrected_text?: string | null
           created_at?: string
+          evaluation_result_json?: Json | null
           evidence_asset_id?: string | null
           extracted_ingredients?: Json | null
           extracted_raw_text?: string | null
@@ -1438,6 +1534,7 @@ export type Database = {
     }
     Functions: {
       canonical_json: { Args: { value: Json }; Returns: string }
+      claim_ai_extraction_slot: { Args: { p_limit: number }; Returns: boolean }
       claim_photo_processing_slot: {
         Args: { p_limit: number }
         Returns: boolean
@@ -1456,6 +1553,15 @@ export type Database = {
         }[]
       }
       escape_like_pattern: { Args: { input: string }; Returns: string }
+      finalize_submission_evaluation: {
+        Args: {
+          p_corrected_text: string
+          p_evaluation_result: Json
+          p_formulation_hash: string
+          p_submission_id: string
+        }
+        Returns: boolean
+      }
       formulation_freshness_state: {
         Args: {
           aging_days: number
