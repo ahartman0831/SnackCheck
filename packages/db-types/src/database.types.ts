@@ -109,6 +109,182 @@ export type Database = {
         }
         Relationships: []
       }
+      ai_model_pricing: {
+        Row: {
+          cached_input_usd_per_million: number | null
+          created_at: string
+          currency: string
+          effective_from: string
+          effective_until: string | null
+          id: string
+          input_usd_per_million: number
+          model: string
+          output_usd_per_million: number
+          provider: string
+          source_note: string | null
+          source_url: string | null
+        }
+        Insert: {
+          cached_input_usd_per_million?: number | null
+          created_at?: string
+          currency?: string
+          effective_from: string
+          effective_until?: string | null
+          id?: string
+          input_usd_per_million: number
+          model: string
+          output_usd_per_million: number
+          provider: string
+          source_note?: string | null
+          source_url?: string | null
+        }
+        Update: {
+          cached_input_usd_per_million?: number | null
+          created_at?: string
+          currency?: string
+          effective_from?: string
+          effective_until?: string | null
+          id?: string
+          input_usd_per_million?: number
+          model?: string
+          output_usd_per_million?: number
+          provider?: string
+          source_note?: string | null
+          source_url?: string | null
+        }
+        Relationships: []
+      }
+      ai_usage_ledger: {
+        Row: {
+          attempt_ordinal: number
+          billed_cost_usd: number | null
+          cached_input_tokens: number | null
+          cached_input_usd_per_million: number | null
+          cost_source: string
+          created_at: string
+          currency: string
+          estimated_input_cost_usd: number | null
+          estimated_output_cost_usd: number | null
+          estimated_total_cost_usd: number | null
+          extraction_attempt_id: string | null
+          failure_code: string | null
+          id: string
+          input_tokens: number | null
+          input_usd_per_million: number | null
+          is_escalation: boolean
+          is_retry: boolean
+          latency_ms: number
+          model: string
+          occurred_at: string
+          outcome: string
+          output_tokens: number | null
+          output_usd_per_million: number | null
+          pricing_id: string | null
+          prompt_version: string
+          provider: string
+          provider_request_id: string | null
+          reasoning_tokens: number | null
+          submission_id: string | null
+          token_source: string
+          total_tokens: number | null
+        }
+        Insert: {
+          attempt_ordinal: number
+          billed_cost_usd?: number | null
+          cached_input_tokens?: number | null
+          cached_input_usd_per_million?: number | null
+          cost_source: string
+          created_at?: string
+          currency?: string
+          estimated_input_cost_usd?: number | null
+          estimated_output_cost_usd?: number | null
+          estimated_total_cost_usd?: number | null
+          extraction_attempt_id?: string | null
+          failure_code?: string | null
+          id?: string
+          input_tokens?: number | null
+          input_usd_per_million?: number | null
+          is_escalation: boolean
+          is_retry: boolean
+          latency_ms: number
+          model: string
+          occurred_at: string
+          outcome: string
+          output_tokens?: number | null
+          output_usd_per_million?: number | null
+          pricing_id?: string | null
+          prompt_version: string
+          provider: string
+          provider_request_id?: string | null
+          reasoning_tokens?: number | null
+          submission_id?: string | null
+          token_source: string
+          total_tokens?: never
+        }
+        Update: {
+          attempt_ordinal?: number
+          billed_cost_usd?: number | null
+          cached_input_tokens?: number | null
+          cached_input_usd_per_million?: number | null
+          cost_source?: string
+          created_at?: string
+          currency?: string
+          estimated_input_cost_usd?: number | null
+          estimated_output_cost_usd?: number | null
+          estimated_total_cost_usd?: number | null
+          extraction_attempt_id?: string | null
+          failure_code?: string | null
+          id?: string
+          input_tokens?: number | null
+          input_usd_per_million?: number | null
+          is_escalation?: boolean
+          is_retry?: boolean
+          latency_ms?: number
+          model?: string
+          occurred_at?: string
+          outcome?: string
+          output_tokens?: number | null
+          output_usd_per_million?: number | null
+          pricing_id?: string | null
+          prompt_version?: string
+          provider?: string
+          provider_request_id?: string | null
+          reasoning_tokens?: number | null
+          submission_id?: string | null
+          token_source?: string
+          total_tokens?: never
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_usage_ledger_extraction_attempt_id_fkey"
+            columns: ["extraction_attempt_id"]
+            isOneToOne: true
+            referencedRelation: "extraction_attempts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ai_usage_ledger_pricing_id_fkey"
+            columns: ["pricing_id"]
+            isOneToOne: false
+            referencedRelation: "ai_model_pricing"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ai_usage_ledger_submission_id_fkey"
+            columns: ["submission_id"]
+            isOneToOne: false
+            referencedRelation: "expired_submission_assets"
+            referencedColumns: ["submission_id"]
+          },
+          {
+            foreignKeyName: "ai_usage_ledger_submission_id_fkey"
+            columns: ["submission_id"]
+            isOneToOne: false
+            referencedRelation: "submissions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       analytics_events: {
         Row: {
           anonymous_key_hash: string
@@ -1517,6 +1693,27 @@ export type Database = {
       }
     }
     Views: {
+      ai_usage_daily_summary: {
+        Row: {
+          accepted_calls: number | null
+          billed_total_cost_usd: number | null
+          cached_input_tokens: number | null
+          currency: string | null
+          escalation_calls: number | null
+          estimated_total_cost_usd: number | null
+          input_tokens: number | null
+          model: string | null
+          occurred_on: string | null
+          output_tokens: number | null
+          provider: string | null
+          provider_calls: number | null
+          reasoning_tokens: number | null
+          retry_calls: number | null
+          total_tokens: number | null
+          unpriced_calls: number | null
+        }
+        Relationships: []
+      }
       expired_submission_assets: {
         Row: {
           evidence_asset_id: string | null
