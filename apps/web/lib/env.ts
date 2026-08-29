@@ -30,6 +30,7 @@ const envSchema = z.object({
     .default("true")
     .transform((value) => value === "true"),
   AI_PROVIDER_TIMEOUT_MS: z.coerce.number().int().positive().default(12_000),
+  AI_PROVIDER_MAX_CALLS: z.coerce.number().int().min(1).max(3).default(3),
   OPEN_FOOD_FACTS_ENABLED: z
     .enum(["true", "false"])
     .default("true")
@@ -75,6 +76,7 @@ function readEnv(): AppEnv {
     OPENAI_EXTRACTION_PROMPT_VERSION: process.env.OPENAI_EXTRACTION_PROMPT_VERSION,
     AI_EXTRACTION_KILL_SWITCH: process.env.AI_EXTRACTION_KILL_SWITCH,
     AI_PROVIDER_TIMEOUT_MS: process.env.AI_PROVIDER_TIMEOUT_MS,
+    AI_PROVIDER_MAX_CALLS: process.env.AI_PROVIDER_MAX_CALLS,
     OPEN_FOOD_FACTS_ENABLED: process.env.OPEN_FOOD_FACTS_ENABLED,
     OPEN_FOOD_FACTS_BASE_URL: process.env.OPEN_FOOD_FACTS_BASE_URL,
     OPEN_FOOD_FACTS_USER_AGENT: process.env.OPEN_FOOD_FACTS_USER_AGENT,

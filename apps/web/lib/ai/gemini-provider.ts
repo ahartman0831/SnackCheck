@@ -10,7 +10,36 @@ import { EXTRACTION_PROMPT } from "./prompt-registry";
 
 const GeminiResponseSchema = z.object({
   id: z.string().optional(),
-  output_text: z.string(),
+  output_text: z.string().optional(),
+  steps: z
+    .array(
+      z
+        .object({
+          type: z.string(),
+          content: z
+            .array(
+              z
+                .object({
+                  type: z.string(),
+                  text: z.string().optional(),
+                })
+                .passthrough(),
+            )
+            .optional(),
+        })
+        .passthrough(),
+    )
+    .optional(),
+  usage: z
+    .object({
+      total_input_tokens: z.number().optional(),
+      total_output_tokens: z.number().optional(),
+      input_tokens_details: z.object({ cached_tokens: z.number().optional() }).optional(),
+      output_tokens_details: z
+        .object({ reasoning_tokens: z.number().optional() })
+        .optional(),
+    })
+    .optional(),
   usage_metadata: z
     .object({
       input_tokens: z.number().optional(),
@@ -45,6 +74,7 @@ export class GeminiExtractionProvider implements ExtractionProvider {
         },
         body: JSON.stringify({
           model: this.model,
+          store: false,
           input: [
             { type: "text", text: EXTRACTION_PROMPT },
             {
@@ -63,14 +93,29 @@ export class GeminiExtractionProvider implements ExtractionProvider {
     );
     if (!response.ok) throw new Error(`Gemini request failed with ${response.status}`);
     const payload = GeminiResponseSchema.parse(await response.json());
+    const outputText =
+      payload.output_text ??
+      payload.steps
+        ?.filter((step) => step.type === "model_output")
+        .flatMap((step) => step.content ?? [])
+        .filter((block) => block.type === "text" && block.text)
+        .map((block) => block.text)
+        .join("");
+    if (!outputText) throw new Error("Gemini response did not contain text output");
     return {
-      outputText: payload.output_text,
+      outputText,
       usage: {
         providerRequestId: payload.id,
-        inputTokens: payload.usage_metadata?.input_tokens,
-        cachedInputTokens: payload.usage_metadata?.cached_input_tokens,
-        outputTokens: payload.usage_metadata?.output_tokens,
-        reasoningTokens: payload.usage_metadata?.reasoning_tokens,
+        inputTokens:
+          payload.usage?.total_input_tokens ?? payload.usage_metadata?.input_tokens,
+        cachedInputTokens:
+          payload.usage?.input_tokens_details?.cached_tokens ??
+          payload.usage_metadata?.cached_input_tokens,
+        outputTokens:
+          payload.usage?.total_output_tokens ?? payload.usage_metadata?.output_tokens,
+        reasoningTokens:
+          payload.usage?.output_tokens_details?.reasoning_tokens ??
+          payload.usage_metadata?.reasoning_tokens,
       },
     };
   }

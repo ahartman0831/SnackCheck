@@ -12,17 +12,35 @@ describe("Phase 7 provider boundaries", () => {
         data: Buffer.from("sanitized").toString("base64"),
         mime_type: "image/jpeg",
       });
+      expect(request.store).toBe(false);
       expect(JSON.stringify(request).toLowerCase()).not.toContain("compliancestatus");
       return new Response(
         JSON.stringify({
-          output_text: JSON.stringify({
-            panelFound: true,
-            rawText: "salt",
-            ingredientText: "salt",
-            ingredients: [],
-            overallConfidence: 0.99,
-            warnings: [],
-          }),
+          id: "interaction-1",
+          usage: {
+            total_input_tokens: 20,
+            total_output_tokens: 10,
+            input_tokens_details: { cached_tokens: 4 },
+          },
+          steps: [
+            { type: "thought" },
+            {
+              type: "model_output",
+              content: [
+                {
+                  type: "text",
+                  text: JSON.stringify({
+                    panelFound: true,
+                    rawText: "salt",
+                    ingredientText: "salt",
+                    ingredients: [],
+                    overallConfidence: 0.99,
+                    warnings: [],
+                  }),
+                },
+              ],
+            },
+          ],
         }),
         { status: 200, headers: { "content-type": "application/json" } },
       );
@@ -42,5 +60,11 @@ describe("Phase 7 provider boundaries", () => {
       new AbortController().signal,
     );
     expect(JSON.parse(result.outputText).ingredientText).toBe("salt");
+    expect(result.usage).toMatchObject({
+      providerRequestId: "interaction-1",
+      inputTokens: 20,
+      cachedInputTokens: 4,
+      outputTokens: 10,
+    });
   });
 });

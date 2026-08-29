@@ -188,6 +188,7 @@ export async function POST(
       promptVersion: EXTRACTION_PROMPT_VERSION,
       confidenceThreshold: env.EXTRACTION_CONFIDENCE_THRESHOLD,
       timeoutMs: env.AI_PROVIDER_TIMEOUT_MS,
+      maxCalls: env.AI_PROVIDER_MAX_CALLS,
       executionPolicy: sharedExtractionExecutionPolicy,
     });
     await admin.from("extraction_attempts").upsert(
