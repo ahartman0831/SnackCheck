@@ -95,10 +95,33 @@ evaluation path.
 - Rulesets published: none
 - Human confirmations/evaluations created by this run: none
 
+## Real-phone happy-path rehearsal
+
+On 2026-08-29, a current iPhone running Safari completed the protected Vercel
+preview flow with a real curved supplement package. The user captured the panel,
+received an accepted candidate transcription at 99% confidence, reviewed the
+image and editable text side by side, and pressed **Confirm and check**.
+
+The confirmed submission `6c1a0ff6-f8e9-4180-8a03-529bf6f0f86c` reached
+`EVALUATED`. OpenAI `gpt-5.6-luna` made one `p7-v1` call with no extraction
+warnings in 7.224 seconds. Provider-reported usage was 3,208 input tokens and 780
+output tokens, including 378 reasoning tokens, for 3,988 total tokens. The dated
+rate card estimated `$0.001577600` (about 0.16 cents).
+
+The deterministic result correctly failed closed as `VERIFY` with
+`RULESET_UNAVAILABLE`: staging has no approved published ruleset or independently
+verified package evidence, so the system did not invent a `PASS` or `FAIL`. This
+proves the secure upload, sanitization, bounded AI transcription, human
+confirmation, deterministic evaluation, and persistence happy path on a real
+phone. Both staging kill switches were restored to `true` immediately after the
+test.
+
 ## Remaining before Phase 7 can be `COMPLETE`
 
-- Rehearse clear, glare, blur, curved-package, no-panel, outage, correction, and
-  cancel/retake paths on a current phone against the protected preview.
+- Rehearse the remaining blur, no-panel, outage, correction, and cancel/retake
+  paths on a current phone against the protected preview. The clear/curved-package
+  happy path is now proven; glare was previously exercised during Phase 5 camera
+  testing.
 - Resolve or deliberately replace the unproven Gemini primary-provider path before
   treating Gemini as production-ready.
 - Separately approve any production rollout; merging this flag-off code is not a

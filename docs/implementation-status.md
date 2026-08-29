@@ -13,7 +13,7 @@ A phase is not complete because interfaces, placeholder pages, or a published-lo
 
 ## Current work
 
-Master-plan **Phase 6** is `COMPLETE` and merged by PR [#3](https://github.com/ahartman0831/SnackCheck/pull/3) at `8e60ce1`. Phase 7 is `PARTIAL` on `codex/phase-7-extraction-orchestration`. Phase 5 remains `PARTIAL`: iPhone Safari passed and Android Chrome was explicitly deferred. Production camera, photo, and AI flags stay off.
+Master-plan **Phase 6** is `COMPLETE` and merged by PR [#3](https://github.com/ahartman0831/SnackCheck/pull/3) at `8e60ce1`. Phase 7 is merged by PR [#4](https://github.com/ahartman0831/SnackCheck/pull/4) at `f308364` and remains `PARTIAL` while its remaining phone failure paths and Gemini decision are open. Phase 8 has started on `codex/phase-8-admin-operations`. Phase 5 remains `PARTIAL`: iPhone Safari passed and Android Chrome was explicitly deferred. Production camera, photo, and AI flags stay off.
 
 **Why not `COMPLETE`:**
 
@@ -38,6 +38,10 @@ The licensed ten-image staging corpus now passes the flag-off merge gates. OpenA
 
 The first accepted live staging extraction ran on 2026-08-29 against a synthetic ingredient-label image. Preview controls forced OpenAI first and limited orchestration to one call. `gpt-5.6-luna` with prompt `p7-v1` returned the four visible ingredients exactly, kept the allergen/manufacturer/fixture text out of `ingredientText`, and reached the private confirmation screen without evaluating the text. Provider-reported usage was 1,956 input tokens, 580 output tokens, 324 reasoning tokens, and 2,536 total tokens. The private ledger priced the call from the dated rate card at `$0.001087200`. The daily counter recorded one accepted call, and both staging kill switches were restored to `true` immediately afterward. The prompt was not changed because the tested output met the transcription boundary; changing it would invalidate this evidence. Earlier Gemini Interactions attempts returned no usable output or token usage. The adapter now records a redacted HTTP failure category and supports explicit provider ordering, but Gemini remains unresolved and must not be treated as a proven primary.
 
+The protected preview also completed its first real-phone happy path on a current iPhone running Safari. A real curved supplement package produced an accepted 99%-confidence transcription with no warnings; the user reviewed and confirmed it, and the submission reached `EVALUATED`. The single `gpt-5.6-luna` call took 7.224 seconds and used 3,988 provider-reported tokens at an estimated `$0.001577600` (about 0.16 cents). The deterministic engine correctly returned `VERIFY` with `RULESET_UNAVAILABLE` because staging has no approved published ruleset or independently verified package evidence. Both staging kill switches were restored to `true`. This proves the real-phone secure upload-to-confirmation happy path without weakening fail-closed compliance behavior.
+
+Phase 8 has begun with a server-only operations data layer and protected dashboard, submission queue summary, and health/spend view. The dashboard reports review counts, low-confidence extractions, product conflicts, stale evidence, provider failures, privacy-safe demand signals, recent submissions, and 30-day AI calls/cost/latency. Every admin page now checks the current allowlisted role before loading data, the admin health endpoint requires an active admin membership rather than authentication alone, and role-denial tests cover inactive users and reviewer/publisher separation. This is only the first read-only slice: audited moderation mutations, conflict-safe product/formulation workflows, ruleset operations, school-policy operations, and full queue detail remain outstanding.
+
 ## Master plan phases
 
 | Phase | Name                                                                                                  | Status        |
@@ -51,7 +55,7 @@ The first accepted live staging extraction ran on 2026-08-29 against a synthetic
 | 5     | Production-quality barcode camera                                                                     | `PARTIAL`     |
 | 6     | Secure ingredient-photo submission pipeline                                                           | `COMPLETE`    |
 | 7     | Extraction orchestration, confirmation, and persistence                                               | `PARTIAL`     |
-| 8     | Admin operations                                                                                      | `NOT STARTED` |
+| 8     | Admin operations                                                                                      | `PARTIAL`     |
 | 9     | Affiliates                                                                                            | `NOT STARTED` |
 | 10    | Observability, PWA, CI                                                                                | `NOT STARTED` |
 | 11    | Launch catalog and production deploy                                                                  | `NOT STARTED` |
@@ -168,5 +172,5 @@ Not deployed. Domain remains pending via `NEXT_PUBLIC_APP_URL`.
 3. Do not apply `0016`/`0017`/`0018` to the linked production Supabase project.
 4. Sign `docs/regulatory-review.md` before calling publish. Do not approve pending aliases.
 5. Keep ingredient-photo flags off in production until Phase 7 is complete and separately approved for rollout.
-6. Rehearse the Phase 7 clear, glare, blur, curved-package, no-panel, outage, correction, and cancel/retake paths on a current phone against the protected preview.
+6. Rehearse the remaining Phase 7 blur, no-panel, outage, correction, and cancel/retake paths on a current phone against the protected preview. The clear/curved-package happy path is proven.
 7. Resolve or deliberately replace the unproven Gemini primary-provider path before treating Gemini as production-ready.
