@@ -30,7 +30,7 @@ const envSchema = z.object({
     .enum(["true", "false"])
     .default("true")
     .transform((value) => value === "true"),
-  AI_PROVIDER_TIMEOUT_MS: z.coerce.number().int().positive().default(12_000),
+  AI_PROVIDER_TIMEOUT_MS: z.coerce.number().int().positive().default(30_000),
   AI_PROVIDER_MAX_CALLS: z.coerce.number().int().min(1).max(3).default(3),
   OPEN_FOOD_FACTS_ENABLED: z
     .enum(["true", "false"])
