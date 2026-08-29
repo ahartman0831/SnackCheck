@@ -92,7 +92,3 @@ grant execute on function public.moderate_submission(uuid, timestamptz, public.s
 
 create index if not exists admin_audit_log_entity_created_idx
   on public.admin_audit_log (entity_type, entity_id, created_at desc);
-
-create index if not exists submissions_review_queue_idx
-  on public.submissions (status, created_at)
-  where status in ('EVALUATED', 'REVIEW_PENDING');
