@@ -10,8 +10,11 @@ export interface ExtractionImageInput {
 }
 
 export interface ProviderUsage {
+  providerRequestId?: string;
   inputTokens?: number;
+  cachedInputTokens?: number;
   outputTokens?: number;
+  reasoningTokens?: number;
   estimatedCostUsd?: number;
 }
 

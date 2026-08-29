@@ -201,8 +201,25 @@ export async function POST(
         outcome: attempt.outcome,
         failure_code: attempt.failureCode ?? null,
         latency_ms: attempt.latencyMs,
+        provider_request_id: attempt.usage?.providerRequestId ?? null,
         input_tokens: attempt.usage?.inputTokens ?? null,
+        cached_input_tokens: attempt.usage?.cachedInputTokens ?? null,
         output_tokens: attempt.usage?.outputTokens ?? null,
+        reasoning_tokens: attempt.usage?.reasoningTokens ?? null,
+        is_retry: result.attempts
+          .slice(0, index)
+          .some(
+            (prior) =>
+              prior.provider === attempt.provider && prior.model === attempt.model,
+          ),
+        is_escalation:
+          index > 0 &&
+          !result.attempts
+            .slice(0, index)
+            .some(
+              (prior) =>
+                prior.provider === attempt.provider && prior.model === attempt.model,
+            ),
         estimated_cost_usd: attempt.usage?.estimatedCostUsd ?? null,
         extraction_json:
           result.ok && index === result.attempts.length - 1 ? result.extraction : null,

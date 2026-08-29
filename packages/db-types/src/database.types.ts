@@ -433,52 +433,67 @@ export type Database = {
       extraction_attempts: {
         Row: {
           attempt_ordinal: number
+          cached_input_tokens: number | null
           created_at: string
           estimated_cost_usd: number | null
           extraction_json: Json | null
           failure_code: string | null
           id: string
           input_tokens: number | null
+          is_escalation: boolean
+          is_retry: boolean
           latency_ms: number
           model: string
           outcome: string
           output_tokens: number | null
           prompt_version: string
           provider: string
+          provider_request_id: string | null
+          reasoning_tokens: number | null
           sanitized_sha256: string
           submission_id: string
         }
         Insert: {
           attempt_ordinal: number
+          cached_input_tokens?: number | null
           created_at?: string
           estimated_cost_usd?: number | null
           extraction_json?: Json | null
           failure_code?: string | null
           id?: string
           input_tokens?: number | null
+          is_escalation?: boolean
+          is_retry?: boolean
           latency_ms: number
           model: string
           outcome: string
           output_tokens?: number | null
           prompt_version: string
           provider: string
+          provider_request_id?: string | null
+          reasoning_tokens?: number | null
           sanitized_sha256: string
           submission_id: string
         }
         Update: {
           attempt_ordinal?: number
+          cached_input_tokens?: number | null
           created_at?: string
           estimated_cost_usd?: number | null
           extraction_json?: Json | null
           failure_code?: string | null
           id?: string
           input_tokens?: number | null
+          is_escalation?: boolean
+          is_retry?: boolean
           latency_ms?: number
           model?: string
           outcome?: string
           output_tokens?: number | null
           prompt_version?: string
           provider?: string
+          provider_request_id?: string | null
+          reasoning_tokens?: number | null
           sanitized_sha256?: string
           submission_id?: string
         }
@@ -1969,4 +1984,3 @@ export const Constants = {
     },
   },
 } as const
-

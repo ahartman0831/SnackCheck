@@ -9,11 +9,14 @@ import type {
 import { EXTRACTION_PROMPT } from "./prompt-registry";
 
 const GeminiResponseSchema = z.object({
+  id: z.string().optional(),
   output_text: z.string(),
   usage_metadata: z
     .object({
       input_tokens: z.number().optional(),
+      cached_input_tokens: z.number().optional(),
       output_tokens: z.number().optional(),
+      reasoning_tokens: z.number().optional(),
     })
     .optional(),
 });
@@ -63,8 +66,11 @@ export class GeminiExtractionProvider implements ExtractionProvider {
     return {
       outputText: payload.output_text,
       usage: {
+        providerRequestId: payload.id,
         inputTokens: payload.usage_metadata?.input_tokens,
+        cachedInputTokens: payload.usage_metadata?.cached_input_tokens,
         outputTokens: payload.usage_metadata?.output_tokens,
+        reasoningTokens: payload.usage_metadata?.reasoning_tokens,
       },
     };
   }

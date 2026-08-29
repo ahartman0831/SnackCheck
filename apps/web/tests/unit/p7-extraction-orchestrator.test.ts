@@ -54,6 +54,32 @@ describe("Phase 7 extraction boundaries", () => {
     expect(fallback.extract).not.toHaveBeenCalled();
   });
 
+  it("preserves provider token categories and request IDs for the private spend ledger", async () => {
+    const metered: ExtractionProvider = {
+      name: "fixture",
+      model: "metered",
+      extract: vi.fn(async () => ({
+        outputText: extraction("sugar, salt"),
+        usage: {
+          providerRequestId: "safe-provider-request-id",
+          inputTokens: 1000,
+          cachedInputTokens: 200,
+          outputTokens: 500,
+          reasoningTokens: 100,
+        },
+      })),
+    };
+    const result = await orchestrateExtraction({ ...base, providers: [metered] });
+
+    expect(result.attempts[0]?.usage).toEqual({
+      providerRequestId: "safe-provider-request-id",
+      inputTokens: 1000,
+      cachedInputTokens: 200,
+      outputTokens: 500,
+      reasoningTokens: 100,
+    });
+  });
+
   it("escalates low confidence and fails closed on provider disagreement", async () => {
     const result = await orchestrateExtraction({
       ...base,
