@@ -43,7 +43,7 @@ insert into public.submissions (
 ) values (
   '33333333-3333-3333-3333-333333333333',
   '22222222-2222-2222-2222-222222222222',
-  'SANITIZED',
+  'UPLOAD_PENDING',
   repeat('3', 64),
   now() + interval '1 hour'
 );
