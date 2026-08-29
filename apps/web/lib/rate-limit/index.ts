@@ -28,6 +28,9 @@ export const memoryRateLimiter: RateLimiter = {
 export async function getRateLimiter(): Promise<RateLimiter> {
   if (env.NODE_ENV === "production") {
     if (!env.UPSTASH_REDIS_REST_URL || !env.UPSTASH_REDIS_REST_TOKEN) {
+      if (env.VERCEL_ENV === "preview" && env.ALLOW_PREVIEW_MEMORY_RATE_LIMIT) {
+        return memoryRateLimiter;
+      }
       throw new Error("Production rate limiting requires Upstash Redis.");
     }
     const { Ratelimit } = await import("@upstash/ratelimit");

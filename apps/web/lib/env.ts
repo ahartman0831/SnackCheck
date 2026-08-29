@@ -41,6 +41,11 @@ const envSchema = z.object({
   OPEN_FOOD_FACTS_CONTACT_EMAIL: optionalString,
   UPSTASH_REDIS_REST_URL: optionalUrl,
   UPSTASH_REDIS_REST_TOKEN: optionalString,
+  VERCEL_ENV: z.enum(["production", "preview", "development"]).optional(),
+  ALLOW_PREVIEW_MEMORY_RATE_LIMIT: z
+    .enum(["true", "false"])
+    .default("false")
+    .transform((value) => value === "true"),
   ANONYMOUS_KEY_HMAC_SECRET: optionalString,
   SUBMISSION_TOKEN_SECRET: optionalSecret,
   SENTRY_DSN: optionalString,
@@ -76,6 +81,8 @@ function readEnv(): AppEnv {
     OPEN_FOOD_FACTS_CONTACT_EMAIL: process.env.OPEN_FOOD_FACTS_CONTACT_EMAIL,
     UPSTASH_REDIS_REST_URL: process.env.UPSTASH_REDIS_REST_URL,
     UPSTASH_REDIS_REST_TOKEN: process.env.UPSTASH_REDIS_REST_TOKEN,
+    VERCEL_ENV: process.env.VERCEL_ENV,
+    ALLOW_PREVIEW_MEMORY_RATE_LIMIT: process.env.ALLOW_PREVIEW_MEMORY_RATE_LIMIT,
     ANONYMOUS_KEY_HMAC_SECRET: process.env.ANONYMOUS_KEY_HMAC_SECRET,
     SUBMISSION_TOKEN_SECRET: process.env.SUBMISSION_TOKEN_SECRET,
     SENTRY_DSN: process.env.SENTRY_DSN,
