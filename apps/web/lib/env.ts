@@ -25,6 +25,7 @@ const envSchema = z.object({
   OPENAI_API_KEY: optionalString,
   OPENAI_VISION_MODEL: z.string().default("gpt-5.6-luna"),
   OPENAI_EXTRACTION_PROMPT_VERSION: z.string().default("p7-v1"),
+  AI_PRIMARY_PROVIDER: z.enum(["gemini", "openai"]).default("gemini"),
   AI_EXTRACTION_KILL_SWITCH: z
     .enum(["true", "false"])
     .default("true")
@@ -74,6 +75,7 @@ function readEnv(): AppEnv {
     OPENAI_API_KEY: process.env.OPENAI_API_KEY,
     OPENAI_VISION_MODEL: process.env.OPENAI_VISION_MODEL,
     OPENAI_EXTRACTION_PROMPT_VERSION: process.env.OPENAI_EXTRACTION_PROMPT_VERSION,
+    AI_PRIMARY_PROVIDER: process.env.AI_PRIMARY_PROVIDER,
     AI_EXTRACTION_KILL_SWITCH: process.env.AI_EXTRACTION_KILL_SWITCH,
     AI_PROVIDER_TIMEOUT_MS: process.env.AI_PROVIDER_TIMEOUT_MS,
     AI_PROVIDER_MAX_CALLS: process.env.AI_PROVIDER_MAX_CALLS,

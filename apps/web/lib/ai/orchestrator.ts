@@ -11,6 +11,7 @@ import {
   ExtractionExecutionError,
   type ExtractionExecutionPolicy,
 } from "./execution-policy";
+import { ExtractionProviderError } from "./provider-error";
 
 const SEVERE_WARNINGS = new Set([
   "NO_INGREDIENT_PANEL",
@@ -109,7 +110,9 @@ export async function orchestrateExtraction(options: {
             ? error.code
             : error instanceof ExtractionOutputError
               ? error.code
-              : "PROVIDER_ERROR";
+              : error instanceof ExtractionProviderError
+                ? error.failureCode
+                : "PROVIDER_ERROR";
         attempts.push({
           provider: provider.name,
           model: provider.model,

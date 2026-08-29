@@ -2,6 +2,7 @@ import { describe, expect, it, vi } from "vitest";
 import type { ExtractionProvider } from "@/lib/ai/contracts";
 import { orchestrateExtraction } from "@/lib/ai/orchestrator";
 import { parseProviderOutput } from "@/lib/ai/output-validator";
+import { ExtractionProviderError } from "@/lib/ai/provider-error";
 
 const extraction = (text: string, confidence = 0.95) =>
   JSON.stringify({
@@ -105,6 +106,23 @@ describe("Phase 7 extraction boundaries", () => {
     expect(result).toMatchObject({ ok: true, quality: "ACCEPTED" });
     expect(result.attempts).toHaveLength(2);
     expect(extract).toHaveBeenCalledTimes(2);
+  });
+
+  it("records provider rejection categories without retrying permanent failures", async () => {
+    const extract = vi.fn(async () => {
+      throw new ExtractionProviderError("PROVIDER_REQUEST_INVALID");
+    });
+    const result = await orchestrateExtraction({
+      ...base,
+      providers: [{ name: "fixture", model: "primary", extract }],
+      retryBaseDelayMs: 0,
+    });
+
+    expect(result).toMatchObject({
+      ok: false,
+      attempts: [{ failureCode: "PROVIDER_REQUEST_INVALID" }],
+    });
+    expect(extract).toHaveBeenCalledTimes(1);
   });
 
   it("honors kill switch, budget gate, and maximum three calls", async () => {

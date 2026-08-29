@@ -7,6 +7,7 @@ import type {
   ProviderResponse,
 } from "./contracts";
 import { EXTRACTION_PROMPT } from "./prompt-registry";
+import { classifyProviderHttpStatus, ExtractionProviderError } from "./provider-error";
 
 const GeminiResponseSchema = z.object({
   id: z.string().optional(),
@@ -91,7 +92,9 @@ export class GeminiExtractionProvider implements ExtractionProvider {
         }),
       },
     );
-    if (!response.ok) throw new Error(`Gemini request failed with ${response.status}`);
+    if (!response.ok) {
+      throw new ExtractionProviderError(classifyProviderHttpStatus(response.status));
+    }
     const payload = GeminiResponseSchema.parse(await response.json());
     const outputText =
       payload.output_text ??

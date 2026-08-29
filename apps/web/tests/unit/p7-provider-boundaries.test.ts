@@ -67,4 +67,43 @@ describe("Phase 7 provider boundaries", () => {
       outputTokens: 10,
     });
   });
+
+  it.each([
+    [400, "PROVIDER_REQUEST_INVALID"],
+    [401, "PROVIDER_AUTH"],
+    [429, "PROVIDER_RATE_LIMITED"],
+    [500, "PROVIDER_ERROR"],
+  ])(
+    "classifies Gemini HTTP %i without exposing its response body",
+    async (status, code) => {
+      const provider = new GeminiExtractionProvider(
+        "configured-model",
+        "test-key",
+        vi.fn(
+          async () =>
+            new Response(
+              JSON.stringify({ error: { message: "sensitive provider detail" } }),
+              {
+                status,
+              },
+            ),
+        ) as typeof fetch,
+      );
+
+      await expect(
+        provider.extract(
+          {
+            bytes: Buffer.from("sanitized"),
+            mediaType: "image/jpeg",
+            sanitizedSha256: "a".repeat(64),
+            submissionId: "submission",
+          },
+          new AbortController().signal,
+        ),
+      ).rejects.toMatchObject({
+        failureCode: code,
+        message: "The extraction provider rejected the request.",
+      });
+    },
+  );
 });
