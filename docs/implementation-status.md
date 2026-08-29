@@ -1,6 +1,6 @@
 # Implementation status
 
-Last updated: 2026-08-28
+Last updated: 2026-08-29
 Baseline detail: [`docs/remediation-baseline.md`](remediation-baseline.md)
 Plan: [`docs/SnackCheck-Cursor-Master-Build-Plan.md`](SnackCheck-Cursor-Master-Build-Plan.md)
 Prior plan: [`docs/SnackCheck-Cursor-Remediation-Build-Plan-v2.md`](SnackCheck-Cursor-Remediation-Build-Plan-v2.md)
@@ -30,7 +30,7 @@ Master-plan **Phase 6** is `COMPLETE` and merged by PR [#3](https://github.com/a
 - **P0-5 is green on the Phase 6 branch** — ownership now uses a signed, expiring, purpose-bound token plus a stored SHA-256 token hash. CI requires the regression to pass.
 - **P0-7 remains `BLOCKED`** — unsigned regulatory review. This session did not publish the Arizona ruleset or approve aliases.
 
-Phase 7 has provider-neutral orchestration and server-only Gemini/OpenAI adapters under test, including maximum-call, timeout, one-retry-with-jitter, in-process concurrency, circuit-breaker, database budget, and kill-switch controls. Gemini and OpenAI keys plus staging Supabase credentials are configured only for the Phase 7 Vercel preview branch; Production is explicitly excluded. No provider call has run. Phases 8–11 are `NOT STARTED`. Do not enable production camera, photo, or AI flags.
+Phase 7 has provider-neutral orchestration and server-only Gemini/OpenAI adapters under test, including maximum-call, timeout, one-retry-with-jitter, in-process concurrency, circuit-breaker, database budget, and kill-switch controls. Gemini and OpenAI keys plus staging Supabase credentials are configured only for the Phase 7 Vercel preview branch; Production is explicitly excluded. Verified dated rate cards are recorded in staging and migration `0023`. The first synthetic preview preflight failed before submission creation because production-mode rate limiting correctly required Redis; it recorded no provider attempt, token usage, cost, or daily-counter claim. An explicit Vercel-preview-only in-memory limiter is now under test while production remains fail-closed. Phases 8–11 are `NOT STARTED`. Do not enable production camera, photo, or AI flags.
 
 Phase 7 current branch also connects sanitized photos to bounded transcription, an editable side-by-side confirmation screen, deterministic evaluation, and atomic persistence. Migration `0020` adds provider-attempt records and an AI-specific kill switch/daily counter. Migration `0021` adds the next fail-closed step: a confirmed known-product submission creates an inactive community formulation, ingredient rows, evidence provenance, and—only when a matching published ruleset exists—a durable deterministic evaluation and rule matches. Migration `0022` adds a private per-provider-call usage ledger, versioned model pricing, cached/reasoning token categories, retry/escalation markers, estimated-versus-billed spend fields, and a server-only daily summary. The ledger stores no prompts, ingredient text, images, or secrets. Migrations `0016`–`0022` were applied to the designated staging Supabase project on 2026-08-28; the AI kill switch remained `true`, published rulesets remained at zero, and the temporary pgcrypto compatibility wrapper required by staging was removed after the forward fixes applied. Unknown/productless submissions remain conservative `VERIFY` cases. Live evaluation-set testing is still outstanding.
 
