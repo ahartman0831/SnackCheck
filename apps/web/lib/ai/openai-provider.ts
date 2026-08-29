@@ -1,3 +1,4 @@
+import "server-only";
 import OpenAI from "openai";
 import { IngredientExtractionSchema } from "@snackcheck/contracts";
 import { z } from "zod";

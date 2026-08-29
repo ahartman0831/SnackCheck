@@ -72,18 +72,16 @@ export async function POST(
       { status: 503 },
     );
   }
-  const confirmed = await admin
-    .from("submissions")
-    .update({
-      status: "CONFIRMED",
-      corrected_text: parsed.data.correctedText,
-      anonymous_key_hash: null,
-    })
-    .eq("id", id)
-    .eq("status", "NEEDS_CONFIRMATION")
-    .select("id")
-    .maybeSingle();
-  if (confirmed.error || !confirmed.data) {
+  const finalized = await admin.rpc(
+    "finalize_submission_evaluation" as never,
+    {
+      p_submission_id: id,
+      p_corrected_text: parsed.data.correctedText,
+      p_formulation_hash: result.formulationHash,
+      p_evaluation_result: result,
+    } as never,
+  );
+  if (finalized.error || finalized.data !== true) {
     return NextResponse.json(
       fail("SUBMISSION_STATE", "This submission cannot be confirmed.", { id: reqId }),
       { status: 409 },

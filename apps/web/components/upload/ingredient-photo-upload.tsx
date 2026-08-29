@@ -2,12 +2,15 @@
 
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 
 type UploadState =
   "idle" | "selected" | "creating" | "uploading" | "sanitizing" | "ready" | "error";
 
 export function IngredientPhotoUpload() {
+  const params = useSearchParams();
+  const router = useRouter();
   const inputRef = useRef<HTMLInputElement>(null);
   const [file, setFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -47,6 +50,8 @@ export function IngredientPhotoUpload() {
       setState("creating");
       const created = await fetch("/api/v1/uploads/ingredient-label", {
         method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ gtin: params.get("gtin") }),
       });
       const createdJson = await created.json();
       if (!created.ok || !createdJson.data?.uploadUrl || !createdJson.data?.path) {
@@ -79,7 +84,20 @@ export function IngredientPhotoUpload() {
           completedJson.error?.message ?? "The photo could not be processed safely.",
         );
       }
+      const extracted = await fetch(`/api/v1/submissions/${nextSubmissionId}/extract`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: "{}",
+      });
+      const extractedJson = await extracted.json();
+      if (!extracted.ok) {
+        throw new Error(
+          extractedJson.error?.message ??
+            "The safe photo is ready, but transcription is unavailable.",
+        );
+      }
       setState("ready");
+      router.push(`/scan/confirm/${nextSubmissionId}`);
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : "Photo upload failed.");
       setState("error");
@@ -94,8 +112,8 @@ export function IngredientPhotoUpload() {
         <h2 className="text-xl font-semibold">Photograph the ingredient panel</h2>
         <p className="text-muted text-sm">
           Your original photo is private and removed after safety processing. A
-          metadata-free copy is retained for up to seven days. No AI reads or evaluates
-          the photo in this phase.
+          metadata-free copy is retained for up to seven days. Transcribed text is never
+          evaluated until you review and confirm it.
         </p>
       </div>
 
@@ -134,7 +152,7 @@ export function IngredientPhotoUpload() {
 
       {state === "ready" ? (
         <p role="status" className="text-pass text-sm font-medium">
-          Photo safely prepared. It has not been evaluated or sent to an AI provider.
+          Photo safely prepared. Opening the required text confirmation…
         </p>
       ) : null}
       {error ? (

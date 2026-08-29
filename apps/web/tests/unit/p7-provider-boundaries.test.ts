@@ -1,6 +1,8 @@
 import { describe, expect, it, vi } from "vitest";
 import { GeminiExtractionProvider } from "@/lib/ai/gemini-provider";
 
+vi.mock("server-only", () => ({}));
+
 describe("Phase 7 provider boundaries", () => {
   it("sends only inline sanitized bytes and a transcription-only schema to Gemini", async () => {
     const fetchImpl = vi.fn(async (_url: string | URL | Request, init?: RequestInit) => {

@@ -56,6 +56,7 @@ export type ExtractionOrchestrationResult =
       extraction: IngredientExtraction;
       attempts: ExtractionAttempt[];
       requiresConfirmation: true;
+      quality: "ACCEPTED" | "LOW_CONFIDENCE";
     }
   | {
       ok: false;

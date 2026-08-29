@@ -1,3 +1,4 @@
+import "server-only";
 import { IngredientExtractionSchema } from "@snackcheck/contracts";
 import { z } from "zod";
 import type {

@@ -16,3 +16,8 @@ export function isIngredientPhotoEnabled(env?: FeatureEnv): boolean {
     source.NEXT_PUBLIC_FEATURE_INGREDIENT_PHOTO === "true"
   );
 }
+
+export function isPhotoExtractionEnabled(env?: FeatureEnv): boolean {
+  const source = env ?? process.env;
+  return source.FEATURE_PHOTO_EXTRACTION === "true";
+}

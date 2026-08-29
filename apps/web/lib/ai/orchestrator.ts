@@ -72,7 +72,13 @@ export async function orchestrateExtraction(options: {
       }
       candidate = extraction;
       if (!lowConfidence) {
-        return { ok: true, extraction, attempts, requiresConfirmation: true };
+        return {
+          ok: true,
+          extraction,
+          attempts,
+          requiresConfirmation: true,
+          quality: "ACCEPTED",
+        };
       }
     } catch (error) {
       const timedOut = controller.signal.aborted;
@@ -97,13 +103,14 @@ export async function orchestrateExtraction(options: {
       clearTimeout(timer);
     }
   }
-  return {
-    ok: false,
-    code: candidate
-      ? candidate.panelFound
-        ? "LOW_CONFIDENCE"
-        : "NO_PANEL"
-      : "ALL_PROVIDERS_FAILED",
-    attempts,
-  };
+  if (candidate?.panelFound) {
+    return {
+      ok: true,
+      extraction: candidate,
+      attempts,
+      requiresConfirmation: true,
+      quality: "LOW_CONFIDENCE",
+    };
+  }
+  return { ok: false, code: candidate ? "NO_PANEL" : "ALL_PROVIDERS_FAILED", attempts };
 }

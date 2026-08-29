@@ -50,6 +50,7 @@ describe("Phase 7 extraction boundaries", () => {
     const result = await orchestrateExtraction({ ...base, providers: [first, fallback] });
     expect(result.ok).toBe(true);
     expect(result.ok && result.requiresConfirmation).toBe(true);
+    expect(result.ok && result.quality).toBe("ACCEPTED");
     expect(fallback.extract).not.toHaveBeenCalled();
   });
 
