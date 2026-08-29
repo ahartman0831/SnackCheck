@@ -1833,6 +1833,15 @@ export type Database = {
           path: string
         }[]
       }
+      moderate_submission: {
+        Args: {
+          p_expected_updated_at: string
+          p_next_status: Database["public"]["Enums"]["submission_status"]
+          p_request_id: string
+          p_submission_id: string
+        }
+        Returns: Json
+      }
       persist_confirmed_submission_evaluation: {
         Args: {
           p_corrected_text: string
@@ -2181,4 +2190,3 @@ export const Constants = {
     },
   },
 } as const
-
