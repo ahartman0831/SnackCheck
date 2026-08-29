@@ -10,6 +10,56 @@ type SubmissionPaths = {
   sanitized_object_path: string | null;
 };
 
+export async function GET(
+  _request: Request,
+  context: { params: Promise<{ id: string }> },
+) {
+  const reqId = requestId();
+  const { id } = await context.params;
+  const token = (await cookies()).get("sc_submission")?.value ?? "";
+  if (!(await ownsSubmission(token, id))) {
+    return NextResponse.json(
+      fail("FORBIDDEN", "This submission is not yours to view.", { id: reqId }),
+      { status: 403 },
+    );
+  }
+  const admin = createAdminClient();
+  if (!admin) {
+    return NextResponse.json(
+      fail("SUBMISSIONS_DISABLED", "Ingredient submissions are unavailable.", {
+        id: reqId,
+      }),
+      { status: 503 },
+    );
+  }
+  const found = await admin
+    .from("submissions")
+    .select("status, extracted_ingredients, extraction_confidence, sanitized_object_path")
+    .eq("id", id)
+    .maybeSingle();
+  if (found.error || !found.data) {
+    return NextResponse.json(fail("NOT_FOUND", "Submission not found.", { id: reqId }), {
+      status: 404,
+    });
+  }
+  const path = found.data.sanitized_object_path;
+  const signed = path
+    ? await admin.storage.from("submission-sanitized").createSignedUrl(path, 300)
+    : null;
+  return NextResponse.json(
+    ok(
+      {
+        submissionId: id,
+        status: found.data.status,
+        extraction: found.data.extracted_ingredients,
+        confidence: found.data.extraction_confidence,
+        imageUrl: signed?.data?.signedUrl ?? null,
+      },
+      reqId,
+    ),
+  );
+}
+
 export async function DELETE(
   _request: Request,
   context: { params: Promise<{ id: string }> },

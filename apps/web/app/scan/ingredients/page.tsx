@@ -25,7 +25,9 @@ export default function IngredientScanPage() {
           : "Paste or type the ingredient list from the package. No photo is processed on this page."}
       </p>
       {photo ? (
-        <IngredientPhotoUpload />
+        <Suspense fallback={<div data-ingredient-capture-slot="loading" />}>
+          <IngredientPhotoUpload />
+        </Suspense>
       ) : (
         <div data-ingredient-capture-slot="reserved" />
       )}

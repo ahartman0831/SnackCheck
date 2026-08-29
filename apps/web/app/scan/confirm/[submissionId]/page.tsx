@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { SubmissionConfirmation } from "@/components/upload/submission-confirmation";
 
 export const metadata: Metadata = {
   robots: { index: false, follow: false },
@@ -14,10 +15,8 @@ export default async function ConfirmPage({
   return (
     <div className="flex flex-col gap-3">
       <h1 className="text-3xl font-semibold">Confirm extraction</h1>
-      <p className="text-muted">
-        Submission {submissionId} is private. Confirm the text on the ingredient scan
-        page. This URL is not for sharing.
-      </p>
+      <p className="text-muted">This private page is not for sharing.</p>
+      <SubmissionConfirmation submissionId={submissionId} />
     </div>
   );
 }

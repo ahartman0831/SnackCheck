@@ -7,7 +7,10 @@ import {
   parseIngredients,
 } from "@snackcheck/compliance";
 import { fail, ok, requestId } from "@/lib/api/envelope";
-import { loadPublishedArizonaRuleset } from "@/lib/rules/arizona";
+import {
+  isUsablePublishedRuleset,
+  loadPublishedArizonaRuleset,
+} from "@/lib/rules/arizona";
 import { ownsSubmission } from "@/lib/submissions/submission-ownership";
 import { createAdminClient } from "@/lib/supabase/admin";
 
@@ -72,18 +75,16 @@ export async function POST(
       { status: 503 },
     );
   }
-  const confirmed = await admin
-    .from("submissions")
-    .update({
-      status: "CONFIRMED",
-      corrected_text: parsed.data.correctedText,
-      anonymous_key_hash: null,
-    })
-    .eq("id", id)
-    .eq("status", "NEEDS_CONFIRMATION")
-    .select("id")
-    .maybeSingle();
-  if (confirmed.error || !confirmed.data) {
+  const finalized = await admin.rpc("persist_confirmed_submission_evaluation", {
+    p_submission_id: id,
+    p_corrected_text: parsed.data.correctedText,
+    p_normalized_text: ingredients.normalizedText,
+    p_formulation_hash: result.formulationHash,
+    p_ingredients: ingredients.ingredients,
+    p_ruleset_id: isUsablePublishedRuleset(ruleset) ? ruleset.id : "",
+    p_evaluation_result: result,
+  });
+  if (finalized.error || finalized.data !== true) {
     return NextResponse.json(
       fail("SUBMISSION_STATE", "This submission cannot be confirmed.", { id: reqId }),
       { status: 409 },

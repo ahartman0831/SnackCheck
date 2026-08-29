@@ -91,6 +91,200 @@ export type Database = {
         }
         Relationships: []
       }
+      ai_extraction_daily_counters: {
+        Row: {
+          accepted_count: number
+          occurred_on: string
+          updated_at: string
+        }
+        Insert: {
+          accepted_count?: number
+          occurred_on?: string
+          updated_at?: string
+        }
+        Update: {
+          accepted_count?: number
+          occurred_on?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      ai_model_pricing: {
+        Row: {
+          cached_input_usd_per_million: number | null
+          created_at: string
+          currency: string
+          effective_from: string
+          effective_until: string | null
+          id: string
+          input_usd_per_million: number
+          model: string
+          output_usd_per_million: number
+          provider: string
+          source_note: string | null
+          source_url: string | null
+        }
+        Insert: {
+          cached_input_usd_per_million?: number | null
+          created_at?: string
+          currency?: string
+          effective_from: string
+          effective_until?: string | null
+          id?: string
+          input_usd_per_million: number
+          model: string
+          output_usd_per_million: number
+          provider: string
+          source_note?: string | null
+          source_url?: string | null
+        }
+        Update: {
+          cached_input_usd_per_million?: number | null
+          created_at?: string
+          currency?: string
+          effective_from?: string
+          effective_until?: string | null
+          id?: string
+          input_usd_per_million?: number
+          model?: string
+          output_usd_per_million?: number
+          provider?: string
+          source_note?: string | null
+          source_url?: string | null
+        }
+        Relationships: []
+      }
+      ai_usage_ledger: {
+        Row: {
+          attempt_ordinal: number
+          billed_cost_usd: number | null
+          cached_input_tokens: number | null
+          cached_input_usd_per_million: number | null
+          cost_source: string
+          created_at: string
+          currency: string
+          estimated_input_cost_usd: number | null
+          estimated_output_cost_usd: number | null
+          estimated_total_cost_usd: number | null
+          extraction_attempt_id: string | null
+          failure_code: string | null
+          id: string
+          input_tokens: number | null
+          input_usd_per_million: number | null
+          is_escalation: boolean
+          is_retry: boolean
+          latency_ms: number
+          model: string
+          occurred_at: string
+          outcome: string
+          output_tokens: number | null
+          output_usd_per_million: number | null
+          pricing_id: string | null
+          prompt_version: string
+          provider: string
+          provider_request_id: string | null
+          reasoning_tokens: number | null
+          submission_id: string | null
+          token_source: string
+          total_tokens: number | null
+        }
+        Insert: {
+          attempt_ordinal: number
+          billed_cost_usd?: number | null
+          cached_input_tokens?: number | null
+          cached_input_usd_per_million?: number | null
+          cost_source: string
+          created_at?: string
+          currency?: string
+          estimated_input_cost_usd?: number | null
+          estimated_output_cost_usd?: number | null
+          estimated_total_cost_usd?: number | null
+          extraction_attempt_id?: string | null
+          failure_code?: string | null
+          id?: string
+          input_tokens?: number | null
+          input_usd_per_million?: number | null
+          is_escalation: boolean
+          is_retry: boolean
+          latency_ms: number
+          model: string
+          occurred_at: string
+          outcome: string
+          output_tokens?: number | null
+          output_usd_per_million?: number | null
+          pricing_id?: string | null
+          prompt_version: string
+          provider: string
+          provider_request_id?: string | null
+          reasoning_tokens?: number | null
+          submission_id?: string | null
+          token_source: string
+          total_tokens?: number | null
+        }
+        Update: {
+          attempt_ordinal?: number
+          billed_cost_usd?: number | null
+          cached_input_tokens?: number | null
+          cached_input_usd_per_million?: number | null
+          cost_source?: string
+          created_at?: string
+          currency?: string
+          estimated_input_cost_usd?: number | null
+          estimated_output_cost_usd?: number | null
+          estimated_total_cost_usd?: number | null
+          extraction_attempt_id?: string | null
+          failure_code?: string | null
+          id?: string
+          input_tokens?: number | null
+          input_usd_per_million?: number | null
+          is_escalation?: boolean
+          is_retry?: boolean
+          latency_ms?: number
+          model?: string
+          occurred_at?: string
+          outcome?: string
+          output_tokens?: number | null
+          output_usd_per_million?: number | null
+          pricing_id?: string | null
+          prompt_version?: string
+          provider?: string
+          provider_request_id?: string | null
+          reasoning_tokens?: number | null
+          submission_id?: string | null
+          token_source?: string
+          total_tokens?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_usage_ledger_extraction_attempt_id_fkey"
+            columns: ["extraction_attempt_id"]
+            isOneToOne: true
+            referencedRelation: "extraction_attempts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ai_usage_ledger_pricing_id_fkey"
+            columns: ["pricing_id"]
+            isOneToOne: false
+            referencedRelation: "ai_model_pricing"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ai_usage_ledger_submission_id_fkey"
+            columns: ["submission_id"]
+            isOneToOne: false
+            referencedRelation: "expired_submission_assets"
+            referencedColumns: ["submission_id"]
+          },
+          {
+            foreignKeyName: "ai_usage_ledger_submission_id_fkey"
+            columns: ["submission_id"]
+            isOneToOne: false
+            referencedRelation: "submissions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       analytics_events: {
         Row: {
           anonymous_key_hash: string
@@ -411,6 +605,90 @@ export type Database = {
           width?: number | null
         }
         Relationships: []
+      }
+      extraction_attempts: {
+        Row: {
+          attempt_ordinal: number
+          cached_input_tokens: number | null
+          created_at: string
+          estimated_cost_usd: number | null
+          extraction_json: Json | null
+          failure_code: string | null
+          id: string
+          input_tokens: number | null
+          is_escalation: boolean
+          is_retry: boolean
+          latency_ms: number
+          model: string
+          outcome: string
+          output_tokens: number | null
+          prompt_version: string
+          provider: string
+          provider_request_id: string | null
+          reasoning_tokens: number | null
+          sanitized_sha256: string
+          submission_id: string
+        }
+        Insert: {
+          attempt_ordinal: number
+          cached_input_tokens?: number | null
+          created_at?: string
+          estimated_cost_usd?: number | null
+          extraction_json?: Json | null
+          failure_code?: string | null
+          id?: string
+          input_tokens?: number | null
+          is_escalation?: boolean
+          is_retry?: boolean
+          latency_ms: number
+          model: string
+          outcome: string
+          output_tokens?: number | null
+          prompt_version: string
+          provider: string
+          provider_request_id?: string | null
+          reasoning_tokens?: number | null
+          sanitized_sha256: string
+          submission_id: string
+        }
+        Update: {
+          attempt_ordinal?: number
+          cached_input_tokens?: number | null
+          created_at?: string
+          estimated_cost_usd?: number | null
+          extraction_json?: Json | null
+          failure_code?: string | null
+          id?: string
+          input_tokens?: number | null
+          is_escalation?: boolean
+          is_retry?: boolean
+          latency_ms?: number
+          model?: string
+          outcome?: string
+          output_tokens?: number | null
+          prompt_version?: string
+          provider?: string
+          provider_request_id?: string | null
+          reasoning_tokens?: number | null
+          sanitized_sha256?: string
+          submission_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "extraction_attempts_submission_id_fkey"
+            columns: ["submission_id"]
+            isOneToOne: false
+            referencedRelation: "expired_submission_assets"
+            referencedColumns: ["submission_id"]
+          },
+          {
+            foreignKeyName: "extraction_attempts_submission_id_fkey"
+            columns: ["submission_id"]
+            isOneToOne: false
+            referencedRelation: "submissions"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       formulation_ingredients: {
         Row: {
@@ -1275,8 +1553,11 @@ export type Database = {
       submissions: {
         Row: {
           anonymous_key_hash: string | null
+          confirmed_at: string | null
+          confirmed_formulation_hash: string | null
           corrected_text: string | null
           created_at: string
+          evaluation_result_json: Json | null
           evidence_asset_id: string | null
           extracted_ingredients: Json | null
           extracted_raw_text: string | null
@@ -1313,8 +1594,11 @@ export type Database = {
         }
         Insert: {
           anonymous_key_hash?: string | null
+          confirmed_at?: string | null
+          confirmed_formulation_hash?: string | null
           corrected_text?: string | null
           created_at?: string
+          evaluation_result_json?: Json | null
           evidence_asset_id?: string | null
           extracted_ingredients?: Json | null
           extracted_raw_text?: string | null
@@ -1351,8 +1635,11 @@ export type Database = {
         }
         Update: {
           anonymous_key_hash?: string | null
+          confirmed_at?: string | null
+          confirmed_formulation_hash?: string | null
           corrected_text?: string | null
           created_at?: string
+          evaluation_result_json?: Json | null
           evidence_asset_id?: string | null
           extracted_ingredients?: Json | null
           extracted_raw_text?: string | null
@@ -1406,6 +1693,27 @@ export type Database = {
       }
     }
     Views: {
+      ai_usage_daily_summary: {
+        Row: {
+          accepted_calls: number | null
+          billed_total_cost_usd: number | null
+          cached_input_tokens: number | null
+          currency: string | null
+          escalation_calls: number | null
+          estimated_total_cost_usd: number | null
+          input_tokens: number | null
+          model: string | null
+          occurred_on: string | null
+          output_tokens: number | null
+          provider: string | null
+          provider_calls: number | null
+          reasoning_tokens: number | null
+          retry_calls: number | null
+          total_tokens: number | null
+          unpriced_calls: number | null
+        }
+        Relationships: []
+      }
       expired_submission_assets: {
         Row: {
           evidence_asset_id: string | null
@@ -1438,6 +1746,7 @@ export type Database = {
     }
     Functions: {
       canonical_json: { Args: { value: Json }; Returns: string }
+      claim_ai_extraction_slot: { Args: { p_limit: number }; Returns: boolean }
       claim_photo_processing_slot: {
         Args: { p_limit: number }
         Returns: boolean
@@ -1523,6 +1832,18 @@ export type Database = {
           kind: string
           path: string
         }[]
+      }
+      persist_confirmed_submission_evaluation: {
+        Args: {
+          p_corrected_text: string
+          p_evaluation_result: Json
+          p_formulation_hash: string
+          p_ingredients: Json
+          p_normalized_text: string
+          p_ruleset_id: string
+          p_submission_id: string
+        }
+        Returns: boolean
       }
       public_product_card: {
         Args: { target_product_id: string }

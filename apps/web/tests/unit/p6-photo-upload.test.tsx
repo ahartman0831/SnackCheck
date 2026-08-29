@@ -26,7 +26,7 @@ describe("Phase 6 ingredient photo UI", () => {
     render(<IngredientPhotoUpload />);
 
     expect(screen.getByText(/original photo is private/i)).toBeInTheDocument();
-    expect(screen.getByText(/No AI reads or evaluates/i)).toBeInTheDocument();
+    expect(screen.getByText(/never evaluated until you review/i)).toBeInTheDocument();
     expect(
       screen.getByRole("button", { name: "Take or choose photo" }),
     ).toBeInTheDocument();
@@ -50,6 +50,11 @@ describe("Phase 6 ingredient photo UI", () => {
       .mockResolvedValueOnce(new Response(null, { status: 200 }))
       .mockResolvedValueOnce(
         new Response(JSON.stringify({ data: { status: "SANITIZED" } }), { status: 202 }),
+      )
+      .mockResolvedValueOnce(
+        new Response(JSON.stringify({ data: { requiresConfirmation: true } }), {
+          status: 200,
+        }),
       );
 
     const { container } = render(<IngredientPhotoUpload />);
@@ -66,13 +71,22 @@ describe("Phase 6 ingredient photo UI", () => {
     await waitFor(() =>
       expect(screen.getByText(/Photo safely prepared/i)).toBeInTheDocument(),
     );
-    expect(screen.getByText(/not been evaluated/i)).toBeInTheDocument();
+    expect(
+      screen.getByText(/Opening the required text confirmation/i),
+    ).toBeInTheDocument();
     expect(fetchMock).toHaveBeenNthCalledWith(1, "/api/v1/uploads/ingredient-label", {
       method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ gtin: null }),
     });
     expect(fetchMock).toHaveBeenNthCalledWith(
       3,
       "/api/v1/submissions/11111111-1111-1111-1111-111111111111/upload-complete",
+      expect.objectContaining({ method: "POST" }),
+    );
+    expect(fetchMock).toHaveBeenNthCalledWith(
+      4,
+      "/api/v1/submissions/11111111-1111-1111-1111-111111111111/extract",
       expect.objectContaining({ method: "POST" }),
     );
   });

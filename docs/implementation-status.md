@@ -1,6 +1,6 @@
 # Implementation status
 
-Last updated: 2026-08-28
+Last updated: 2026-08-29
 Baseline detail: [`docs/remediation-baseline.md`](remediation-baseline.md)
 Plan: [`docs/SnackCheck-Cursor-Master-Build-Plan.md`](SnackCheck-Cursor-Master-Build-Plan.md)
 Prior plan: [`docs/SnackCheck-Cursor-Remediation-Build-Plan-v2.md`](SnackCheck-Cursor-Remediation-Build-Plan-v2.md)
@@ -13,7 +13,7 @@ A phase is not complete because interfaces, placeholder pages, or a published-lo
 
 ## Current work
 
-Master-plan **Phase 6** is `COMPLETE` on draft PR [#3](https://github.com/ahartman0831/SnackCheck/pull/3). Phase 5 remains `PARTIAL`: implementation and required Ubuntu CI are green, and current iPhone Safari physical-device testing passed, including a curved two-liter bottle with glare. Android Chrome testing was explicitly deferred by the owner. Production camera and photo flags stay off.
+Master-plan **Phase 6** is `COMPLETE` and merged by PR [#3](https://github.com/ahartman0831/SnackCheck/pull/3) at `8e60ce1`. Phase 7 is `PARTIAL` on `codex/phase-7-extraction-orchestration`. Phase 5 remains `PARTIAL`: iPhone Safari passed and Android Chrome was explicitly deferred. Production camera, photo, and AI flags stay off.
 
 **Why not `COMPLETE`:**
 
@@ -30,7 +30,13 @@ Master-plan **Phase 6** is `COMPLETE` on draft PR [#3](https://github.com/ahartm
 - **P0-5 is green on the Phase 6 branch** — ownership now uses a signed, expiring, purpose-bound token plus a stored SHA-256 token hash. CI requires the regression to pass.
 - **P0-7 remains `BLOCKED`** — unsigned regulatory review. This session did not publish the Arizona ruleset or approve aliases.
 
-Phases 7–11 are `NOT STARTED`. Do not enable production camera or photo flags.
+Phase 7 has provider-neutral orchestration and server-only Gemini/OpenAI adapters under test, including maximum-call, timeout, one-retry-with-jitter, in-process concurrency, circuit-breaker, database budget, and kill-switch controls. Gemini and OpenAI keys plus staging Supabase credentials are configured only for the Phase 7 Vercel preview branch; Production is explicitly excluded. Verified dated rate cards are recorded in staging and migration `0023`. The staging rows match the dated migration, but `0023` has not been applied through the migration runner. An explicit Vercel-preview-only in-memory limiter supports the authenticated test deployment while production remains fail-closed. Phases 8–11 are `NOT STARTED`. Do not enable production camera, photo, or AI flags.
+
+Phase 7 current branch also connects sanitized photos to bounded transcription, an editable side-by-side confirmation screen, deterministic evaluation, and atomic persistence. Migration `0020` adds provider-attempt records and an AI-specific kill switch/daily counter. Migration `0021` adds the next fail-closed step: a confirmed known-product submission creates an inactive community formulation, ingredient rows, evidence provenance, and—only when a matching published ruleset exists—a durable deterministic evaluation and rule matches. Migration `0022` adds a private per-provider-call usage ledger, versioned model pricing, cached/reasoning token categories, retry/escalation markers, estimated-versus-billed spend fields, and a server-only daily summary. The ledger stores no prompts, ingredient text, images, or secrets. Migrations `0016`–`0022` were applied to the designated staging Supabase project on 2026-08-28; published rulesets remained at zero, and the temporary pgcrypto compatibility wrapper required by staging was removed after the forward fixes applied. Unknown/productless submissions remain conservative `VERIFY` cases.
+
+The licensed ten-image staging corpus now passes the flag-off merge gates. OpenAI `gpt-5.6-luna` with prompt `p7-v1` achieved 100% panel detection, 98.99% normalized transcription accuracy, 88.78% top-level segment F1, and zero false-confidence cases. The run made exactly one call per image, averaged 11.378 seconds, and cost an estimated `$0.02082154`; all ten ledger rows used provider-reported token usage and the verified rate card. The no-panel case failed closed and the degraded soup panel was marked low confidence. Both staging counters ended at ten and both staging kill switches were restored to `true`. See [`docs/phase-7-staging-evaluation.md`](phase-7-staging-evaluation.md). Phase 7 remains `PARTIAL` because real-phone photo-path testing and a Gemini production decision are still outstanding.
+
+The first accepted live staging extraction ran on 2026-08-29 against a synthetic ingredient-label image. Preview controls forced OpenAI first and limited orchestration to one call. `gpt-5.6-luna` with prompt `p7-v1` returned the four visible ingredients exactly, kept the allergen/manufacturer/fixture text out of `ingredientText`, and reached the private confirmation screen without evaluating the text. Provider-reported usage was 1,956 input tokens, 580 output tokens, 324 reasoning tokens, and 2,536 total tokens. The private ledger priced the call from the dated rate card at `$0.001087200`. The daily counter recorded one accepted call, and both staging kill switches were restored to `true` immediately afterward. The prompt was not changed because the tested output met the transcription boundary; changing it would invalidate this evidence. Earlier Gemini Interactions attempts returned no usable output or token usage. The adapter now records a redacted HTTP failure category and supports explicit provider ordering, but Gemini remains unresolved and must not be treated as a proven primary.
 
 ## Master plan phases
 
@@ -44,7 +50,7 @@ Phases 7–11 are `NOT STARTED`. Do not enable production camera or photo flags.
 | 4C    | Preserve and close the completed remediation                                                          | `COMPLETE`    |
 | 5     | Production-quality barcode camera                                                                     | `PARTIAL`     |
 | 6     | Secure ingredient-photo submission pipeline                                                           | `COMPLETE`    |
-| 7     | Extraction orchestration, confirmation, and persistence                                               | `NOT STARTED` |
+| 7     | Extraction orchestration, confirmation, and persistence                                               | `PARTIAL`     |
 | 8     | Admin operations                                                                                      | `NOT STARTED` |
 | 9     | Affiliates                                                                                            | `NOT STARTED` |
 | 10    | Observability, PWA, CI                                                                                | `NOT STARTED` |
@@ -162,3 +168,5 @@ Not deployed. Domain remains pending via `NEXT_PUBLIC_APP_URL`.
 3. Do not apply `0016`/`0017`/`0018` to the linked production Supabase project.
 4. Sign `docs/regulatory-review.md` before calling publish. Do not approve pending aliases.
 5. Keep ingredient-photo flags off in production until Phase 7 is complete and separately approved for rollout.
+6. Rehearse the Phase 7 clear, glare, blur, curved-package, no-panel, outage, correction, and cancel/retake paths on a current phone against the protected preview.
+7. Resolve or deliberately replace the unproven Gemini primary-provider path before treating Gemini as production-ready.

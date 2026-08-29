@@ -38,7 +38,11 @@ export function IngredientCheckForm() {
     setBusy(true);
     setError(null);
     try {
-      const created = await fetch("/api/v1/uploads/ingredient-label", { method: "POST" });
+      const created = await fetch("/api/v1/uploads/ingredient-label", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ gtin }),
+      });
       const createdJson = await created.json();
       if (!created.ok) {
         setError(

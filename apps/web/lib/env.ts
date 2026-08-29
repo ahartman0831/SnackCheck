@@ -19,9 +19,19 @@ const envSchema = z.object({
   NEXT_PUBLIC_SUPABASE_URL: optionalUrl,
   NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: optionalString,
   SUPABASE_SERVICE_ROLE_KEY: optionalString,
+  GEMINI_API_KEY: optionalString,
+  GEMINI_PRIMARY_MODEL: z.string().default("gemini-3.5-flash-lite"),
+  GEMINI_ESCALATION_MODEL: z.string().default("gemini-3.7-flash"),
   OPENAI_API_KEY: optionalString,
-  OPENAI_VISION_MODEL: z.string().default("gpt-4.1-mini"),
-  OPENAI_EXTRACTION_PROMPT_VERSION: z.string().default("v1"),
+  OPENAI_VISION_MODEL: z.string().default("gpt-5.6-luna"),
+  OPENAI_EXTRACTION_PROMPT_VERSION: z.string().default("p7-v1"),
+  AI_PRIMARY_PROVIDER: z.enum(["gemini", "openai"]).default("gemini"),
+  AI_EXTRACTION_KILL_SWITCH: z
+    .enum(["true", "false"])
+    .default("true")
+    .transform((value) => value === "true"),
+  AI_PROVIDER_TIMEOUT_MS: z.coerce.number().int().positive().default(30_000),
+  AI_PROVIDER_MAX_CALLS: z.coerce.number().int().min(1).max(3).default(3),
   OPEN_FOOD_FACTS_ENABLED: z
     .enum(["true", "false"])
     .default("true")
@@ -33,6 +43,11 @@ const envSchema = z.object({
   OPEN_FOOD_FACTS_CONTACT_EMAIL: optionalString,
   UPSTASH_REDIS_REST_URL: optionalUrl,
   UPSTASH_REDIS_REST_TOKEN: optionalString,
+  VERCEL_ENV: z.enum(["production", "preview", "development"]).optional(),
+  ALLOW_PREVIEW_MEMORY_RATE_LIMIT: z
+    .enum(["true", "false"])
+    .default("false")
+    .transform((value) => value === "true"),
   ANONYMOUS_KEY_HMAC_SECRET: optionalString,
   SUBMISSION_TOKEN_SECRET: optionalSecret,
   SENTRY_DSN: optionalString,
@@ -54,15 +69,24 @@ function readEnv(): AppEnv {
     NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY:
       process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
     SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY,
+    GEMINI_API_KEY: process.env.GEMINI_API_KEY,
+    GEMINI_PRIMARY_MODEL: process.env.GEMINI_PRIMARY_MODEL,
+    GEMINI_ESCALATION_MODEL: process.env.GEMINI_ESCALATION_MODEL,
     OPENAI_API_KEY: process.env.OPENAI_API_KEY,
     OPENAI_VISION_MODEL: process.env.OPENAI_VISION_MODEL,
     OPENAI_EXTRACTION_PROMPT_VERSION: process.env.OPENAI_EXTRACTION_PROMPT_VERSION,
+    AI_PRIMARY_PROVIDER: process.env.AI_PRIMARY_PROVIDER,
+    AI_EXTRACTION_KILL_SWITCH: process.env.AI_EXTRACTION_KILL_SWITCH,
+    AI_PROVIDER_TIMEOUT_MS: process.env.AI_PROVIDER_TIMEOUT_MS,
+    AI_PROVIDER_MAX_CALLS: process.env.AI_PROVIDER_MAX_CALLS,
     OPEN_FOOD_FACTS_ENABLED: process.env.OPEN_FOOD_FACTS_ENABLED,
     OPEN_FOOD_FACTS_BASE_URL: process.env.OPEN_FOOD_FACTS_BASE_URL,
     OPEN_FOOD_FACTS_USER_AGENT: process.env.OPEN_FOOD_FACTS_USER_AGENT,
     OPEN_FOOD_FACTS_CONTACT_EMAIL: process.env.OPEN_FOOD_FACTS_CONTACT_EMAIL,
     UPSTASH_REDIS_REST_URL: process.env.UPSTASH_REDIS_REST_URL,
     UPSTASH_REDIS_REST_TOKEN: process.env.UPSTASH_REDIS_REST_TOKEN,
+    VERCEL_ENV: process.env.VERCEL_ENV,
+    ALLOW_PREVIEW_MEMORY_RATE_LIMIT: process.env.ALLOW_PREVIEW_MEMORY_RATE_LIMIT,
     ANONYMOUS_KEY_HMAC_SECRET: process.env.ANONYMOUS_KEY_HMAC_SECRET,
     SUBMISSION_TOKEN_SECRET: process.env.SUBMISSION_TOKEN_SECRET,
     SENTRY_DSN: process.env.SENTRY_DSN,

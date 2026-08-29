@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { randomUUID } from "node:crypto";
+import { z } from "zod";
 import { fail, ok, requestId } from "@/lib/api/envelope";
 import { getRateLimiter } from "@/lib/rate-limit";
 import { createAdminClient } from "@/lib/supabase/admin";
@@ -9,8 +10,11 @@ import {
   hashSubmissionToken,
 } from "@/lib/submissions/submission-token";
 import { isIngredientPhotoEnabled } from "@/lib/features";
+import { normalizeGtin } from "@/lib/gtin";
 
-export async function POST() {
+const BodySchema = z.object({ gtin: z.string().optional() });
+
+export async function POST(request: Request) {
   const id = requestId();
   if (!env.SUBMISSION_TOKEN_SECRET) {
     return NextResponse.json(
@@ -46,6 +50,14 @@ export async function POST() {
 
   let uploadUrl: string | null = null;
 
+  const body = BodySchema.safeParse(await request.json().catch(() => ({})));
+  const normalized =
+    body.success && body.data.gtin ? normalizeGtin(body.data.gtin) : null;
+  const normalizedGtin = normalized && "gtin14" in normalized ? normalized.gtin14 : null;
+  const product = normalizedGtin
+    ? await admin.from("products").select("id").eq("gtin14", normalizedGtin).maybeSingle()
+    : null;
+
   const inserted = await admin.from("submissions").insert({
     id: submissionId,
     status: "UPLOAD_PENDING",
@@ -54,6 +66,8 @@ export async function POST() {
     token_expires_at: new Date(payload.expiresAt * 1000).toISOString(),
     raw_object_path: isIngredientPhotoEnabled() ? path : null,
     retention_until: new Date(payload.expiresAt * 1000).toISOString(),
+    normalized_gtin14: normalizedGtin,
+    product_id: product?.data?.id ?? null,
   });
   if (inserted.error) {
     return NextResponse.json(
