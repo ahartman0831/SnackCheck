@@ -1553,15 +1553,6 @@ export type Database = {
         }[]
       }
       escape_like_pattern: { Args: { input: string }; Returns: string }
-      finalize_submission_evaluation: {
-        Args: {
-          p_corrected_text: string
-          p_evaluation_result: Json
-          p_formulation_hash: string
-          p_submission_id: string
-        }
-        Returns: boolean
-      }
       formulation_freshness_state: {
         Args: {
           aging_days: number
@@ -1629,6 +1620,18 @@ export type Database = {
           kind: string
           path: string
         }[]
+      }
+      persist_confirmed_submission_evaluation: {
+        Args: {
+          p_corrected_text: string
+          p_evaluation_result: Json
+          p_formulation_hash: string
+          p_ingredients: Json
+          p_normalized_text: string
+          p_ruleset_id: string
+          p_submission_id: string
+        }
+        Returns: boolean
       }
       public_product_card: {
         Args: { target_product_id: string }

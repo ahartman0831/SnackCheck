@@ -8,6 +8,7 @@ import {
 import { orchestrateExtraction } from "@/lib/ai/orchestrator";
 import { EXTRACTION_PROMPT_VERSION } from "@/lib/ai/prompt-registry";
 import { createExtractionProviders } from "@/lib/ai/provider-factory";
+import { sharedExtractionExecutionPolicy } from "@/lib/ai/execution-policy";
 import { fail, ok, requestId } from "@/lib/api/envelope";
 import { env } from "@/lib/env";
 import { isPhotoExtractionEnabled } from "@/lib/features";
@@ -187,6 +188,7 @@ export async function POST(
       promptVersion: EXTRACTION_PROMPT_VERSION,
       confidenceThreshold: env.EXTRACTION_CONFIDENCE_THRESHOLD,
       timeoutMs: env.AI_PROVIDER_TIMEOUT_MS,
+      executionPolicy: sharedExtractionExecutionPolicy,
     });
     await admin.from("extraction_attempts").upsert(
       result.attempts.map((attempt, index) => ({

@@ -7,6 +7,10 @@ import type {
   ExtractionProvider,
 } from "./contracts";
 import { ExtractionOutputError, parseProviderOutput } from "./output-validator";
+import {
+  ExtractionExecutionError,
+  type ExtractionExecutionPolicy,
+} from "./execution-policy";
 
 const SEVERE_WARNINGS = new Set([
   "NO_INGREDIENT_PANEL",
@@ -37,6 +41,8 @@ export async function orchestrateExtraction(options: {
   confidenceThreshold: number;
   timeoutMs: number;
   maxCalls?: number;
+  retryBaseDelayMs?: number;
+  executionPolicy?: ExtractionExecutionPolicy;
 }): Promise<ExtractionOrchestrationResult> {
   const attempts: ExtractionAttempt[] = [];
   if (!options.enabled) return { ok: false, code: "KILL_SWITCH", attempts };
@@ -45,63 +51,91 @@ export async function orchestrateExtraction(options: {
   }
 
   let candidate: IngredientExtraction | null = null;
-  const providers = options.providers.slice(0, Math.min(options.maxCalls ?? 3, 3));
+  const maxCalls = Math.min(options.maxCalls ?? 3, 3);
+  let callCount = 0;
+  const wait = (milliseconds: number) =>
+    new Promise((resolve) => setTimeout(resolve, milliseconds));
+  const providers = options.providers.slice(0, 3);
   for (const provider of providers) {
-    const started = Date.now();
-    const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), options.timeoutMs);
-    try {
-      const response = await provider.extract(options.input, controller.signal);
-      const extraction = parseProviderOutput(response.outputText);
-      const lowConfidence = needsEscalation(extraction, options.confidenceThreshold);
-      attempts.push({
-        provider: provider.name,
-        model: provider.model,
-        promptVersion: options.promptVersion,
-        latencyMs: Date.now() - started,
-        usage: response.usage,
-        outcome: lowConfidence ? "LOW_CONFIDENCE" : "ACCEPTED",
-        failureCode: lowConfidence
-          ? extraction.panelFound
-            ? "LOW_CONFIDENCE"
-            : "NO_PANEL"
-          : undefined,
-      });
-      if (candidate && conflicts(candidate, extraction)) {
-        return { ok: false, code: "PROVIDER_CONFLICT", attempts };
+    let retryAvailable = true;
+    while (callCount < maxCalls) {
+      callCount += 1;
+      const started = Date.now();
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), options.timeoutMs);
+      let shouldRetry = false;
+      try {
+        const operation = () => provider.extract(options.input, controller.signal);
+        const response = options.executionPolicy
+          ? await options.executionPolicy.run(
+              `${provider.name}:${provider.model}`,
+              operation,
+            )
+          : await operation();
+        const extraction = parseProviderOutput(response.outputText);
+        const lowConfidence = needsEscalation(extraction, options.confidenceThreshold);
+        attempts.push({
+          provider: provider.name,
+          model: provider.model,
+          promptVersion: options.promptVersion,
+          latencyMs: Date.now() - started,
+          usage: response.usage,
+          outcome: lowConfidence ? "LOW_CONFIDENCE" : "ACCEPTED",
+          failureCode: lowConfidence
+            ? extraction.panelFound
+              ? "LOW_CONFIDENCE"
+              : "NO_PANEL"
+            : undefined,
+        });
+        if (candidate && conflicts(candidate, extraction)) {
+          return { ok: false, code: "PROVIDER_CONFLICT", attempts };
+        }
+        candidate = extraction;
+        if (!lowConfidence) {
+          return {
+            ok: true,
+            extraction,
+            attempts,
+            requiresConfirmation: true,
+            quality: "ACCEPTED",
+          };
+        }
+        break;
+      } catch (error) {
+        const timedOut = controller.signal.aborted;
+        const code = timedOut
+          ? "PROVIDER_TIMEOUT"
+          : error instanceof ExtractionExecutionError
+            ? error.code
+            : error instanceof ExtractionOutputError
+              ? error.code
+              : "PROVIDER_ERROR";
+        attempts.push({
+          provider: provider.name,
+          model: provider.model,
+          promptVersion: options.promptVersion,
+          latencyMs: Date.now() - started,
+          outcome: timedOut
+            ? "TIMEOUT"
+            : error instanceof ExtractionOutputError
+              ? "INVALID"
+              : "ERROR",
+          failureCode: code,
+        });
+        shouldRetry =
+          retryAvailable &&
+          (code === "PROVIDER_TIMEOUT" || code === "PROVIDER_ERROR") &&
+          callCount < maxCalls;
+      } finally {
+        clearTimeout(timer);
       }
-      candidate = extraction;
-      if (!lowConfidence) {
-        return {
-          ok: true,
-          extraction,
-          attempts,
-          requiresConfirmation: true,
-          quality: "ACCEPTED",
-        };
-      }
-    } catch (error) {
-      const timedOut = controller.signal.aborted;
-      const code = timedOut
-        ? "PROVIDER_TIMEOUT"
-        : error instanceof ExtractionOutputError
-          ? error.code
-          : "PROVIDER_ERROR";
-      attempts.push({
-        provider: provider.name,
-        model: provider.model,
-        promptVersion: options.promptVersion,
-        latencyMs: Date.now() - started,
-        outcome: timedOut
-          ? "TIMEOUT"
-          : error instanceof ExtractionOutputError
-            ? "INVALID"
-            : "ERROR",
-        failureCode: code,
-      });
-    } finally {
-      clearTimeout(timer);
+      if (!shouldRetry) break;
+      retryAvailable = false;
+      const baseDelay = options.retryBaseDelayMs ?? 80;
+      const jitteredDelay = Math.max(0, Math.round(baseDelay * (0.5 + Math.random())));
+      await wait(jitteredDelay);
     }
+    if (callCount >= maxCalls) break;
   }
   if (candidate?.panelFound) {
     return {

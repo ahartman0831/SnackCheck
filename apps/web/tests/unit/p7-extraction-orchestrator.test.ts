@@ -65,6 +65,22 @@ describe("Phase 7 extraction boundaries", () => {
     expect(result).toMatchObject({ ok: false, code: "PROVIDER_CONFLICT" });
   });
 
+  it("retries one transient provider failure with bounded jitter", async () => {
+    const extract = vi
+      .fn()
+      .mockRejectedValueOnce(new Error("temporary outage"))
+      .mockResolvedValueOnce({ outputText: extraction("sugar, salt") });
+    const result = await orchestrateExtraction({
+      ...base,
+      providers: [{ name: "fixture", model: "primary", extract }],
+      retryBaseDelayMs: 0,
+    });
+
+    expect(result).toMatchObject({ ok: true, quality: "ACCEPTED" });
+    expect(result.attempts).toHaveLength(2);
+    expect(extract).toHaveBeenCalledTimes(2);
+  });
+
   it("honors kill switch, budget gate, and maximum three calls", async () => {
     expect(
       await orchestrateExtraction({ ...base, enabled: false, providers: [] }),
