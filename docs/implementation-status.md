@@ -13,7 +13,7 @@ A phase is not complete because interfaces, placeholder pages, or a published-lo
 
 ## Current work
 
-Master-plan **Phase 6** is `COMPLETE` on draft PR [#3](https://github.com/ahartman0831/SnackCheck/pull/3). Phase 5 remains `PARTIAL`: implementation and required Ubuntu CI are green, and current iPhone Safari physical-device testing passed, including a curved two-liter bottle with glare. Android Chrome testing was explicitly deferred by the owner. Production camera and photo flags stay off.
+Master-plan **Phase 6** is `COMPLETE` and merged by PR [#3](https://github.com/ahartman0831/SnackCheck/pull/3) at `8e60ce1`. Phase 7 is `PARTIAL` on `codex/phase-7-extraction-orchestration`. Phase 5 remains `PARTIAL`: iPhone Safari passed and Android Chrome was explicitly deferred. Production camera, photo, and AI flags stay off.
 
 **Why not `COMPLETE`:**
 
@@ -30,7 +30,7 @@ Master-plan **Phase 6** is `COMPLETE` on draft PR [#3](https://github.com/ahartm
 - **P0-5 is green on the Phase 6 branch** — ownership now uses a signed, expiring, purpose-bound token plus a stored SHA-256 token hash. CI requires the regression to pass.
 - **P0-7 remains `BLOCKED`** — unsigned regulatory review. This session did not publish the Arizona ruleset or approve aliases.
 
-Phases 7–11 are `NOT STARTED`. Do not enable production camera or photo flags.
+Phase 7 has provider-neutral orchestration and server-only Gemini/OpenAI adapters under test; no API key has been added and no provider call has run. Phases 8–11 are `NOT STARTED`. Do not enable production camera, photo, or AI flags.
 
 ## Master plan phases
 
@@ -44,7 +44,7 @@ Phases 7–11 are `NOT STARTED`. Do not enable production camera or photo flags.
 | 4C    | Preserve and close the completed remediation                                                          | `COMPLETE`    |
 | 5     | Production-quality barcode camera                                                                     | `PARTIAL`     |
 | 6     | Secure ingredient-photo submission pipeline                                                           | `COMPLETE`    |
-| 7     | Extraction orchestration, confirmation, and persistence                                               | `NOT STARTED` |
+| 7     | Extraction orchestration, confirmation, and persistence                                               | `PARTIAL`     |
 | 8     | Admin operations                                                                                      | `NOT STARTED` |
 | 9     | Affiliates                                                                                            | `NOT STARTED` |
 | 10    | Observability, PWA, CI                                                                                | `NOT STARTED` |

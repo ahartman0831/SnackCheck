@@ -19,9 +19,17 @@ const envSchema = z.object({
   NEXT_PUBLIC_SUPABASE_URL: optionalUrl,
   NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: optionalString,
   SUPABASE_SERVICE_ROLE_KEY: optionalString,
+  GEMINI_API_KEY: optionalString,
+  GEMINI_PRIMARY_MODEL: z.string().default("gemini-3.5-flash-lite"),
+  GEMINI_ESCALATION_MODEL: z.string().default("gemini-3.7-flash"),
   OPENAI_API_KEY: optionalString,
-  OPENAI_VISION_MODEL: z.string().default("gpt-4.1-mini"),
-  OPENAI_EXTRACTION_PROMPT_VERSION: z.string().default("v1"),
+  OPENAI_VISION_MODEL: z.string().default("gpt-5.6-luna"),
+  OPENAI_EXTRACTION_PROMPT_VERSION: z.string().default("p7-v1"),
+  AI_EXTRACTION_KILL_SWITCH: z
+    .enum(["true", "false"])
+    .default("true")
+    .transform((value) => value === "true"),
+  AI_PROVIDER_TIMEOUT_MS: z.coerce.number().int().positive().default(12_000),
   OPEN_FOOD_FACTS_ENABLED: z
     .enum(["true", "false"])
     .default("true")
@@ -54,9 +62,14 @@ function readEnv(): AppEnv {
     NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY:
       process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
     SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY,
+    GEMINI_API_KEY: process.env.GEMINI_API_KEY,
+    GEMINI_PRIMARY_MODEL: process.env.GEMINI_PRIMARY_MODEL,
+    GEMINI_ESCALATION_MODEL: process.env.GEMINI_ESCALATION_MODEL,
     OPENAI_API_KEY: process.env.OPENAI_API_KEY,
     OPENAI_VISION_MODEL: process.env.OPENAI_VISION_MODEL,
     OPENAI_EXTRACTION_PROMPT_VERSION: process.env.OPENAI_EXTRACTION_PROMPT_VERSION,
+    AI_EXTRACTION_KILL_SWITCH: process.env.AI_EXTRACTION_KILL_SWITCH,
+    AI_PROVIDER_TIMEOUT_MS: process.env.AI_PROVIDER_TIMEOUT_MS,
     OPEN_FOOD_FACTS_ENABLED: process.env.OPEN_FOOD_FACTS_ENABLED,
     OPEN_FOOD_FACTS_BASE_URL: process.env.OPEN_FOOD_FACTS_BASE_URL,
     OPEN_FOOD_FACTS_USER_AGENT: process.env.OPEN_FOOD_FACTS_USER_AGENT,
