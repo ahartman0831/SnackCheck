@@ -55,7 +55,13 @@ export function SubmissionConfirmation({ submissionId }: { submissionId: string 
       if (!response.ok) throw new Error(body.error?.message ?? "Confirmation failed.");
       setResult(body.data.result);
     } catch (caught) {
-      setError(caught instanceof Error ? caught.message : "Confirmation failed.");
+      setError(
+        !navigator.onLine
+          ? "You're offline. Reconnect and try again; your corrections are still here."
+          : caught instanceof Error
+            ? caught.message
+            : "Confirmation failed.",
+      );
     } finally {
       setBusy(false);
     }
