@@ -1,4 +1,5 @@
 import { getOperationsSnapshot } from "@/lib/admin/operations";
+import Link from "next/link";
 
 export default async function AdminSubmissionsPage() {
   const snapshot = await getOperationsSnapshot();
@@ -35,6 +36,12 @@ export default async function AdminSubmissionsPage() {
               <dt>Failure</dt>
               <dd>{item.failureCode ?? "—"}</dd>
             </dl>
+            <Link
+              href={`/admin/submissions/${item.id}`}
+              className="mt-4 inline-block text-sm font-semibold underline"
+            >
+              Open private review
+            </Link>
           </article>
         ))}
       </div>
