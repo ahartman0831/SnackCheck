@@ -32,7 +32,7 @@ Master-plan **Phase 6** is `COMPLETE` and merged by PR [#3](https://github.com/a
 
 Phase 7 has provider-neutral orchestration and server-only Gemini/OpenAI adapters under test; no API key has been added and no provider call has run. Phases 8–11 are `NOT STARTED`. Do not enable production camera, photo, or AI flags.
 
-Phase 7 current branch also connects sanitized photos to bounded transcription, an editable side-by-side confirmation screen, deterministic evaluation, and atomic submission-result persistence. Migration `0020` adds provider-attempt records and an AI-specific kill switch/daily counter; it is local-only until CI applies it. Known GTINs attach the submission to an existing product candidate, while unknown/productless submissions remain conservative `VERIFY` cases. Real provider credentials and formulation-table persistence are still outstanding.
+Phase 7 current branch also connects sanitized photos to bounded transcription, an editable side-by-side confirmation screen, deterministic evaluation, and atomic persistence. Migration `0020` adds provider-attempt records and an AI-specific kill switch/daily counter; CI applied it and its pgTAP suite successfully before correctly stopping on generated-type drift. Migration `0021` adds the next fail-closed step: a confirmed known-product submission creates an inactive community formulation, ingredient rows, evidence provenance, and—only when a matching published ruleset exists—a durable deterministic evaluation and rule matches. Unknown/productless submissions remain conservative `VERIFY` cases. Real non-production provider credentials and live evaluation-set testing are still outstanding.
 
 ## Master plan phases
 
