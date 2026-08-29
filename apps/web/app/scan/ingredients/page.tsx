@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { IngredientCheckForm } from "@/components/public/ingredient-check-form";
+import { IngredientPhotoUpload } from "@/components/upload/ingredient-photo-upload";
 import { isIngredientPhotoEnabled } from "@/lib/features";
 import { ingredientPageTitle } from "@/lib/public-copy";
 import { pageMetadata } from "@/lib/seo";
@@ -23,7 +24,11 @@ export default function IngredientScanPage() {
           ? "Photograph the ingredient panel, then confirm the text before SnackCheck evaluates it."
           : "Paste or type the ingredient list from the package. No photo is processed on this page."}
       </p>
-      <div data-ingredient-capture-slot={photo ? "ready" : "reserved"} />
+      {photo ? (
+        <IngredientPhotoUpload />
+      ) : (
+        <div data-ingredient-capture-slot="reserved" />
+      )}
       <Suspense>
         <IngredientCheckForm />
       </Suspense>

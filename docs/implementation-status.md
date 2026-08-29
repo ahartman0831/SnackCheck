@@ -13,13 +13,12 @@ A phase is not complete because interfaces, placeholder pages, or a published-lo
 
 ## Current work
 
-Master-plan **Phase 5** is `PARTIAL`. Implementation and required Ubuntu CI are green on `codex/phase-5-barcode-camera` as PR [#2](https://github.com/ahartman0831/SnackCheck/pull/2) (`eac7e6b`, [run 33212276731](https://github.com/ahartman0831/SnackCheck/actions/runs/33212276731)). The camera flag stays off in committed env examples.
+Master-plan **Phase 6** is `COMPLETE` on draft PR [#3](https://github.com/ahartman0831/SnackCheck/pull/3). Phase 5 remains `PARTIAL`: implementation and required Ubuntu CI are green, and current iPhone Safari physical-device testing passed, including a curved two-liter bottle with glare. Android Chrome testing was explicitly deferred by the owner. Production camera and photo flags stay off.
 
 **Why not `COMPLETE`:**
 
-- Real iPhone Safari camera testing is unverified.
-- Real Android Chrome camera testing is unverified.
-- Local desktop Chrome and Ubuntu WebKit only covered mocked permission and MediaDevices paths.
+- Real Android Chrome camera testing is deferred and unverified.
+- Phase 5 still lacks the deferred Android Chrome physical-device pass.
 
 **Host limitations:**
 
@@ -28,10 +27,10 @@ Master-plan **Phase 5** is `PARTIAL`. Implementation and required Ubuntu CI are 
 
 **Carried gates (unchanged):**
 
-- **P0-5 remains red** — forgeable `${id}.*` submission cookie. Owned by Phase 6. CI asserts this test still fails.
+- **P0-5 is green on the Phase 6 branch** — ownership now uses a signed, expiring, purpose-bound token plus a stored SHA-256 token hash. CI requires the regression to pass.
 - **P0-7 remains `BLOCKED`** — unsigned regulatory review. This session did not publish the Arizona ruleset or approve aliases.
 
-Phases 6–11 are `NOT STARTED`. Do not start photo/submission work. Do not enable production camera flags.
+Phases 7–11 are `NOT STARTED`. Do not enable production camera or photo flags.
 
 ## Master plan phases
 
@@ -44,7 +43,7 @@ Phases 6–11 are `NOT STARTED`. Do not start photo/submission work. Do not enab
 | 4     | Public UI / design system                                                                             | `COMPLETE`    |
 | 4C    | Preserve and close the completed remediation                                                          | `COMPLETE`    |
 | 5     | Production-quality barcode camera                                                                     | `PARTIAL`     |
-| 6     | Secure ingredient-photo submission pipeline                                                           | `NOT STARTED` |
+| 6     | Secure ingredient-photo submission pipeline                                                           | `COMPLETE`    |
 | 7     | Extraction orchestration, confirmation, and persistence                                               | `NOT STARTED` |
 | 8     | Admin operations                                                                                      | `NOT STARTED` |
 | 9     | Affiliates                                                                                            | `NOT STARTED` |
@@ -55,7 +54,7 @@ Phase 4C closeout for this session:
 
 - Logical commits from `docs/phase-4c-review-checklist.md` are on `codex/phase-4c-closeout`. They were not pushed to `main`.
 - `scripts/generate-db-types.ts` no longer calls `supabase gen types --linked`. A regression test forbids that flag. CI generates types from a local instance only.
-- `verify` runs unit tests except P0-5, then `pnpm test:p0-5-open` so an accidental P0-5 pass fails CI.
+- `verify` now runs all unit tests and the explicit green P0-5 regression; Phase 4C's intentional-red assertion was removed in Phase 6.
 - `database` starts local Supabase on `ubuntu-latest`, resets through `0018`, runs pgTAP, generates local types, fails if committed types drift, resets again, and runs pgTAP again. It does not link or push.
 - `0018` only fixes publication-guard array appends, child-immutability trigger typing, and `search_path`/`digest` qualification so clone works under a locked search_path. It does not publish AZ-HSA.
 - `e2e-webkit` installs Playwright WebKit on Ubuntu and runs `mobile-webkit`, then a separate camera-on WebKit job.
@@ -66,6 +65,15 @@ Phase 5 for this session:
 - Every decode is normalized and checksum-checked before lookup. Duplicates and concurrent lookups are suppressed. Known GTINs go to the product page; unknown valid GTINs keep the code on `/scan/ingredients`.
 - Manual entry stays on the same page when the camera is off, denied, missing, insecure, unsupported, or cancelled.
 - Analytics emit attempt, permission failure, invalid decode, lookup outcome, and fallback events without GTIN, image, or IP properties.
+- Current iPhone Safari physical testing passed start, rear preview, switch, cancel, decode, manual fallback, and track cleanup. Curved packaging with glare decoded. Android Chrome remains deferred.
+
+Phase 6 closeout:
+
+- Replaced the forgeable prefix cookie with a signed token binding version, submission ID, purpose, issue time, expiry, and random nonce. Verification uses constant-time signature and stored-hash comparison and fails closed when the secret or database record is unavailable.
+- Added `0019_submission_pipeline.sql` and pgTAP coverage for private object paths, token/retention metadata, guarded state transitions, evidence matching, storage privacy, a global kill switch, and a daily processing counter. It ran twice against ephemeral local Supabase in CI and is not applied to production.
+- Added a server-only image sanitizer that sniffs JPEG/PNG/WebP magic bytes, safely decodes, rejects animated/unsafe input, rotates, resizes, converts to JPEG, strips metadata, re-inspects the output, and records hashes/dimensions/version.
+- Added a flag-gated photo chooser with preview, retake, progress, cancellation, privacy copy, and paste fallback. Successful Phase 6 processing stops at `SANITIZED`; no AI provider is called.
+- CI uploads a generated image to private local Supabase storage, sanitizes it, proves metadata removal and hash persistence, stores the private derivative, deletes the raw object, and resets the database again. Run [33221197495](https://github.com/ahartman0831/SnackCheck/actions/runs/33221197495) passed.
 
 ## Original scaffold inventory
 
@@ -91,7 +99,7 @@ P0-6 remains green while the camera flag is off. When the flag is on, `/scan/bar
 
 ### Ingredient pipeline — `PARTIAL`
 
-P0-9 is green via paste-only public copy. P0-5 remains open and is owned by Phase 6.
+P0-9 remains green while photo flags are off. P0-5 is green on the Phase 6 branch. Database, storage, sanitizer, and cleanup integration are verified in ephemeral CI; production remains untouched.
 
 ### Approved, PWA, sharing — `PARTIAL`
 
@@ -107,7 +115,7 @@ No fabricated production catalog was imported.
 
 ### Observability and rehearsal — `PARTIAL`
 
-CI `verify`, `database`, and `e2e-webkit` are green on Phase 5 PR [#2](https://github.com/ahartman0831/SnackCheck/pull/2) run [33212276731](https://github.com/ahartman0831/SnackCheck/actions/runs/33212276731).
+CI `verify`, `database`, and `e2e-webkit` are green on Phase 6 draft PR [#3](https://github.com/ahartman0831/SnackCheck/pull/3) run [33221197495](https://github.com/ahartman0831/SnackCheck/actions/runs/33221197495). The database job includes the real private-storage pipeline integration test.
 
 ### Production launch — `NOT STARTED`
 
@@ -135,22 +143,22 @@ Not deployed. Domain remains pending via `NEXT_PUBLIC_APP_URL`.
 
 ## P0 map after Phase 5
 
-| ID   | Status  | Notes                                                                             |
-| ---- | ------- | --------------------------------------------------------------------------------- |
-| P0-1 | Green   | Phase 1 — no production fixture ruleset                                           |
-| P0-2 | Green   | Phase 1 — parser warnings cannot PASS                                             |
-| P0-3 | Green   | Phase 2 — finished public search cards never emit `ingredientStatus: null`        |
-| P0-4 | Green   | Phase 2 — production DB miss is not-found, never labeled fixtures                 |
-| P0-5 | Red     | Phase 6 — forgeable `${id}.*` submission cookie. CI asserts this test still fails |
-| P0-6 | Green   | Phase 5 — camera copy appears only when the barcode camera flag is on             |
-| P0-7 | Blocked | Human gate — unsigned regulatory review; do not publish or approve aliases        |
-| P0-8 | Green   | Phase 2 — approved catalog uses the live query when Supabase is configured        |
-| P0-9 | Green   | Phase 4 — public UI no longer advertises scan/photo while extract is paste-only   |
+| ID   | Status  | Notes                                                                           |
+| ---- | ------- | ------------------------------------------------------------------------------- |
+| P0-1 | Green   | Phase 1 — no production fixture ruleset                                         |
+| P0-2 | Green   | Phase 1 — parser warnings cannot PASS                                           |
+| P0-3 | Green   | Phase 2 — finished public search cards never emit `ingredientStatus: null`      |
+| P0-4 | Green   | Phase 2 — production DB miss is not-found, never labeled fixtures               |
+| P0-5 | Green   | Phase 6 branch — signed/expiring token plus stored exact token hash             |
+| P0-6 | Green   | Phase 5 — camera copy appears only when the barcode camera flag is on           |
+| P0-7 | Blocked | Human gate — unsigned regulatory review; do not publish or approve aliases      |
+| P0-8 | Green   | Phase 2 — approved catalog uses the live query when Supabase is configured      |
+| P0-9 | Green   | Phase 4 — public UI no longer advertises scan/photo while extract is paste-only |
 
 ## Remaining operator tasks
 
-1. Complete physical-device camera tests on current iPhone Safari and Android Chrome before calling Phase 5 `COMPLETE`.
+1. Complete the deferred Android Chrome camera test before calling Phase 5 `COMPLETE`; iPhone Safari passed.
 2. Keep `FEATURE_BARCODE_CAMERA` and `NEXT_PUBLIC_FEATURE_BARCODE_CAMERA` false in production until those tests pass and you choose to enable the camera independently.
 3. Do not apply `0016`/`0017`/`0018` to the linked production Supabase project.
 4. Sign `docs/regulatory-review.md` before calling publish. Do not approve pending aliases.
-5. Do not start Phase 6 photo/submission work.
+5. Keep ingredient-photo flags off in production until Phase 7 is complete and separately approved for rollout.

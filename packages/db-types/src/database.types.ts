@@ -1254,6 +1254,24 @@ export type Database = {
           },
         ]
       }
+      submission_daily_counters: {
+        Row: {
+          accepted_count: number
+          occurred_on: string
+          updated_at: string
+        }
+        Insert: {
+          accepted_count?: number
+          occurred_on?: string
+          updated_at?: string
+        }
+        Update: {
+          accepted_count?: number
+          occurred_on?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       submissions: {
         Row: {
           anonymous_key_hash: string | null
@@ -1270,10 +1288,27 @@ export type Database = {
           id: string
           image_sha256: string | null
           normalized_gtin14: string | null
+          ownership_revoked_at: string | null
+          processing_attempts: number
+          processing_started_at: string | null
           product_id: string | null
           prompt_version: string | null
+          raw_byte_size: number | null
+          raw_object_path: string | null
+          raw_sha256: string | null
+          retention_until: string | null
+          sanitized_at: string | null
+          sanitized_byte_size: number | null
+          sanitized_height: number | null
+          sanitized_media_type: string | null
+          sanitized_object_path: string | null
+          sanitized_sha256: string | null
+          sanitized_width: number | null
+          sanitizer_version: string | null
           scanned_identifier: string | null
           status: Database["public"]["Enums"]["submission_status"]
+          token_expires_at: string | null
+          token_version: number
           updated_at: string
         }
         Insert: {
@@ -1291,10 +1326,27 @@ export type Database = {
           id?: string
           image_sha256?: string | null
           normalized_gtin14?: string | null
+          ownership_revoked_at?: string | null
+          processing_attempts?: number
+          processing_started_at?: string | null
           product_id?: string | null
           prompt_version?: string | null
+          raw_byte_size?: number | null
+          raw_object_path?: string | null
+          raw_sha256?: string | null
+          retention_until?: string | null
+          sanitized_at?: string | null
+          sanitized_byte_size?: number | null
+          sanitized_height?: number | null
+          sanitized_media_type?: string | null
+          sanitized_object_path?: string | null
+          sanitized_sha256?: string | null
+          sanitized_width?: number | null
+          sanitizer_version?: string | null
           scanned_identifier?: string | null
           status: Database["public"]["Enums"]["submission_status"]
+          token_expires_at?: string | null
+          token_version?: number
           updated_at?: string
         }
         Update: {
@@ -1312,10 +1364,27 @@ export type Database = {
           id?: string
           image_sha256?: string | null
           normalized_gtin14?: string | null
+          ownership_revoked_at?: string | null
+          processing_attempts?: number
+          processing_started_at?: string | null
           product_id?: string | null
           prompt_version?: string | null
+          raw_byte_size?: number | null
+          raw_object_path?: string | null
+          raw_sha256?: string | null
+          retention_until?: string | null
+          sanitized_at?: string | null
+          sanitized_byte_size?: number | null
+          sanitized_height?: number | null
+          sanitized_media_type?: string | null
+          sanitized_object_path?: string | null
+          sanitized_sha256?: string | null
+          sanitized_width?: number | null
+          sanitizer_version?: string | null
           scanned_identifier?: string | null
           status?: Database["public"]["Enums"]["submission_status"]
+          token_expires_at?: string | null
+          token_version?: number
           updated_at?: string
         }
         Relationships: [
@@ -1337,10 +1406,42 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      expired_submission_assets: {
+        Row: {
+          evidence_asset_id: string | null
+          raw_object_path: string | null
+          sanitized_object_path: string | null
+          submission_id: string | null
+        }
+        Insert: {
+          evidence_asset_id?: string | null
+          raw_object_path?: string | null
+          sanitized_object_path?: string | null
+          submission_id?: string | null
+        }
+        Update: {
+          evidence_asset_id?: string | null
+          raw_object_path?: string | null
+          sanitized_object_path?: string | null
+          submission_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "submissions_evidence_asset_id_fkey"
+            columns: ["evidence_asset_id"]
+            isOneToOne: false
+            referencedRelation: "evidence_assets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
       canonical_json: { Args: { value: Json }; Returns: string }
+      claim_photo_processing_slot: {
+        Args: { p_limit: number }
+        Returns: boolean
+      }
       clone_ruleset_to_draft: {
         Args: { source_ruleset_id: string }
         Returns: string
@@ -1560,6 +1661,8 @@ export type Database = {
         | "APPROVED"
         | "REJECTED"
         | "FAILED"
+        | "SANITIZED"
+        | "CANCELLED"
       verification_status:
         | "VERIFIED"
         | "PACKAGE_VERIFIED"
@@ -1742,6 +1845,8 @@ export const Constants = {
         "APPROVED",
         "REJECTED",
         "FAILED",
+        "SANITIZED",
+        "CANCELLED",
       ],
       verification_status: [
         "VERIFIED",

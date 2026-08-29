@@ -34,10 +34,10 @@ jobs:
         run: pnpm typecheck
       - name: Type generation policy
         run: pnpm test:types-policy
-      - name: Unit tests except the open P0-5 gate
+      - name: Unit tests
         run: pnpm test:unit
-      - name: Confirm P0-5 remains red
-        run: pnpm test:p0-5-open
+      - name: P0-5 submission ownership regression
+        run: pnpm test:p0-5
       - name: Integration tests
         run: pnpm test:integration
       - name: Production build
@@ -71,7 +71,7 @@ jobs:
           version: 2.84.2
       - name: Start local non-production Supabase
         run: supabase start
-      - name: Reset and seed through 0017
+      - name: Reset and seed through latest migration
         run: supabase db reset --yes
       - name: pgTAP
         run: supabase test db
@@ -79,8 +79,22 @@ jobs:
         run: pnpm db:types
         env:
           CI: true
+      - name: Upload locally generated database types
+        uses: actions/upload-artifact@v4
+        with:
+          name: local-database-types
+          path: packages/db-types/src/database.types.ts
+          retention-days: 1
       - name: Committed types match the local schema
         run: git diff --exit-code -- packages/db-types/src/database.types.ts
+      - name: Private photo storage integration
+        shell: bash
+        run: |
+          source <(supabase status -o env)
+          LOCAL_SUPABASE_PHOTO_TEST=true \
+          NEXT_PUBLIC_SUPABASE_URL="$API_URL" \
+          SUPABASE_SERVICE_ROLE_KEY="$SERVICE_ROLE_KEY" \
+          pnpm --filter web exec vitest run tests/integration/p6-photo-storage-local.test.ts --config vitest.integration.config.ts
       - name: Reset a second time
         run: supabase db reset --yes
       - name: pgTAP after second reset
