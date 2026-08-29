@@ -219,7 +219,7 @@ export type Database = {
           reasoning_tokens?: number | null
           submission_id?: string | null
           token_source: string
-          total_tokens?: never
+          total_tokens?: number | null
         }
         Update: {
           attempt_ordinal?: number
@@ -252,7 +252,7 @@ export type Database = {
           reasoning_tokens?: number | null
           submission_id?: string | null
           token_source?: string
-          total_tokens?: never
+          total_tokens?: number | null
         }
         Relationships: [
           {
@@ -2181,3 +2181,4 @@ export const Constants = {
     },
   },
 } as const
+
