@@ -74,6 +74,12 @@ test.describe("barcode camera", () => {
   test.skip(!cameraEnabled, "Camera e2e runs only when the barcode camera flag is on.");
 
   test("manual entry remains available while the camera is enabled", async ({ page }) => {
+    await page.addInitScript(() => {
+      Object.defineProperty(navigator, "onLine", {
+        configurable: true,
+        get: () => true,
+      });
+    });
     await page.route("**/api/v1/upc/**", async (route) => {
       await route.fulfill({
         status: 200,

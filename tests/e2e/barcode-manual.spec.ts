@@ -5,6 +5,12 @@ test.describe("manual barcode fallback", () => {
   test("keeps typed entry usable without a camera claim when the flag is off", async ({
     page,
   }) => {
+    await page.addInitScript(() => {
+      Object.defineProperty(navigator, "onLine", {
+        configurable: true,
+        get: () => true,
+      });
+    });
     await page.route("**/api/v1/upc/**", async (route) => {
       await route.fulfill({
         status: 200,
