@@ -3,6 +3,9 @@ import { defineConfig, devices } from "@playwright/test";
 const baseURL = process.env.PLAYWRIGHT_BASE_URL ?? "http://127.0.0.1:3000";
 const preview = new URL(baseURL);
 const chromiumChannel = process.env.CI ? undefined : "chrome";
+const serverCommand = process.env.CI
+  ? `pnpm --filter web exec next start --hostname ${preview.hostname} --port ${preview.port || "80"}`
+  : `pnpm --filter web exec next dev --hostname ${preview.hostname} --port ${preview.port || "80"}`;
 
 export default defineConfig({
   testDir: "../../tests/e2e",
@@ -14,7 +17,7 @@ export default defineConfig({
     trace: "on-first-retry",
   },
   webServer: {
-    command: `pnpm --filter web exec next dev --hostname ${preview.hostname} --port ${preview.port || "80"}`,
+    command: serverCommand,
     url: baseURL,
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,
