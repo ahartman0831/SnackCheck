@@ -6,7 +6,7 @@ import {
 
 describe("Phase 10 server observability", () => {
   it("records only allowlisted operational fields", () => {
-    const secret = "sk-live-never-log-this";
+    const secret = "private-provider-value-never-log-this";
     const error = Object.assign(new Error(secret), {
       digest: "safe-digest-123",
       ingredientText: secret,
