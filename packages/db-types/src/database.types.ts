@@ -1745,6 +1745,33 @@ export type Database = {
       }
     }
     Functions: {
+      admin_clone_ruleset_to_draft: {
+        Args: {
+          p_expected_hash: string
+          p_request_id: string
+          p_source_ruleset_id: string
+        }
+        Returns: string
+      }
+      admin_publish_ruleset: {
+        Args: {
+          p_expected_hash: string
+          p_expected_reviewed_at: string
+          p_request_id: string
+          p_ruleset_id: string
+        }
+        Returns: Json
+      }
+      admin_review_ruleset: {
+        Args: {
+          p_document_hash: string
+          p_document_url: string
+          p_expected_hash: string
+          p_request_id: string
+          p_ruleset_id: string
+        }
+        Returns: Json
+      }
       canonical_json: { Args: { value: Json }; Returns: string }
       claim_ai_extraction_slot: { Args: { p_limit: number }; Returns: boolean }
       claim_photo_processing_slot: {
