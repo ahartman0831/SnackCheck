@@ -4,6 +4,7 @@ import { describe, expect, it } from "vitest";
 import {
   CONTENT_SECURITY_POLICY,
   SECURITY_RESPONSE_HEADERS,
+  contentSecurityPolicy,
 } from "@/lib/security/response-headers";
 
 describe("Phase 10 security headers", () => {
@@ -25,7 +26,13 @@ describe("Phase 10 security headers", () => {
     expect(CONTENT_SECURITY_POLICY).toContain("object-src 'none'");
     expect(CONTENT_SECURITY_POLICY).toContain("base-uri 'self'");
     expect(CONTENT_SECURITY_POLICY).toContain("form-action 'self'");
-    expect(CONTENT_SECURITY_POLICY).not.toContain("'unsafe-eval'");
+    expect(contentSecurityPolicy("production")).not.toContain("'unsafe-eval'");
+  });
+
+  it("allows React development diagnostics without weakening production", () => {
+    expect(contentSecurityPolicy("development")).toContain("'unsafe-eval'");
+    expect(contentSecurityPolicy("preview")).not.toContain("'unsafe-eval'");
+    expect(contentSecurityPolicy("production")).not.toContain("'unsafe-eval'");
   });
 
   it("does not require Google Fonts during a production build", () => {
