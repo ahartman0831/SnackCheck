@@ -1882,6 +1882,16 @@ export type Database = {
         Args: { target_product_id: string }
         Returns: undefined
       }
+      resolve_formulation_conflict: {
+        Args: {
+          p_conflict_id: string
+          p_decision: string
+          p_expected_left_updated_at: string
+          p_expected_right_updated_at: string
+          p_request_id: string
+        }
+        Returns: Json
+      }
       review_ruleset: {
         Args: {
           document_hash: string
