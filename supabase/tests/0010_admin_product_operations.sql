@@ -43,9 +43,16 @@ select throws_ok(
 reset role;
 insert into public.products (id, brand, name, slug, updated_at)
 values ('64000000-0000-4000-8000-000000000001', 'Canonical', 'Oats', 'canonical-oats', '2026-08-30T12:00:00Z');
+create temporary table product_merge_test_values (
+  source_id uuid not null,
+  source_updated_at timestamptz not null
+);
+insert into product_merge_test_values
+select id, updated_at from public.products where slug = 'test-oats';
+grant select on product_merge_test_values to authenticated;
 set local role authenticated;
 select lives_ok(
-  $$select public.admin_merge_products((select id from public.products where slug = 'test-oats'),'64000000-0000-4000-8000-000000000001',(select updated_at from public.products where slug = 'test-oats'),'2026-08-30T12:00:00Z','request-merge-product')$$,
+  $$select public.admin_merge_products((select source_id from product_merge_test_values),'64000000-0000-4000-8000-000000000001',(select source_updated_at from product_merge_test_values),'2026-08-30T12:00:00Z','request-merge-product')$$,
   'a reviewer can merge a conflict-free duplicate'
 );
 

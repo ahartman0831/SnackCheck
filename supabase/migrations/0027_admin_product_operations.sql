@@ -1,3 +1,6 @@
+alter function public.refresh_product_search_document(uuid)
+  set search_path = public;
+
 create or replace function public.admin_create_product_from_submission(
   p_submission_id uuid,
   p_expected_submission_updated_at timestamptz,
