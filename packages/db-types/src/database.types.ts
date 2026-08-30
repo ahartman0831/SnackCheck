@@ -1753,6 +1753,35 @@ export type Database = {
         }
         Returns: string
       }
+      admin_create_product_from_submission: {
+        Args: {
+          p_brand: string
+          p_category: string
+          p_expected_submission_updated_at: string
+          p_identifier_type: string
+          p_individually_packaged: boolean
+          p_ingredients: Json
+          p_name: string
+          p_normalized_ingredient_text: string
+          p_raw_identifier: string
+          p_request_id: string
+          p_size: string
+          p_slug: string
+          p_submission_id: string
+          p_variant: string
+        }
+        Returns: Json
+      }
+      admin_merge_products: {
+        Args: {
+          p_expected_source_updated_at: string
+          p_expected_target_updated_at: string
+          p_request_id: string
+          p_source_product_id: string
+          p_target_product_id: string
+        }
+        Returns: Json
+      }
       admin_publish_ruleset: {
         Args: {
           p_expected_hash: string

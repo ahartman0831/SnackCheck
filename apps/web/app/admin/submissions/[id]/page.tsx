@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { z } from "zod";
 import { SubmissionModerationControls } from "@/components/admin/submission-moderation-controls";
+import { ProductCreateControls } from "@/components/admin/product-create-controls";
 import { getSubmissionReview } from "@/lib/admin/submission-review";
 
 function json(value: unknown) {
@@ -155,6 +156,28 @@ export default async function AdminSubmissionReviewPage({
           />
         </div>
       </section>
+
+      {submission.status === "APPROVED" &&
+      !submission.product &&
+      submission.gtin14 &&
+      submission.confirmedText &&
+      submission.image ? (
+        <section>
+          <h2 className="text-xl font-semibold">Create catalog product</h2>
+          <p className="text-muted mt-2 text-sm">
+            This action promotes the reviewed package evidence into a public,
+            package-verified product. Check identity carefully; duplicate barcodes are
+            blocked.
+          </p>
+          <div className="mt-3">
+            <ProductCreateControls
+              submissionId={submission.id}
+              expectedUpdatedAt={submission.updatedAt}
+              gtin14={submission.gtin14}
+            />
+          </div>
+        </section>
+      ) : null}
 
       <section>
         <h2 className="text-xl font-semibold">Provider attempts and spend</h2>

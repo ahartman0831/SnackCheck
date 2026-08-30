@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { ContextPanels } from "@/components/compliance/context-panels";
 import { StatusCard } from "@/components/compliance/status-card";
 import { HighlightedText } from "@/components/public/highlighted-text";
@@ -57,6 +57,7 @@ export default async function ProductPage({
   if (!model) {
     notFound();
   }
+  if (model.product.slug !== slug) redirect(`/product/${model.product.slug}`);
 
   const matches = model.classroom.matchedRules;
   const url = `${publicAppUrl()}/product/${model.product.slug}`;

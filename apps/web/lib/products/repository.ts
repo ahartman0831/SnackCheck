@@ -115,6 +115,31 @@ export async function getProductBySlug(slug: string): Promise<ProductPageModel |
     .eq("active", true)
     .maybeSingle();
   if (!product) {
+    const { data: redirect } = await admin
+      .from("product_redirects")
+      .select("to_product_id")
+      .eq("from_slug", slug)
+      .maybeSingle();
+    if (redirect) {
+      const { data: target } = await admin
+        .from("products")
+        .select("*")
+        .eq("id", redirect.to_product_id)
+        .eq("active", true)
+        .maybeSingle();
+      if (target) {
+        const { data: targetFormulation } = await admin
+          .from("formulations")
+          .select("*")
+          .eq("product_id", target.id)
+          .eq("active", true)
+          .order("last_verified_at", { ascending: false, nullsFirst: false })
+          .order("version", { ascending: false })
+          .limit(1)
+          .maybeSingle();
+        return hydrate(mapProduct(target), targetFormulation);
+      }
+    }
     return resolveMiss(true, false) === "dev-catalog" ? findDevProduct(slug) : null;
   }
 
