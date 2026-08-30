@@ -13,6 +13,24 @@ export type FormulationConflictSummary = {
   right: { id: string; version: number; status: string; lastVerifiedAt: string | null };
 };
 
+export type FormulationConflictFilters = {
+  order: "oldest" | "newest";
+  query: string;
+};
+
+function single(value: string | string[] | undefined): string {
+  return Array.isArray(value) ? (value[0] ?? "") : (value ?? "");
+}
+
+export function parseFormulationConflictFilters(
+  values: Record<string, string | string[] | undefined>,
+): FormulationConflictFilters {
+  return {
+    order: single(values.order) === "newest" ? "newest" : "oldest",
+    query: single(values.query).trim().slice(0, 80),
+  };
+}
+
 export type FormulationSide = {
   id: string;
   version: number;
@@ -63,9 +81,9 @@ function safeSourceUrl(value: string | null): string | null {
   }
 }
 
-export async function listOpenFormulationConflicts(): Promise<
-  FormulationConflictSummary[] | null
-> {
+export async function listOpenFormulationConflicts(
+  filters: FormulationConflictFilters = { order: "oldest", query: "" },
+): Promise<FormulationConflictSummary[] | null> {
   const auth = await requireAdmin([...REVIEW_ROLES]);
   if (!auth.allowed) return null;
   const admin = createAdminClient();
@@ -102,31 +120,44 @@ export async function listOpenFormulationConflicts(): Promise<
   const productById = new Map((products.data ?? []).map((row) => [row.id, row]));
   const formulationById = new Map((formulations.data ?? []).map((row) => [row.id, row]));
 
-  return conflicts.data.flatMap((row) => {
-    const product = productById.get(row.product_id);
-    const left = formulationById.get(row.left_formulation_id);
-    const right = formulationById.get(row.right_formulation_id);
-    if (!product || !left || !right) return [];
-    return [
-      {
-        id: row.id,
-        createdAt: row.created_at,
-        product,
-        left: {
-          id: left.id,
-          version: left.version,
-          status: left.verification_status,
-          lastVerifiedAt: left.last_verified_at,
+  const normalizedQuery = filters.query.toLocaleLowerCase();
+  return conflicts.data
+    .flatMap((row) => {
+      const product = productById.get(row.product_id);
+      const left = formulationById.get(row.left_formulation_id);
+      const right = formulationById.get(row.right_formulation_id);
+      if (!product || !left || !right) return [];
+      return [
+        {
+          id: row.id,
+          createdAt: row.created_at,
+          product,
+          left: {
+            id: left.id,
+            version: left.version,
+            status: left.verification_status,
+            lastVerifiedAt: left.last_verified_at,
+          },
+          right: {
+            id: right.id,
+            version: right.version,
+            status: right.verification_status,
+            lastVerifiedAt: right.last_verified_at,
+          },
         },
-        right: {
-          id: right.id,
-          version: right.version,
-          status: right.verification_status,
-          lastVerifiedAt: right.last_verified_at,
-        },
-      },
-    ];
-  });
+      ];
+    })
+    .filter((item) => {
+      if (!normalizedQuery) return true;
+      return `${item.product.brand} ${item.product.name} ${item.id}`
+        .toLocaleLowerCase()
+        .includes(normalizedQuery);
+    })
+    .sort((left, right) =>
+      filters.order === "newest"
+        ? Date.parse(right.createdAt) - Date.parse(left.createdAt)
+        : Date.parse(left.createdAt) - Date.parse(right.createdAt),
+    );
 }
 
 export async function getFormulationConflict(

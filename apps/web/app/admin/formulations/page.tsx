@@ -1,8 +1,16 @@
 import Link from "next/link";
-import { listOpenFormulationConflicts } from "@/lib/admin/formulation-conflicts";
+import {
+  listOpenFormulationConflicts,
+  parseFormulationConflictFilters,
+} from "@/lib/admin/formulation-conflicts";
 
-export default async function AdminFormulationsPage() {
-  const conflicts = await listOpenFormulationConflicts();
+export default async function AdminFormulationsPage({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
+  const filters = parseFormulationConflictFilters(await searchParams);
+  const conflicts = await listOpenFormulationConflicts(filters);
   if (!conflicts)
     return (
       <>
@@ -17,6 +25,36 @@ export default async function AdminFormulationsPage() {
         Compare source-backed versions before choosing an active formulation. Decisions
         are protected against stale evidence and written to the audit log.
       </p>
+      <form className="border-border mt-6 grid gap-3 rounded-2xl border p-4 sm:grid-cols-[1fr_auto_auto]">
+        <label className="text-sm font-semibold">
+          Product or conflict reference
+          <input
+            name="query"
+            defaultValue={filters.query}
+            placeholder="Brand, product, or reference"
+            className="border-border bg-surface mt-1 block w-full rounded-xl border px-3 py-2"
+          />
+        </label>
+        <label className="text-sm font-semibold">
+          Order
+          <select
+            name="order"
+            defaultValue={filters.order}
+            className="border-border bg-surface mt-1 block w-full rounded-xl border px-3 py-2"
+          >
+            <option value="oldest">Oldest first</option>
+            <option value="newest">Newest first</option>
+          </select>
+        </label>
+        <div className="flex items-end gap-3">
+          <button className="bg-accent text-on-accent rounded-xl px-4 py-2 font-semibold">
+            Apply
+          </button>
+          <Link href="/admin/formulations" className="px-2 py-2 underline">
+            Clear
+          </Link>
+        </div>
+      </form>
       <div className="mt-6 flex flex-col gap-3">
         {conflicts.map((conflict) => (
           <article key={conflict.id} className="border-border rounded-2xl border p-4">
@@ -56,7 +94,7 @@ export default async function AdminFormulationsPage() {
         ))}
       </div>
       {conflicts.length === 0 ? (
-        <p className="text-muted mt-6">There are no open formulation conflicts.</p>
+        <p className="text-muted mt-6">No open conflicts match these filters.</p>
       ) : null}
     </div>
   );
