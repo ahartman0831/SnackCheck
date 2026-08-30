@@ -9,10 +9,19 @@ select function_privs_are('public', 'clone_ruleset_to_draft', array['uuid'], 'au
 select function_privs_are('public', 'review_ruleset', array['uuid', 'uuid', 'text', 'text'], 'authenticated', array[]::text[], 'legacy review is not directly callable');
 select function_privs_are('public', 'publish_ruleset', array['uuid', 'uuid'], 'authenticated', array[]::text[], 'legacy publish is not directly callable');
 
+create temporary table ruleset_test_values (
+  expected_hash text not null,
+  reviewed_at timestamptz null
+);
+insert into ruleset_test_values (expected_hash)
+select ruleset_hash from public.rulesets
+where id = '33333333-3333-3333-3333-333333333333';
+grant select on ruleset_test_values to authenticated;
+
 set local role authenticated;
 select set_config('request.jwt.claim.sub', '50000000-0000-4000-8000-000000000001', true);
 select throws_ok(
-  $$select public.admin_review_ruleset('33333333-3333-3333-3333-333333333333', (select ruleset_hash from public.rulesets where id = '33333333-3333-3333-3333-333333333333'), 'https://example.test/review.pdf', repeat('a', 64), 'request-unauthorized')$$,
+  $$select public.admin_review_ruleset('33333333-3333-3333-3333-333333333333', null, 'https://example.test/review.pdf', repeat('a', 64), 'request-unauthorized')$$,
   '42501', 'active regulatory administrator access is required', 'non-members cannot review'
 );
 
@@ -34,17 +43,19 @@ select throws_ok(
   '40001', 'ruleset changed; refresh before reviewing', 'stale review evidence is rejected'
 );
 select lives_ok(
-  $$select public.admin_review_ruleset('33333333-3333-3333-3333-333333333333', (select ruleset_hash from public.rulesets where id = '33333333-3333-3333-3333-333333333333'), 'https://example.test/review.pdf', repeat('a', 64), 'request-valid-review')$$,
+  $$select public.admin_review_ruleset('33333333-3333-3333-3333-333333333333', (select expected_hash from ruleset_test_values), 'https://example.test/review.pdf', repeat('a', 64), 'request-valid-review')$$,
   'a regulatory administrator can record signed review evidence'
 );
 
 reset role;
 select is((select action from public.admin_audit_log where entity_id = '33333333-3333-3333-3333-333333333333'), 'RULESET_REVIEW_RECORDED', 'review is audited');
 select is((select review_document_hash from public.rulesets where id = '33333333-3333-3333-3333-333333333333'), repeat('a', 64), 'review hash is recorded');
+update ruleset_test_values
+set reviewed_at = (select reviewed_at from public.rulesets where id = '33333333-3333-3333-3333-333333333333');
 
 set local role authenticated;
 select throws_ok(
-  $$select public.admin_publish_ruleset('33333333-3333-3333-3333-333333333333', (select ruleset_hash from public.rulesets where id = '33333333-3333-3333-3333-333333333333'), (select reviewed_at from public.rulesets where id = '33333333-3333-3333-3333-333333333333'), 'request-same-person')$$,
+  $$select public.admin_publish_ruleset('33333333-3333-3333-3333-333333333333', (select expected_hash from ruleset_test_values), (select reviewed_at from ruleset_test_values), 'request-same-person')$$,
   '23514', 'publisher must be different from the signed reviewer', 'the reviewer cannot publish their own review'
 );
 
