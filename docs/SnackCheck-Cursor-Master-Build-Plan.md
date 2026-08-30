@@ -315,7 +315,7 @@ SnackCheck should be excellent because it removes doubt, not because it adds dec
 - Products: search, create from sourced evidence, merge with redirects, identifiers, aliases, images/attribution, activation, and duplicate detection.
 - Formulations: version comparison, sources, ingredients, evidence age, activate/deactivate/stale/reject, and explicit conflict workflow.
 - Rulesets: clone published to draft, attach sources, review aliases, show hash diff, validate, record review, and publish immutable snapshot.
-- Schools/policies: source-backed participation and local-policy records only; no unsourced “participating” badges.
+- School participation: later import source-backed Arizona meal-program participation records with source and verification dates. Do not create school-specific regulatory rules, local overrides, or unsourced “participating” badges; the statewide determination remains separate.
 - Analytics/health: privacy-safe product metrics and provider/queue health, not vanity dashboards.
 
 ### Authorization and audit

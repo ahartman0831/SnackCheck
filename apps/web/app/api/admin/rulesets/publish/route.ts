@@ -6,6 +6,9 @@ import { publishRuleset } from "@/lib/rules/ruleset-admin";
 
 const BodySchema = z.object({
   rulesetId: z.string().uuid(),
+  expectedHash: z.string().regex(/^[0-9a-f]{64}$/),
+  expectedReviewedAt: z.string().datetime({ offset: true }),
+  confirmation: z.literal("PUBLISH"),
 });
 
 export async function POST(request: Request) {
@@ -25,24 +28,38 @@ export async function POST(request: Request) {
   }
   const parsed = BodySchema.safeParse(await request.json().catch(() => null));
   if (!parsed.success) {
-    return NextResponse.json(fail("INVALID_BODY", "rulesetId is required.", { id }), {
-      status: 400,
-    });
+    return NextResponse.json(
+      fail(
+        "INVALID_BODY",
+        "A reviewed ruleset, current hash, review timestamp, and typed PUBLISH confirmation are required.",
+        { id },
+      ),
+      { status: 400 },
+    );
   }
   try {
     await publishRuleset({
       rulesetId: parsed.data.rulesetId,
-      publisherId: auth.user.id,
+      expectedHash: parsed.data.expectedHash,
+      expectedReviewedAt: parsed.data.expectedReviewedAt,
+      requestId: id,
     });
     return NextResponse.json(ok({ published: true }, id));
   } catch (error) {
+    const conflict =
+      typeof error === "object" &&
+      error !== null &&
+      "code" in error &&
+      error.code === "40001";
     return NextResponse.json(
       fail(
-        "PUBLISH_FAILED",
-        error instanceof Error ? error.message : "Ruleset publish failed.",
+        conflict ? "EDIT_CONFLICT" : "PUBLISH_FAILED",
+        conflict
+          ? "The ruleset changed. Refresh before publishing."
+          : "Ruleset publish failed.",
         { id },
       ),
-      { status: 400 },
+      { status: conflict ? 409 : 400 },
     );
   }
 }

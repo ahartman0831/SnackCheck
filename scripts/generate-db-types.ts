@@ -10,7 +10,7 @@ try {
   const types = execFileSync("supabase", ["gen", "types", "typescript", "--local"], {
     encoding: "utf8",
   });
-  writeFileSync(outFile, types);
+  writeFileSync(outFile, `${types.trimEnd()}\n`);
   console.log(`Wrote generated Database types to ${outFile}`);
 } catch (error) {
   const message = error instanceof Error ? error.message : String(error);

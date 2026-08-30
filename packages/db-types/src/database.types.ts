@@ -1745,6 +1745,62 @@ export type Database = {
       }
     }
     Functions: {
+      admin_clone_ruleset_to_draft: {
+        Args: {
+          p_expected_hash: string
+          p_request_id: string
+          p_source_ruleset_id: string
+        }
+        Returns: string
+      }
+      admin_create_product_from_submission: {
+        Args: {
+          p_brand: string
+          p_category: string
+          p_expected_submission_updated_at: string
+          p_identifier_type: string
+          p_individually_packaged: boolean
+          p_ingredients: Json
+          p_name: string
+          p_normalized_ingredient_text: string
+          p_raw_identifier: string
+          p_request_id: string
+          p_size: string
+          p_slug: string
+          p_submission_id: string
+          p_variant: string
+        }
+        Returns: Json
+      }
+      admin_merge_products: {
+        Args: {
+          p_expected_source_updated_at: string
+          p_expected_target_updated_at: string
+          p_request_id: string
+          p_source_product_id: string
+          p_target_product_id: string
+        }
+        Returns: Json
+      }
+      admin_publish_ruleset: {
+        Args: {
+          p_expected_hash: string
+          p_expected_reviewed_at: string
+          p_request_id: string
+          p_ruleset_id: string
+        }
+        Returns: Json
+      }
+      admin_review_ruleset: {
+        Args: {
+          p_document_hash: string
+          p_document_url: string
+          p_expected_hash: string
+          p_request_id: string
+          p_ruleset_id: string
+        }
+        Returns: Json
+      }
       canonical_json: { Args: { value: Json }; Returns: string }
       claim_ai_extraction_slot: { Args: { p_limit: number }; Returns: boolean }
       claim_photo_processing_slot: {
@@ -1833,6 +1889,15 @@ export type Database = {
           path: string
         }[]
       }
+      moderate_submission: {
+        Args: {
+          p_expected_updated_at: string
+          p_next_status: Database["public"]["Enums"]["submission_status"]
+          p_request_id: string
+          p_submission_id: string
+        }
+        Returns: Json
+      }
       persist_confirmed_submission_evaluation: {
         Args: {
           p_corrected_text: string
@@ -1872,6 +1937,16 @@ export type Database = {
       refresh_product_search_document: {
         Args: { target_product_id: string }
         Returns: undefined
+      }
+      resolve_formulation_conflict: {
+        Args: {
+          p_conflict_id: string
+          p_decision: string
+          p_expected_left_updated_at: string
+          p_expected_right_updated_at: string
+          p_request_id: string
+        }
+        Returns: Json
       }
       review_ruleset: {
         Args: {
@@ -2181,4 +2256,3 @@ export const Constants = {
     },
   },
 } as const
-

@@ -6,8 +6,10 @@ import { reviewRuleset } from "@/lib/rules/ruleset-admin";
 
 const BodySchema = z.object({
   rulesetId: z.string().uuid(),
-  reviewDocumentUrl: z.string().url(),
-  reviewDocumentHash: z.string().min(32),
+  expectedHash: z.string().regex(/^[0-9a-f]{64}$/),
+  reviewDocumentUrl: z.string().url().startsWith("https://"),
+  reviewDocumentHash: z.string().regex(/^[0-9a-f]{64}$/),
+  confirmed: z.literal(true),
 });
 
 export async function POST(request: Request) {
@@ -24,26 +26,38 @@ export async function POST(request: Request) {
   const parsed = BodySchema.safeParse(await request.json().catch(() => null));
   if (!parsed.success) {
     return NextResponse.json(
-      fail("INVALID_BODY", "Review document URL and hash are required.", { id }),
+      fail(
+        "INVALID_BODY",
+        "A current ruleset hash, HTTPS review document, lowercase SHA-256, and explicit confirmation are required.",
+        { id },
+      ),
       { status: 400 },
     );
   }
   try {
     await reviewRuleset({
       rulesetId: parsed.data.rulesetId,
-      reviewerId: auth.user.id,
+      expectedHash: parsed.data.expectedHash,
       reviewDocumentUrl: parsed.data.reviewDocumentUrl,
       reviewDocumentHash: parsed.data.reviewDocumentHash,
+      requestId: id,
     });
     return NextResponse.json(ok({ reviewed: true }, id));
   } catch (error) {
+    const conflict =
+      typeof error === "object" &&
+      error !== null &&
+      "code" in error &&
+      error.code === "40001";
     return NextResponse.json(
       fail(
-        "REVIEW_FAILED",
-        error instanceof Error ? error.message : "Ruleset review failed.",
+        conflict ? "EDIT_CONFLICT" : "REVIEW_FAILED",
+        conflict
+          ? "The ruleset changed. Refresh before reviewing."
+          : "Ruleset review failed.",
         { id },
       ),
-      { status: 400 },
+      { status: conflict ? 409 : 400 },
     );
   }
 }

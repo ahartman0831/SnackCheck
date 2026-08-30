@@ -6,6 +6,8 @@ import { cloneRulesetToDraft } from "@/lib/rules/ruleset-admin";
 
 const BodySchema = z.object({
   sourceRulesetId: z.string().uuid(),
+  expectedHash: z.string().regex(/^[0-9a-f]{64}$/),
+  confirmed: z.literal(true),
 });
 
 export async function POST(request: Request) {
@@ -22,21 +24,36 @@ export async function POST(request: Request) {
   const parsed = BodySchema.safeParse(await request.json().catch(() => null));
   if (!parsed.success) {
     return NextResponse.json(
-      fail("INVALID_BODY", "sourceRulesetId is required.", { id }),
+      fail(
+        "INVALID_BODY",
+        "A source, current hash, and explicit confirmation are required.",
+        { id },
+      ),
       { status: 400 },
     );
   }
   try {
-    const draftId = await cloneRulesetToDraft(parsed.data.sourceRulesetId);
+    const draftId = await cloneRulesetToDraft({
+      sourceRulesetId: parsed.data.sourceRulesetId,
+      expectedHash: parsed.data.expectedHash,
+      requestId: id,
+    });
     return NextResponse.json(ok({ draftRulesetId: draftId }, id));
   } catch (error) {
+    const conflict =
+      typeof error === "object" &&
+      error !== null &&
+      "code" in error &&
+      error.code === "40001";
     return NextResponse.json(
       fail(
-        "CLONE_FAILED",
-        error instanceof Error ? error.message : "Ruleset clone failed.",
+        conflict ? "EDIT_CONFLICT" : "CLONE_FAILED",
+        conflict
+          ? "The ruleset changed. Refresh before cloning."
+          : "Ruleset clone failed.",
         { id },
       ),
-      { status: 400 },
+      { status: conflict ? 409 : 400 },
     );
   }
 }

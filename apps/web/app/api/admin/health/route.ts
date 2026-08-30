@@ -1,12 +1,11 @@
 import { NextResponse } from "next/server";
-import { createUserServerClient } from "@/lib/supabase/server";
+import { requireAdmin } from "@/lib/auth/require-admin";
 import { fail, ok, requestId } from "@/lib/api/envelope";
 
 export async function GET() {
   const id = requestId();
-  const supabase = await createUserServerClient();
-  const user = supabase ? (await supabase.auth.getUser()).data.user : null;
-  if (!user) {
+  const auth = await requireAdmin(["REVIEWER", "REGULATORY_ADMIN", "SUPER_ADMIN"]);
+  if (!auth.allowed || !auth.user || !auth.role) {
     return NextResponse.json(
       fail("UNAUTHORIZED", "Admin authentication required.", { id }),
       {
@@ -14,5 +13,5 @@ export async function GET() {
       },
     );
   }
-  return NextResponse.json(ok({ userId: user.id }, id));
+  return NextResponse.json(ok({ userId: auth.user.id, role: auth.role }, id));
 }
