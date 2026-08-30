@@ -119,6 +119,8 @@ jobs:
         run: pnpm install --frozen-lockfile
       - name: Install WebKit
         run: pnpm --filter web exec playwright install --with-deps webkit
+      - name: Build production app for WebKit
+        run: pnpm build
       - name: Run mobile WebKit
         run: pnpm test:e2e:webkit
         env:
