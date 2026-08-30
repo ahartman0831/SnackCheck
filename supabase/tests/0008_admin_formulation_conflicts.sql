@@ -1,5 +1,5 @@
 begin;
-select plan(10);
+select plan(11);
 
 select has_function(
   'public', 'resolve_formulation_conflict',
