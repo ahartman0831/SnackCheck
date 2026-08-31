@@ -45,10 +45,10 @@ export function MobileTabBar() {
   return (
     <nav
       aria-label="Mobile"
-      className="border-border bg-surface/95 fixed inset-x-0 bottom-0 z-40 border-t backdrop-blur md:hidden"
+      className="glass-panel fixed inset-x-3 bottom-3 z-40 rounded-[24px] md:hidden"
       style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
     >
-      <ul className="mx-auto grid max-w-5xl grid-cols-5 px-1 pt-1">
+      <ul className="mx-auto grid max-w-5xl grid-cols-5 px-1.5 py-1.5">
         {tabs.map((tab) => {
           const current = tab.match(pathname);
           const Icon = tab.icon;
@@ -58,15 +58,15 @@ export function MobileTabBar() {
                 href={tab.href}
                 aria-current={current ? "page" : undefined}
                 className={cn(
-                  "flex min-h-12 min-w-12 flex-col items-center justify-center gap-0.5 px-1 text-[11px] font-semibold",
+                  "flex min-h-12 min-w-12 flex-col items-center justify-center gap-0.5 rounded-[18px] px-1 text-[11px] font-bold transition-colors",
                   current ? "text-accent" : "text-muted",
-                  tab.prominent && "-mt-4",
+                  tab.prominent && "-mt-5",
                 )}
               >
                 <span
                   className={cn(
-                    "inline-flex size-11 items-center justify-center rounded-full",
-                    tab.prominent && "bg-accent text-on-accent shadow-[var(--shadow)]",
+                    "inline-flex size-10 items-center justify-center rounded-full",
+                    tab.prominent && "hero-gradient size-12 shadow-[var(--shadow)]",
                     !tab.prominent && current && "bg-surface-strong",
                   )}
                 >

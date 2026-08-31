@@ -21,19 +21,22 @@ export function SiteFooter() {
     <footer
       className={
         compact
-          ? "border-border bg-surface border-t"
-          : "border-border bg-surface border-t pb-[calc(5.5rem+env(safe-area-inset-bottom))] md:pb-0"
+          ? "border-border/70 bg-surface/70 border-t backdrop-blur"
+          : "border-border/70 bg-surface/70 border-t pb-[calc(5.5rem+env(safe-area-inset-bottom))] backdrop-blur md:pb-0"
       }
     >
-      <div className="text-muted mx-auto flex w-full max-w-5xl flex-col gap-4 px-4 py-8 text-sm">
-        <p>{LOCAL_RULES_DISCLAIMER}</p>
+      <div className="text-muted mx-auto flex w-full max-w-6xl flex-col gap-5 px-5 py-10 text-sm sm:px-6">
+        <div className="flex flex-col justify-between gap-2 sm:flex-row sm:items-center">
+          <p className="text-foreground text-base font-bold">SnackCheck</p>
+          <p className="max-w-2xl">{LOCAL_RULES_DISCLAIMER}</p>
+        </div>
         <nav aria-label="Legal">
-          <ul className="flex flex-wrap gap-4">
+          <ul className="flex flex-wrap gap-x-5 gap-y-2">
             {links.map((link) => (
               <li key={link.href}>
                 <Link
                   href={link.href}
-                  className="touch-target inline-flex items-center underline underline-offset-2"
+                  className="touch-target hover:text-accent inline-flex items-center font-semibold"
                 >
                   {link.label}
                 </Link>

@@ -38,7 +38,7 @@ export function Input({ className, ...props }: InputHTMLAttributes<HTMLInputElem
   return (
     <input
       className={cn(
-        "border-border bg-surface touch-target w-full min-w-0 rounded-[16px] border px-3 font-sans",
+        "border-border bg-surface/95 touch-target hover:border-accent/30 focus:border-accent w-full min-w-0 rounded-[18px] border px-4 font-sans shadow-[var(--highlight)] transition-[border-color,box-shadow] focus:shadow-[0_0_0_4px_var(--accent-soft)] focus:outline-none",
         className,
       )}
       {...props}
@@ -53,7 +53,7 @@ export function Textarea({
   return (
     <textarea
       className={cn(
-        "border-border bg-surface min-h-28 w-full min-w-0 rounded-[16px] border px-3 py-3 font-sans",
+        "border-border bg-surface/95 hover:border-accent/30 focus:border-accent min-h-32 w-full min-w-0 rounded-[20px] border px-4 py-4 font-sans shadow-[var(--highlight)] transition-[border-color,box-shadow] focus:shadow-[0_0_0_4px_var(--accent-soft)] focus:outline-none",
         className,
       )}
       {...props}

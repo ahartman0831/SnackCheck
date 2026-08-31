@@ -60,16 +60,20 @@ export default async function ApprovedPage({
 
   return (
     <div className="flex flex-col gap-8">
-      <header className="brand-grid bg-surface rounded-[20px] px-5 py-7 shadow-[var(--shadow)] sm:px-8">
-        <p className="text-accent text-sm font-semibold uppercase tracking-[0.16em]">
-          Current, reviewed package evidence
-        </p>
-        <h1 className="mt-2 text-4xl font-semibold tracking-tight">What can I bring?</h1>
-        <p className="text-muted mt-3 max-w-3xl text-lg">
+      <header className="glass-panel brand-grid relative overflow-hidden rounded-[32px] px-5 py-8 sm:px-9 sm:py-10">
+        <div
+          className="bg-spark-soft absolute -right-16 -top-20 size-64 rounded-full blur-2xl"
+          aria-hidden
+        />
+        <p className="eyebrow relative">Current, reviewed package evidence</p>
+        <h1 className="relative mt-4 text-4xl font-extrabold tracking-tight sm:text-5xl">
+          What can I bring?
+        </h1>
+        <p className="text-muted relative mt-3 max-w-3xl text-lg leading-relaxed">
           Browse products that pass the current Arizona 11-ingredient screen. Always
           compare the package in your hand: recipes and school policies can change.
         </p>
-        <div className="mt-5 flex flex-wrap gap-3">
+        <div className="relative mt-6 flex flex-wrap gap-3">
           <Button asChild>
             <Link href="/search">Search by product or brand</Link>
           </Button>
@@ -122,7 +126,7 @@ export default async function ApprovedPage({
                 return (
                   <li key={category}>
                     <Link href={discoveryHref({ category })}>
-                      <Card className="h-full transition-colors hover:bg-[var(--surface-strong)]">
+                      <Card className="interactive-card h-full">
                         <h3 className="text-lg font-semibold">
                           {categoryLabel(category)}
                         </h3>

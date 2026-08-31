@@ -137,7 +137,7 @@ export function ProductSearch({
             autoFocus={autoFocus}
             autoComplete="off"
             enterKeyHint="search"
-            placeholder="Search a food or brand"
+            placeholder="Search product or brand…"
             onChange={(event) => setQuery(event.target.value)}
             onKeyDown={(event) => {
               if (!live || visibleResults.length === 0) return;

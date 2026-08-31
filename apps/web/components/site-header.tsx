@@ -17,9 +17,12 @@ export function SiteHeader() {
   ];
 
   return (
-    <header className="border-border bg-surface/90 sticky top-0 z-40 border-b backdrop-blur">
-      <div className="mx-auto flex w-full max-w-5xl items-center justify-between gap-3 px-4 py-3">
-        <Link href="/" className="touch-target inline-flex items-center">
+    <header className="sticky top-0 z-40 px-3 pt-3 sm:px-5">
+      <div className="glass-panel mx-auto flex w-full max-w-6xl items-center justify-between gap-3 rounded-full px-3 py-2 sm:px-4">
+        <Link
+          href="/"
+          className="touch-target inline-flex items-center rounded-full px-1"
+        >
           <Wordmark className="text-base sm:text-lg" />
           <span className="sr-only">SnackCheck home</span>
         </Link>
@@ -35,10 +38,10 @@ export function SiteHeader() {
                     href={link.href}
                     aria-current={current ? "page" : undefined}
                     className={cn(
-                      "touch-target inline-flex items-center rounded-[14px] px-3 text-sm font-semibold",
+                      "touch-target inline-flex items-center rounded-full px-4 text-sm font-bold transition-colors",
                       current
-                        ? "bg-surface-strong text-foreground"
-                        : "text-muted hover:text-foreground",
+                        ? "bg-accent-soft text-accent"
+                        : "text-muted hover:bg-surface-strong hover:text-foreground",
                     )}
                   >
                     {link.label}

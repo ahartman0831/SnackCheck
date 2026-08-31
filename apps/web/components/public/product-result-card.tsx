@@ -8,12 +8,12 @@ export function ProductResultCard({ item }: { item: PublicProductCard }) {
   const detail = [item.variant, item.size].filter(Boolean).join(" · ");
   const evidenceDate = formatEvidenceDate(item.evidenceObservedAt ?? item.lastVerifiedAt);
   return (
-    <article className="border-border bg-surface min-w-0 rounded-[20px] border p-4 shadow-[var(--highlight)]">
+    <article className="interactive-card border-border bg-surface/95 min-w-0 rounded-[24px] border p-4 shadow-[var(--highlight),var(--shadow-soft)]">
       <Link
         href={`/product/${item.slug}`}
         className="flex min-h-20 min-w-0 items-center gap-4"
       >
-        <div className="bg-surface-strong text-muted flex size-16 shrink-0 items-center justify-center overflow-hidden rounded-[14px] text-xs font-semibold">
+        <div className="bg-surface-strong text-accent flex size-16 shrink-0 items-center justify-center overflow-hidden rounded-[18px] text-lg font-black">
           {item.imageUrl ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img src={item.imageUrl} alt="" className="size-full object-cover" />
