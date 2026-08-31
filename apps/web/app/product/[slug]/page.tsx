@@ -14,7 +14,8 @@ import { StatusBadge } from "@/components/ui/status-badge";
 import { LOCAL_RULES_DISCLAIMER } from "@/lib/copy";
 import { publicAppUrl } from "@/lib/brand";
 import { freshnessState } from "@/lib/products/approved-eligibility";
-import { getProductBySlug } from "@/lib/products/repository";
+import { getProductBySlug, listApprovedAlternatives } from "@/lib/products/repository";
+import { categoryLabel } from "@/lib/products/discovery";
 import { ingredientActionLabel } from "@/lib/public-copy";
 import { loadArizonaSources } from "@/lib/rules/arizona";
 import { pageMetadata } from "@/lib/seo";
@@ -61,7 +62,21 @@ export default async function ProductPage({
 
   const matches = model.classroom.matchedRules;
   const url = `${publicAppUrl()}/product/${model.product.slug}`;
-  const sources = await loadArizonaSources();
+  const packageChangeParams = new URLSearchParams({
+    request: "package-change",
+    product: model.product.slug,
+  });
+  if (model.product.gtin14) packageChangeParams.set("gtin", model.product.gtin14);
+  const [sources, alternatives] = await Promise.all([
+    loadArizonaSources(),
+    model.classroom.ingredientStatus === "PASS"
+      ? Promise.resolve([])
+      : listApprovedAlternatives({
+          category: model.product.category,
+          excludeProductId: model.product.id,
+          limit: 3,
+        }),
+  ]);
   const freshness = freshnessState({
     lastVerifiedAt: model.formulation?.lastVerifiedAt ?? null,
     evaluationDate: model.classroom.evaluatedAt.slice(0, 10),
@@ -126,6 +141,57 @@ export default async function ProductPage({
         for this product.
       </p>
 
+      {model.classroom.ingredientStatus !== "PASS" ? (
+        <section
+          className="bg-surface-strong rounded-[20px] p-5"
+          aria-labelledby="alternatives-heading"
+        >
+          <h2 id="alternatives-heading" className="text-xl font-semibold">
+            {model.product.category
+              ? `Other ${categoryLabel(model.product.category)} to consider`
+              : "Other products to consider"}
+          </h2>
+          <p className="text-muted mt-1">
+            These products independently pass the current Arizona ingredient screen. They
+            are ordered by category, evidence eligibility, brand, and name—not by
+            affiliate payment.
+          </p>
+          {alternatives.length > 0 ? (
+            <ul className="mt-4 grid gap-3">
+              {alternatives.map((alternative) => (
+                <li key={alternative.id}>
+                  <Link
+                    href={`/product/${alternative.slug}`}
+                    className="border-border bg-surface flex min-h-14 items-center justify-between gap-3 rounded-[16px] border px-4 py-3"
+                  >
+                    <span>
+                      <span className="text-muted block text-sm">
+                        {alternative.brand}
+                      </span>
+                      <span className="font-semibold">{alternative.name}</span>
+                    </span>
+                    <StatusBadge status="PASS" />
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="text-muted mt-3">
+              No current passing alternative is available in this category yet.
+            </p>
+          )}
+          {model.product.category ? (
+            <Button asChild variant="secondary" className="mt-4">
+              <Link
+                href={`/approved?category=${encodeURIComponent(model.product.category)}`}
+              >
+                Browse this category
+              </Link>
+            </Button>
+          ) : null}
+        </section>
+      ) : null}
+
       {matches.length > 0 ? (
         <section className="flex flex-col gap-3">
           <h2 className="text-xl font-semibold">Matching evidence</h2>
@@ -172,7 +238,21 @@ export default async function ProductPage({
             {model.formulation.lastVerifiedAt ?? "not verified"}
           </p>
           {model.formulation.sourceTitle ? (
-            <p className="text-muted mt-2 text-sm">{model.formulation.sourceTitle}</p>
+            <p className="text-muted mt-2 text-sm">
+              Evidence:{" "}
+              {model.formulation.sourceUrl ? (
+                <a
+                  href={model.formulation.sourceUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="font-semibold underline underline-offset-2"
+                >
+                  {model.formulation.sourceTitle}
+                </a>
+              ) : (
+                model.formulation.sourceTitle
+              )}
+            </p>
           ) : null}
         </section>
       ) : (
@@ -203,8 +283,8 @@ export default async function ProductPage({
           url={url}
         />
         <Button asChild variant="secondary">
-          <Link href="/scan/ingredients">
-            Does your package look different? {ingredientActionLabel()}
+          <Link href={`/scan/ingredients?${packageChangeParams.toString()}`}>
+            Report a package change · {ingredientActionLabel()}
           </Link>
         </Button>
         <Button asChild variant="ghost">

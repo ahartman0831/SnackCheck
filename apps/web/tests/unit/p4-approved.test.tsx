@@ -16,9 +16,9 @@ describe("approved browser filters", () => {
         values={{ category: "bars", brand: "Example" }}
       />,
     );
-    expect(screen.getByRole("link", { name: "bars" })).toHaveAttribute(
+    expect(screen.getByRole("link", { name: "Bars" })).toHaveAttribute(
       "href",
-      "/approved/bars",
+      "/approved?category=bars",
     );
     expect(screen.getAllByRole("link", { name: "Clear all" }).length).toBeGreaterThan(0);
   });

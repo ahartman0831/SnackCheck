@@ -2109,6 +2109,37 @@ export type Database = {
         Args: { target_product_id: string }
         Returns: string
       }
+      list_approved_discovery_products: {
+        Args: {
+          filter_brand?: string
+          filter_category?: string
+          filter_individually_packaged?: boolean
+          filter_verification?: Database["public"]["Enums"]["verification_status"]
+          result_limit?: number
+          result_offset?: number
+        }
+        Returns: {
+          brand: string
+          category: string
+          evidence_observed_at: string
+          evidence_title: string
+          evidence_url: string
+          formulation_conflict: boolean
+          freshness_state: string
+          id: string
+          image_attribution: string
+          image_url: string
+          individually_packaged: boolean
+          ingredient_status: Database["public"]["Enums"]["ingredient_status"]
+          last_verified_at: string
+          name: string
+          ruleset_hash: string
+          size: string
+          slug: string
+          variant: string
+          verification_status: Database["public"]["Enums"]["verification_status"]
+        }[]
+      }
       list_approved_public_products: {
         Args: {
           filter_brand?: string

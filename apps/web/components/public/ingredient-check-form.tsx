@@ -26,6 +26,9 @@ export function IngredientCheckForm() {
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const gtin = params.get("gtin");
+  const request = params.get("request");
+  const requestedQuery = params.get("q")?.slice(0, 80);
+  const productSlug = params.get("product")?.slice(0, 120);
   const text = override ?? stored;
 
   function persist(next: string) {
@@ -80,6 +83,31 @@ export function IngredientCheckForm() {
     <form onSubmit={confirm} className="flex flex-col gap-4">
       {gtin ? (
         <p className="text-muted font-mono text-sm">Preserved GTIN: {gtin}</p>
+      ) : null}
+      {request === "product" ? (
+        <div className="bg-surface-strong rounded-[16px] px-4 py-3" role="status">
+          <p className="font-semibold">Request a product check</p>
+          <p className="text-muted mt-1 text-sm">
+            {requestedQuery
+              ? `No catalog match was found for “${requestedQuery}.” `
+              : "This product is not in the current catalog. "}
+            Paste the package ingredients to check it now. This does not automatically
+            publish or approve a product record.
+          </p>
+        </div>
+      ) : null}
+      {request === "package-change" ? (
+        <div
+          className="bg-verify-surface text-verify rounded-[16px] px-4 py-3"
+          role="status"
+        >
+          <p className="font-semibold">Report a package change</p>
+          <p className="mt-1 text-sm">
+            {productSlug ? `Current catalog product: ${productSlug}. ` : ""}
+            Paste every word from the new ingredient panel. This check does not replace
+            the current catalog record unless the new evidence is reviewed.
+          </p>
+        </div>
       ) : null}
       <Field
         id="ingredient-text"

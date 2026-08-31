@@ -20,6 +20,10 @@ export const PublicProductCardSchema = z.object({
   freshnessState: FreshnessStateSchema,
   formulationConflict: z.boolean(),
   rulesetHash: z.string().nullable(),
+  individuallyPackaged: z.boolean().nullable().optional(),
+  evidenceTitle: z.string().nullable().optional(),
+  evidenceUrl: z.string().url().nullable().optional(),
+  evidenceObservedAt: z.string().nullable().optional(),
 });
 export type PublicProductCard = z.infer<typeof PublicProductCardSchema>;
 

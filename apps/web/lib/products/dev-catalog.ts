@@ -23,6 +23,37 @@ const DEV_PRODUCTS: ProductPageModel[] = [
     primaryUpc: "000000000000",
     ingredients: "Whole grain oats, brown sugar, sunflower oil, salt, baking soda",
     verificationStatus: "VERIFIED",
+    size: "6 bars",
+    sourceType: "MANUFACTURER",
+    sourceTitle: "Local manufacturer fixture — not real product data",
+  }),
+  createFixture({
+    id: "dev-pass-fruit-bites",
+    slug: "dev-fixture-plain-fruit-bites",
+    brand: "[DEV FIXTURE] Sonoran Pantry",
+    name: "Plain Fruit Bites",
+    category: "fruit-snacks",
+    gtin14: "00000000000031",
+    primaryUpc: "000000000003",
+    ingredients: "Apple puree, pear puree, lemon juice",
+    verificationStatus: "PACKAGE_VERIFIED",
+    size: "8 pouches",
+    sourceType: "PACKAGE_PHOTO",
+    sourceTitle: "Reviewed development package photograph — not real product data",
+  }),
+  createFixture({
+    id: "dev-pass-crackers",
+    slug: "dev-fixture-sea-salt-crackers",
+    brand: "[DEV FIXTURE] Copper State",
+    name: "Sea Salt Crackers",
+    category: "crackers",
+    gtin14: "00000000000048",
+    primaryUpc: "000000000004",
+    ingredients: "Wheat flour, sunflower oil, sea salt",
+    verificationStatus: "VERIFIED",
+    size: "12 snack packs",
+    sourceType: "MANUFACTURER",
+    sourceTitle: "Local manufacturer fixture — not real product data",
   }),
   createFixture({
     id: "dev-fail-fruit-snacks",
@@ -58,6 +89,9 @@ function createFixture(input: {
   primaryUpc: string;
   ingredients: string;
   verificationStatus: "VERIFIED" | "PACKAGE_VERIFIED" | "COMMUNITY_SUBMITTED";
+  size?: string;
+  sourceType?: "MANUFACTURER" | "PACKAGE_PHOTO" | "ADMIN_ENTRY";
+  sourceTitle?: string;
 }): ProductPageModel {
   const parsed = parseIngredients(input.ingredients);
   const hash = hashFormulation({
@@ -77,8 +111,8 @@ function createFixture(input: {
     firstObservedAt: "2026-08-01T00:00:00.000Z",
     lastObservedAt: "2026-08-01T00:00:00.000Z",
     conflict: false,
-    sourceType: "ADMIN_ENTRY",
-    sourceTitle: "Local development fixture — not real product data",
+    sourceType: input.sourceType ?? "ADMIN_ENTRY",
+    sourceTitle: input.sourceTitle ?? "Local development fixture — not real product data",
     sourceUrl: null,
   };
   const product: ProductRecord = {
@@ -87,7 +121,7 @@ function createFixture(input: {
     brand: input.brand,
     name: input.name,
     variant: null,
-    size: null,
+    size: input.size ?? null,
     category: input.category,
     gtin14: input.gtin14,
     primaryUpc: input.primaryUpc,
