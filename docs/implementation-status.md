@@ -17,6 +17,8 @@ Master-plan **Phase 6** is `COMPLETE` and merged by PR [#3](https://github.com/a
 
 The consumer-style public UI refresh is merged by PR [#12](https://github.com/ahartman0831/SnackCheck/pull/12) at `a04d281`; all five PR checks passed. It changed presentation and navigation only. No database, feature flag, catalog, or environment changed.
 
+The deterministic Phase 11 shortlist is merged by PR [#13](https://github.com/ahartman0831/SnackCheck/pull/13) at `c47f0ca`. After all five required checks passed, migration `0031` was applied only to owner-designated staging project `lhnbxjvqllohlbtdncyg`. The exact guarded operation queued 190 candidates for private evidence review. Read-back verified 190 matching audit rows, 273 candidates still in `SCREENED_PASS`, and zero products and formulations. Nothing was approved, promoted, or published; AI and production were not used.
+
 PR #9 adds a reviewer-only catalog queue and evidence detail, guarded queue/reject actions, and one atomic promotion transaction. Promotion requires a current queued candidate, explicit reviewer acknowledgement, confirmed ingredient text, and an independent HTTPS manufacturer source; USDA and Open Food Facts cannot verify their own candidates. Existing GTINs with different formulations create an open conflict instead of replacing the active formulation. Promotion records product, formulation, parsed ingredients, source, any valid deterministic evaluation, canonical links, and an audit entry together. There is no bulk approval control and no AI call. GitHub run [33397852039](https://github.com/ahartman0831/SnackCheck/actions/runs/33397852039) passes `verify`, WebKit, migration `0029`, all pgTAP checks twice across clean resets, generated-type parity, private storage integration, and backup/restore rehearsal. No real dataset was downloaded and no staging or production system was changed.
 
 PR #10 adds the category-first “What can I bring?” experience over a new public discovery projection that begins with the existing strict approved-product function. It exposes only supported package format and safe evidence fields, masks private package-photo details, accepts HTTPS manufacturer evidence links only, and uses neutral category/brand/name ordering with no affiliate input. FAIL and VERIFY product pages may link only to current passing products from the same strict projection. Missing-product and package-change paths feed the existing confirmed ingredient workflow without automatically publishing or replacing catalog records. Controlled fixtures, unit/integration tests, Chrome mobile/desktop browser tests, and Node 22 production build pass locally. GitHub run [33412131484](https://github.com/ahartman0831/SnackCheck/actions/runs/33412131484) passes `verify`, WebKit, migration `0030`, pgTAP twice across clean resets, generated-type parity, private storage integration, and backup/restore rehearsal. No real data was downloaded, no environment was changed, and production flags remain off.
@@ -32,14 +34,14 @@ found 489 unique GTINs and zero public approved rows. No candidate was promoted,
 no ruleset was published, and no AI or production system was used. See
 [`docs/phase-11-usda-staging-pilot.md`](phase-11-usda-staging-pilot.md).
 
-The next Phase 11 branch adds the deterministic `school-use-v1` shortlist
-policy and a service-role-only bounded queue transaction in migration `0031`.
-A read-only run against the real staging pool selected 190 candidates across
+PR #13 added the deterministic `school-use-v1` shortlist policy and a
+service-role-only bounded queue transaction in migration `0031`. The selection
+against the real staging pool identified 190 candidates across
 38 source categories and 144 brands: 55 snacks, 45 breakfast items, 38
 lunchbox items, 10 drinks, and 42 treats. Pantry/preparation categories are
-excluded rather than used to pad the target. The dry run made no changes; CI,
-merge, migration `0031`, and the exact staging confirmation are still required
-before queueing. See
+excluded rather than used to pad the target. After merge, the migration and
+exact guarded queue operation completed in staging. These rows remain private
+and require independent evidence review before any individual promotion. See
 [`docs/phase-11-catalog-shortlist.md`](phase-11-catalog-shortlist.md).
 
 **Why not `COMPLETE`:**
@@ -162,11 +164,11 @@ Unchanged operations scaffold. Admin and confirmation routes are noindexed.
 
 The bounded USDA staging pilot imported 489 private candidates from 500 sampled
 source rows after a 10,000-row dry run. The public approved projection remains
-empty. A deterministic dry run now identifies 190 strong, category-balanced
-school-use candidates, but they are not queued or approved. Public catalog
-launch still requires independent evidence review, individual promotion,
-regulatory review, and a separate production project or a documented wipe of
-the staging project.
+empty. A deterministic selection has queued 190 strong, category-balanced
+school-use candidates for private evidence review; they are not approved.
+Public catalog launch still requires independent evidence review, individual
+promotion, regulatory review, and a separate production project or a
+documented wipe of the staging project.
 
 ### Observability and rehearsal — `PARTIAL`
 
