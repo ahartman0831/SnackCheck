@@ -11,6 +11,7 @@ const REVIEW_NAVIGATION = [
   ["/admin/submissions", "Submissions"],
   ["/admin/products", "Products"],
   ["/admin/formulations", "Formulations"],
+  ["/admin/catalog", "Catalog candidates"],
   ["/admin/analytics", "Health & spend"],
 ] as const;
 

@@ -429,6 +429,9 @@ export type Database = {
           provider: string
           quality_flags: Json
           raw_ingredient_text: string
+          review_reason: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
           ruleset_hash: string
           screen_status: Database["public"]["Enums"]["ingredient_status"]
           size: string | null
@@ -466,6 +469,9 @@ export type Database = {
           provider: string
           quality_flags?: Json
           raw_ingredient_text: string
+          review_reason?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
           ruleset_hash: string
           screen_status: Database["public"]["Enums"]["ingredient_status"]
           size?: string | null
@@ -503,6 +509,9 @@ export type Database = {
           provider?: string
           quality_flags?: Json
           raw_ingredient_text?: string
+          review_reason?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
           ruleset_hash?: string
           screen_status?: Database["public"]["Enums"]["ingredient_status"]
           size?: string | null
@@ -2000,12 +2009,31 @@ export type Database = {
         }
         Returns: Json
       }
+      admin_promote_catalog_candidate: {
+        Args: {
+          p_candidate_id: string
+          p_expected_updated_at: string
+          p_promotion: Json
+          p_request_id: string
+        }
+        Returns: Json
+      }
       admin_publish_ruleset: {
         Args: {
           p_expected_hash: string
           p_expected_reviewed_at: string
           p_request_id: string
           p_ruleset_id: string
+        }
+        Returns: Json
+      }
+      admin_review_catalog_candidate: {
+        Args: {
+          p_candidate_id: string
+          p_decision: string
+          p_expected_updated_at: string
+          p_reason: string
+          p_request_id: string
         }
         Returns: Json
       }
