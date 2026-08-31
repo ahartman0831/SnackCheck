@@ -171,7 +171,14 @@ begin
     insert into public.product_identifiers (
       product_id, identifier_type, raw_value, normalized_gtin14, is_primary
     ) values (
-      product_id_value, 'GTIN_14', candidate_row.source_gtin,
+      product_id_value,
+      case length(candidate_row.source_gtin)
+        when 8 then 'EAN_8'
+        when 12 then 'UPC_A'
+        when 13 then 'EAN_13'
+        else 'GTIN_14'
+      end,
+      candidate_row.source_gtin,
       candidate_row.normalized_gtin14, true
     );
   end if;
