@@ -31,3 +31,5 @@ GitHub Actions on `ubuntu-latest` is the authorized non-production environment f
 1. Revert the Vercel deployment to the previous successful build.
 2. Do not rewrite applied production migrations; add a forward fix.
 3. Keep the previous published ruleset effective until a reviewed replacement is published.
+
+The tested non-production procedures and remaining human assignments are documented in [`operations-monitoring-and-recovery.md`](operations-monitoring-and-recovery.md). CI rehearses a disposable PostgreSQL data backup/restore; production restore and Vercel promotion/rollback remain launch gates.

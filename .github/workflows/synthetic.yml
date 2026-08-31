@@ -1,0 +1,36 @@
+name: Synthetic health
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "7,22,37,52 * * * *"
+
+permissions:
+  contents: read
+
+jobs:
+  configuration:
+    name: Monitoring configuration
+    runs-on: ubuntu-latest
+    steps:
+      - name: Report inactive monitor honestly
+        if: ${{ vars.SYNTHETIC_BASE_URL == '' }}
+        run: echo "Synthetic monitoring is inactive until SYNTHETIC_BASE_URL and SYNTHETIC_MONITOR_TOKEN are configured."
+      - name: Confirm monitor target exists
+        if: ${{ vars.SYNTHETIC_BASE_URL != '' }}
+        run: echo "Synthetic monitoring target is configured."
+
+  synthetic:
+    name: Public and protected health checks
+    if: ${{ vars.SYNTHETIC_BASE_URL != '' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Run privacy-safe synthetic checks
+        run: node scripts/run-synthetic-checks.mjs
+        env:
+          SYNTHETIC_BASE_URL: ${{ vars.SYNTHETIC_BASE_URL }}
+          SYNTHETIC_MONITOR_TOKEN: ${{ secrets.SYNTHETIC_MONITOR_TOKEN }}

@@ -1,5 +1,5 @@
 import { createHash } from "node:crypto";
-import sharp from "sharp";
+import sharp, { type Metadata, type OutputInfo, type Sharp } from "sharp";
 
 export const SANITIZER_VERSION = "sharp-jpeg-v1";
 
@@ -92,8 +92,8 @@ export async function sanitizeIngredientImage(
   }
 
   const maxInputPixels = options.maxInputPixels ?? 40_000_000;
-  let source: sharp.Sharp;
-  let metadata: sharp.Metadata;
+  let source: Sharp;
+  let metadata: Metadata;
   try {
     source = sharp(input, {
       failOn: "error",
@@ -122,7 +122,7 @@ export async function sanitizeIngredientImage(
   }
 
   let output: Buffer;
-  let info: sharp.OutputInfo;
+  let info: OutputInfo;
   try {
     const result = await source
       .rotate()

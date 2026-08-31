@@ -16,13 +16,20 @@ export default function PrivacyPage() {
         location.
       </p>
       <p>
-        Ingredient-photo processing is not active. If you paste an ingredient list,
-        SnackCheck uses that text. EXIF stripping is not implemented yet and is not
-        claimed here.
+        Ingredient-photo processing is not active in production. In an explicitly enabled
+        test environment, SnackCheck removes image metadata, stores only a private
+        sanitized derivative for the stated retention period, and asks you to confirm the
+        extracted ingredient text before evaluation.
       </p>
       <p>
         Analytics, when enabled, use allowlisted event names and a daily rotating
         anonymous key. Raw IP addresses are not stored.
+      </p>
+      <p>
+        Operational monitoring receives only allowlisted technical fields such as a
+        request ID, route template, safe error code, environment, and release. It does not
+        receive ingredient text, images, submission tokens, raw error messages, headers,
+        query strings, or account details.
       </p>
     </article>
   );

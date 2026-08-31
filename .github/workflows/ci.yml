@@ -44,7 +44,6 @@ jobs:
         run: pnpm build
       - name: Dependency audit
         run: pnpm audit --audit-level=high
-        continue-on-error: true
       - name: Secret scan
         run: |
           if git grep -nE 'sk-live-|BEGIN PRIVATE KEY|SERVICE_ROLE_KEY=[^[:space:]]+' -- ':!.env.example' ':!docs/**' ':!.github/workflows/ci.yml'; then
@@ -95,6 +94,8 @@ jobs:
           NEXT_PUBLIC_SUPABASE_URL="$API_URL" \
           SUPABASE_SERVICE_ROLE_KEY="$SERVICE_ROLE_KEY" \
           pnpm --filter web exec vitest run tests/integration/p6-photo-storage-local.test.ts --config vitest.integration.config.ts
+      - name: Disposable backup and restore rehearsal
+        run: bash scripts/rehearse-local-backup-restore.sh
       - name: Reset a second time
         run: supabase db reset --yes
       - name: pgTAP after second reset
