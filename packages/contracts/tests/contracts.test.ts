@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   AnalyticsEventSchema,
+  CatalogSourceRecordSchema,
   IngredientStatusSchema,
   INGREDIENT_STATUS_LABELS,
   PublicProductCardSchema,
@@ -54,5 +55,39 @@ describe("shared contracts", () => {
         rulesetHash: null,
       }),
     ).toThrow();
+  });
+
+  it("accepts a private catalog source record with complete provenance", () => {
+    expect(
+      CatalogSourceRecordSchema.parse({
+        provider: "USDA_FDC",
+        externalRecordId: "123",
+        sourceVersion: "2026-08-01",
+        sourceRecordSha256: "a".repeat(64),
+        sourceGtin: "012345678905",
+        normalizedGtin14: "00012345678905",
+        brand: "Fixture Foods",
+        productName: "Oat Bites",
+        variant: null,
+        size: "6 oz",
+        category: "Snacks",
+        rawIngredientText: "Oats, salt",
+        normalizedIngredientText: "oats, salt",
+        ingredientTextSha256: "b".repeat(64),
+        marketCountry: "United States",
+        sourceModifiedAt: "2026-08-01T00:00:00.000Z",
+        sourcePublishedAt: null,
+        discontinued: false,
+        sourceUrl: "https://fdc.nal.usda.gov/fdc-app.html#/food-details/123",
+        sourceReference: "FDC 123",
+        licenseIdentifier: "CC0-1.0",
+        attribution: "USDA FoodData Central",
+        screenStatus: "PASS",
+        qualityFlags: [],
+        matchedRuleIds: [],
+        engineVersion: "0.1.0",
+        rulesetHash: "c".repeat(64),
+      }).provider,
+    ).toBe("USDA_FDC");
   });
 });
