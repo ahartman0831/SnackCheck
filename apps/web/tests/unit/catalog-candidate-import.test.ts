@@ -127,5 +127,15 @@ describe("USDA catalog candidate foundation", () => {
         maxRows: 100,
       }),
     ).not.toThrow();
+
+    vi.stubEnv("CATALOG_PRODUCTION_SUPABASE_PROJECT_REF", "stagingfixture");
+    expect(() =>
+      assertCandidateApplyAllowed({
+        apply: true,
+        target: "staging",
+        confirmation: APPLY_CONFIRMATION,
+        maxRows: 100,
+      }),
+    ).toThrow("production Supabase project");
   });
 });
