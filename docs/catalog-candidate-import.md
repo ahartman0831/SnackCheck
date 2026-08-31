@@ -6,7 +6,9 @@ This command stages external product records for screening and later review. It 
 
 - Dry-run is the default and makes no database calls.
 - Apply accepts only the explicit `staging` target, an exact confirmation phrase, and a limit of at most 10,000 source rows.
-- The known production Supabase project and the Vercel Production environment are rejected.
+- The project named by `CATALOG_PRODUCTION_SUPABASE_PROJECT_REF` and the Vercel
+  Production environment are rejected. Apply also requires
+  `CATALOG_STAGING_SUPABASE_PROJECT_REF` to match the target URL exactly.
 - Only the service role can call the candidate import functions. Candidate tables are not readable by anonymous or ordinary signed-in users.
 - Replaying an identical source version is unchanged. A newer source version preserves and supersedes the older candidate. An older version arriving later is stored as superseded rather than replacing the current candidate.
 - Candidate screening is not product verification. No bulk candidate can enter the public passing-products projection.
@@ -39,3 +41,14 @@ Apply is reserved for a separately approved non-production pilot after migration
 ```
 
 Do not use `supabase link`, `supabase db push`, production credentials, or a production URL for this workflow.
+
+## Project designation
+
+Supabase project `lhnbxjvqllohlbtdncyg` is SnackCheck's pre-production/staging
+project. The owner explicitly confirmed this designation on 2026-08-31 because
+SnackCheck has no live production environment. A future production launch must
+use a different Supabase project and set
+`CATALOG_PRODUCTION_SUPABASE_PROJECT_REF` to that project's reference before any
+catalog operation is enabled there. The current staging project may instead be
+wiped before launch, but it must never be silently promoted into production with
+pilot candidate data intact.

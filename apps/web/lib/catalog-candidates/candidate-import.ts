@@ -69,7 +69,8 @@ export function assertCandidateApplyAllowed(options: CandidateImportOptions): vo
     );
   }
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
-  if (url.includes("lhnbxjvqllohlbtdncyg")) {
+  const productionProjectRef = process.env.CATALOG_PRODUCTION_SUPABASE_PROJECT_REF ?? "";
+  if (productionProjectRef && url.includes(`://${productionProjectRef}.`)) {
     throw new Error(
       "Candidate imports are forbidden for the production Supabase project.",
     );
