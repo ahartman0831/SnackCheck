@@ -330,6 +330,224 @@ export type Database = {
         }
         Relationships: []
       }
+      catalog_import_batches: {
+        Row: {
+          completed_at: string | null
+          created_at: string
+          dataset_release: string
+          engine_version: string | null
+          error_counts: Json
+          file_byte_size: number
+          file_sha256: string
+          id: string
+          license_identifier: string
+          mode: string
+          normalizer_version: string
+          parser_version: string
+          provider: string
+          rows_accepted: number
+          rows_read: number
+          rows_rejected: number
+          rows_superseded: number
+          rows_unchanged: number
+          ruleset_hash: string | null
+          source_url: string
+          started_at: string
+          status: string
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string
+          dataset_release: string
+          engine_version?: string | null
+          error_counts?: Json
+          file_byte_size: number
+          file_sha256: string
+          id?: string
+          license_identifier: string
+          mode: string
+          normalizer_version: string
+          parser_version: string
+          provider: string
+          rows_accepted?: number
+          rows_read?: number
+          rows_rejected?: number
+          rows_superseded?: number
+          rows_unchanged?: number
+          ruleset_hash?: string | null
+          source_url: string
+          started_at?: string
+          status?: string
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string
+          dataset_release?: string
+          engine_version?: string | null
+          error_counts?: Json
+          file_byte_size?: number
+          file_sha256?: string
+          id?: string
+          license_identifier?: string
+          mode?: string
+          normalizer_version?: string
+          parser_version?: string
+          provider?: string
+          rows_accepted?: number
+          rows_read?: number
+          rows_rejected?: number
+          rows_superseded?: number
+          rows_unchanged?: number
+          ruleset_hash?: string | null
+          source_url?: string
+          started_at?: string
+          status?: string
+        }
+        Relationships: []
+      }
+      catalog_source_records: {
+        Row: {
+          attribution: string | null
+          brand: string
+          candidate_state: string
+          canonical_formulation_id: string | null
+          canonical_product_id: string | null
+          category: string | null
+          created_at: string
+          discontinued: boolean
+          engine_version: string
+          external_record_id: string
+          id: string
+          import_batch_id: string
+          ingredient_text_sha256: string
+          license_identifier: string
+          market_country: string
+          matched_rule_ids: Json
+          normalized_gtin14: string
+          normalized_ingredient_text: string
+          product_name: string
+          provider: string
+          quality_flags: Json
+          raw_ingredient_text: string
+          ruleset_hash: string
+          screen_status: Database["public"]["Enums"]["ingredient_status"]
+          size: string | null
+          source_gtin: string
+          source_modified_at: string | null
+          source_published_at: string | null
+          source_record_sha256: string
+          source_reference: string
+          source_url: string
+          source_version: string
+          superseded_by_id: string | null
+          updated_at: string
+          variant: string | null
+        }
+        Insert: {
+          attribution?: string | null
+          brand: string
+          candidate_state: string
+          canonical_formulation_id?: string | null
+          canonical_product_id?: string | null
+          category?: string | null
+          created_at?: string
+          discontinued?: boolean
+          engine_version: string
+          external_record_id: string
+          id?: string
+          import_batch_id: string
+          ingredient_text_sha256: string
+          license_identifier: string
+          market_country: string
+          matched_rule_ids?: Json
+          normalized_gtin14: string
+          normalized_ingredient_text: string
+          product_name: string
+          provider: string
+          quality_flags?: Json
+          raw_ingredient_text: string
+          ruleset_hash: string
+          screen_status: Database["public"]["Enums"]["ingredient_status"]
+          size?: string | null
+          source_gtin: string
+          source_modified_at?: string | null
+          source_published_at?: string | null
+          source_record_sha256: string
+          source_reference: string
+          source_url: string
+          source_version: string
+          superseded_by_id?: string | null
+          updated_at?: string
+          variant?: string | null
+        }
+        Update: {
+          attribution?: string | null
+          brand?: string
+          candidate_state?: string
+          canonical_formulation_id?: string | null
+          canonical_product_id?: string | null
+          category?: string | null
+          created_at?: string
+          discontinued?: boolean
+          engine_version?: string
+          external_record_id?: string
+          id?: string
+          import_batch_id?: string
+          ingredient_text_sha256?: string
+          license_identifier?: string
+          market_country?: string
+          matched_rule_ids?: Json
+          normalized_gtin14?: string
+          normalized_ingredient_text?: string
+          product_name?: string
+          provider?: string
+          quality_flags?: Json
+          raw_ingredient_text?: string
+          ruleset_hash?: string
+          screen_status?: Database["public"]["Enums"]["ingredient_status"]
+          size?: string | null
+          source_gtin?: string
+          source_modified_at?: string | null
+          source_published_at?: string | null
+          source_record_sha256?: string
+          source_reference?: string
+          source_url?: string
+          source_version?: string
+          superseded_by_id?: string | null
+          updated_at?: string
+          variant?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "catalog_source_records_canonical_formulation_id_fkey"
+            columns: ["canonical_formulation_id"]
+            isOneToOne: false
+            referencedRelation: "formulations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "catalog_source_records_canonical_product_id_fkey"
+            columns: ["canonical_product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "catalog_source_records_import_batch_id_fkey"
+            columns: ["import_batch_id"]
+            isOneToOne: false
+            referencedRelation: "catalog_import_batches"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "catalog_source_records_superseded_by_id_fkey"
+            columns: ["superseded_by_id"]
+            isOneToOne: false
+            referencedRelation: "catalog_source_records"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       compliance_evaluations: {
         Row: {
           applicability_status: Database["public"]["Enums"]["applicability_status"]
@@ -1811,6 +2029,11 @@ export type Database = {
         Args: { source_ruleset_id: string }
         Returns: string
       }
+      complete_catalog_import_batch: {
+        Args: { p_batch_id: string; p_summary: Json }
+        Returns: undefined
+      }
+      create_catalog_import_batch: { Args: { p_batch: Json }; Returns: string }
       current_published_arizona_ruleset: {
         Args: never
         Returns: {
@@ -1852,6 +2075,7 @@ export type Database = {
         }
         Returns: string
       }
+      import_catalog_source_record: { Args: { p_record: Json }; Returns: Json }
       is_active_admin: { Args: { required_roles?: string[] }; Returns: boolean }
       latest_public_formulation_id: {
         Args: { target_product_id: string }
