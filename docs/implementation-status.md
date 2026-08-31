@@ -1,6 +1,6 @@
 # Implementation status
 
-Last updated: 2026-08-30
+Last updated: 2026-08-31
 Baseline detail: [`docs/remediation-baseline.md`](remediation-baseline.md)
 Plan: [`docs/SnackCheck-Cursor-Master-Build-Plan.md`](SnackCheck-Cursor-Master-Build-Plan.md)
 Prior plan: [`docs/SnackCheck-Cursor-Remediation-Build-Plan-v2.md`](SnackCheck-Cursor-Remediation-Build-Plan-v2.md)
@@ -13,7 +13,7 @@ A phase is not complete because interfaces, placeholder pages, or a published-lo
 
 ## Current work
 
-Master-plan **Phase 6** is `COMPLETE` and merged by PR [#3](https://github.com/ahartman0831/SnackCheck/pull/3) at `8e60ce1`. Phase 7 is merged by PR [#4](https://github.com/ahartman0831/SnackCheck/pull/4) at `f308364` and remains `PARTIAL` while its remaining phone failure paths and Gemini decision are open. Phase 8 is `COMPLETE` and merged by PR [#5](https://github.com/ahartman0831/SnackCheck/pull/5) at `8efffe3`; required `main` CI is green on run [33333608797](https://github.com/ahartman0831/SnackCheck/actions/runs/33333608797). Phase 10 monitoring and recovery work is merged through PR #7. Phase 11's candidate-ingestion foundation is `COMPLETE` on open PR [#8](https://github.com/ahartman0831/SnackCheck/pull/8); required CI is green on run [33393174779](https://github.com/ahartman0831/SnackCheck/actions/runs/33393174779). Phase 11 remains `PARTIAL` overall because review/promotion, discovery, and any real-data pilot have not started. Phase 5 remains `PARTIAL`: iPhone Safari passed and Android Chrome was explicitly deferred. Production camera, photo, and AI flags stay off.
+Master-plan **Phase 6** is `COMPLETE` and merged by PR [#3](https://github.com/ahartman0831/SnackCheck/pull/3) at `8e60ce1`. Phase 7 is merged by PR [#4](https://github.com/ahartman0831/SnackCheck/pull/4) at `f308364` and remains `PARTIAL` while its remaining phone failure paths and Gemini decision are open. Phase 8 is `COMPLETE` and merged by PR [#5](https://github.com/ahartman0831/SnackCheck/pull/5) at `8efffe3`; required `main` CI is green on run [33333608797](https://github.com/ahartman0831/SnackCheck/actions/runs/33333608797). Phase 10 monitoring and recovery work is merged through PR #7. Phase 11's candidate-ingestion foundation is `COMPLETE` and merged by PR [#8](https://github.com/ahartman0831/SnackCheck/pull/8) at `6ad392b`; required PR CI is green on run [33393174779](https://github.com/ahartman0831/SnackCheck/actions/runs/33393174779). Protected review and promotion are in progress on `codex/phase-11-catalog-review-promotion`. Phase 11 remains `PARTIAL` overall because PR #9 is not yet proven or merged, discovery has not started, and no real-data pilot has been authorized. Phase 5 remains `PARTIAL`: iPhone Safari passed and Android Chrome was explicitly deferred. Production camera, photo, and AI flags stay off.
 
 **Why not `COMPLETE`:**
 
