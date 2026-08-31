@@ -297,6 +297,7 @@ begin
         coalesce(evaluation_result -> 'qualityFlags', '[]'::jsonb),
         evaluation_result ->> 'engineVersion',
         coalesce(evaluation_result -> 'explanation', '{}'::jsonb)
+      )
       on conflict (
         formulation_id, ruleset_id, context, evaluation_date, ruleset_hash, formulation_hash
       ) do nothing
