@@ -1,4 +1,4 @@
-type ServerErrorRecord = {
+export type ServerErrorRecord = {
   timestamp: string;
   level: "error";
   event: "server_request_error";
@@ -65,4 +65,11 @@ export function recordServerError(
   write: (message: string) => void = console.error,
 ): void {
   write(JSON.stringify(buildServerErrorRecord(input)));
+}
+
+export function writeServerErrorRecord(
+  record: ServerErrorRecord,
+  write: (message: string) => void = console.error,
+): void {
+  write(JSON.stringify(record));
 }

@@ -26,7 +26,9 @@
     "db:verify-seed": "pnpm exec tsx scripts/verify-seed.ts",
     "db:check-provenance": "pnpm exec tsx scripts/check-regulatory-provenance.ts",
     "check-ingredients": "pnpm exec tsx scripts/check-ingredients.ts",
-    "import-products": "pnpm exec tsx scripts/import-products.ts"
+    "import-products": "pnpm exec tsx scripts/import-products.ts",
+    "ops:synthetic": "node scripts/run-synthetic-checks.mjs",
+    "ops:retention": "pnpm exec tsx scripts/cleanup-expired-submission-assets.ts"
   },
   "devDependencies": {
     "prettier": "^3.6.2",

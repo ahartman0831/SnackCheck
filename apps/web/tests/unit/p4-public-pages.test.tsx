@@ -32,8 +32,10 @@ describe("public route copy", () => {
   it("describes current privacy behavior only", () => {
     render(<PrivacyPage />);
     expect(screen.getByRole("heading", { name: "Privacy" })).toBeInTheDocument();
-    expect(screen.queryByText(/EXIF is stripped/i)).not.toBeInTheDocument();
-    expect(screen.queryByText(/EXIF stripping/i)).toBeInTheDocument();
+    expect(
+      screen.queryByText(/EXIF stripping is not implemented/i),
+    ).not.toBeInTheDocument();
+    expect(screen.getByText(/removes image metadata/i)).toBeInTheDocument();
     expect(
       screen.getByText(/Ingredient-photo processing is not active/i),
     ).toBeInTheDocument();
