@@ -62,8 +62,20 @@ state transition to `REVIEW_QUEUED`, and writes one audit record per candidate.
 It cannot create products or formulations. Promotion remains one product at a
 time and still requires independent current manufacturer or package evidence.
 
-## Current state
+## Staging queue result
 
-Implementation and the staging dry run are complete on the working branch.
-Migration `0031` has not been applied to staging and the 190 candidates have
-not been queued. CI and merge must pass before either action.
+PR [#13](https://github.com/ahartman0831/SnackCheck/pull/13) passed all five
+required checks and was merged at `c47f0ca`. Migration `0031` was then applied
+only to the owner-designated staging project `lhnbxjvqllohlbtdncyg`.
+
+The exact guarded apply queued all 190 selected candidates with the same
+selection hash recorded above. Independent read-back verified:
+
+- 190 candidates in `REVIEW_QUEUED`;
+- 273 candidates remaining in `SCREENED_PASS`;
+- 190 matching `CATALOG_CANDIDATE_SHORTLIST_QUEUED` audit rows; and
+- zero products and zero formulations.
+
+The queue is private evidence-review work. No candidate was approved or
+promoted, no public catalog row was created, no AI was used, and no production
+system or feature flag changed.
