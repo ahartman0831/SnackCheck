@@ -13,7 +13,7 @@ A phase is not complete because interfaces, placeholder pages, or a published-lo
 
 ## Current work
 
-Master-plan **Phase 6** is `COMPLETE` and merged by PR [#3](https://github.com/ahartman0831/SnackCheck/pull/3) at `8e60ce1`. Phase 7 is merged by PR [#4](https://github.com/ahartman0831/SnackCheck/pull/4) at `f308364` and remains `PARTIAL` while its remaining phone failure paths and Gemini decision are open. Phase 8 is `COMPLETE` and merged by PR [#5](https://github.com/ahartman0831/SnackCheck/pull/5) at `8efffe3`; required `main` CI is green on run [33333608797](https://github.com/ahartman0831/SnackCheck/actions/runs/33333608797). Phase 10 has started on an isolated reliability-foundation branch and remains `PARTIAL`. Phase 5 remains `PARTIAL`: iPhone Safari passed and Android Chrome was explicitly deferred. Production camera, photo, and AI flags stay off.
+Master-plan **Phase 6** is `COMPLETE` and merged by PR [#3](https://github.com/ahartman0831/SnackCheck/pull/3) at `8e60ce1`. Phase 7 is merged by PR [#4](https://github.com/ahartman0831/SnackCheck/pull/4) at `f308364` and remains `PARTIAL` while its remaining phone failure paths and Gemini decision are open. Phase 8 is `COMPLETE` and merged by PR [#5](https://github.com/ahartman0831/SnackCheck/pull/5) at `8efffe3`; required `main` CI is green on run [33333608797](https://github.com/ahartman0831/SnackCheck/actions/runs/33333608797). Phase 10 monitoring and recovery work is merged through PR #7. Phase 11 has started with the approved PR #8 candidate-ingestion foundation and remains `PARTIAL` until disposable CI proves migration `0028`, pgTAP, and generated-type parity. Phase 5 remains `PARTIAL`: iPhone Safari passed and Android Chrome was explicitly deferred. Production camera, photo, and AI flags stay off.
 
 **Why not `COMPLETE`:**
 
@@ -68,7 +68,7 @@ The second Phase 10 slice is on draft PR [#7](https://github.com/ahartman0831/Sn
 | 8     | Admin operations                                                                                      | `COMPLETE`    |
 | 9     | Affiliates                                                                                            | `NOT STARTED` |
 | 10    | Observability, PWA, CI                                                                                | `PARTIAL`     |
-| 11    | Launch catalog and production deploy                                                                  | `NOT STARTED` |
+| 11    | Launch catalog and production deploy                                                                  | `PARTIAL`     |
 
 Phase 4C closeout for this session:
 
@@ -131,7 +131,7 @@ Unchanged operations scaffold. Admin and confirmation routes are noindexed.
 
 ### Launch dataset — `BLOCKED`
 
-No fabricated production catalog was imported.
+PR #8 adds a private candidate staging design, USDA branded-record adapter, dry-run/apply guards, deterministic screening, and synthetic fixture coverage. No real dataset was downloaded and no candidate was imported into staging or production. Public catalog launch remains blocked on later review/promotion work, regulatory review, and a separately approved data pilot.
 
 ### Observability and rehearsal — `PARTIAL`
 

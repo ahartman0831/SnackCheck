@@ -1,7 +1,7 @@
 # Phase 11 catalog and discovery build plan
 
-**Status:** `NOT STARTED` — plan awaiting approval  
-**Owner approval required before implementation**  
+**Status:** `IN PROGRESS` — PR #8 candidate ingestion foundation approved
+**Owner approval received 2026-08-31 for PR #8 only**
 **Prepared:** 2026-08-31  
 **Planning branch:** `codex/phase-11-catalog-foundation`; implementation begins only after approval
 

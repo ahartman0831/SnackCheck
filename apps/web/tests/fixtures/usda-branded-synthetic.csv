@@ -1,0 +1,8 @@
+fdc_id,description,brand_owner,brand_name,subbrand_name,gtin_upc,ingredients,serving_size,serving_size_unit,branded_food_category,market_country,modified_date,publication_date,discontinued_date
+1001,Oat Bites,Fixture Foods,Fixture Foods,,012345678905,"Oats, sea salt",6,oz,Snacks,United States,2026-08-01,2026-08-02,
+1001,Oat Bites,Fixture Foods,Fixture Foods,,012345678905,"Oats, titanium dioxide",6,oz,Snacks,United States,2026-08-15,2026-08-16,
+1001,Oat Bites,Fixture Foods,Fixture Foods,,012345678905,"Oats, titanium dioxide",6,oz,Snacks,United States,2026-08-15,2026-08-16,
+1002,Bad Barcode,Fixture Foods,Fixture Foods,,123,"Oats, salt",6,oz,Snacks,United States,2026-08-01,2026-08-02,
+1003,Missing Ingredients,Fixture Foods,Fixture Foods,,012345678905,,6,oz,Snacks,United States,2026-08-01,2026-08-02,
+1004,Canadian Product,Fixture Foods,Fixture Foods,,012345678905,"Oats, salt",6,oz,Snacks,Canada,2026-08-01,2026-08-02,
+1005,Old Product,Fixture Foods,Fixture Foods,,012345678905,"Oats, salt",6,oz,Snacks,United States,2026-08-01,2026-08-02,2026-08-20
