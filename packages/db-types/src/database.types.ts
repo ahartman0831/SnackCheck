@@ -2217,6 +2217,10 @@ export type Database = {
         Args: { publisher_id: string; target_ruleset_id: string }
         Returns: undefined
       }
+      queue_catalog_candidate_shortlist: {
+        Args: { p_candidate_ids: string[]; p_confirmation: string; p_run: Json }
+        Returns: Json
+      }
       refresh_product_search_document: {
         Args: { target_product_id: string }
         Returns: undefined
