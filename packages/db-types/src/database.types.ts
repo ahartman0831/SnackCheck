@@ -2218,11 +2218,7 @@ export type Database = {
         Returns: undefined
       }
       queue_catalog_candidate_shortlist: {
-        Args: {
-          p_candidate_ids: string[]
-          p_confirmation: string
-          p_run: Json
-        }
+        Args: { p_candidate_ids: string[]; p_confirmation: string; p_run: Json }
         Returns: Json
       }
       refresh_product_search_document: {
