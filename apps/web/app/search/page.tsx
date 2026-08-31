@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Search } from "lucide-react";
 import { ProductSearch } from "@/components/public/product-search";
 import { searchProducts } from "@/lib/products/repository";
 import { normalizeSearchQuery } from "@/lib/products/search-query";
@@ -22,8 +23,20 @@ export default async function SearchPage({
   const results = "query" in parsed ? await searchProducts(parsed.query) : [];
 
   return (
-    <div className="flex flex-col gap-6">
-      <h1 className="text-3xl font-semibold">Search</h1>
+    <div className="mx-auto flex w-full max-w-4xl flex-col gap-7">
+      <header className="glass-panel rounded-[28px] px-5 py-7 sm:px-8">
+        <span className="bg-accent-soft text-accent flex size-12 items-center justify-center rounded-[18px]">
+          <Search className="size-6" aria-hidden />
+        </span>
+        <p className="eyebrow mt-5">Product finder</p>
+        <h1 className="mt-3 text-4xl font-bold tracking-tight sm:text-5xl">
+          Find a snack
+        </h1>
+        <p className="text-muted mt-3 max-w-2xl text-lg">
+          Search a product or brand, then open the result to see the current evidence
+          behind it.
+        </p>
+      </header>
       {malformed ? (
         <p className="text-muted" role="status">
           {parsed.error === "too_long"

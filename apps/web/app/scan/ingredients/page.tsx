@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
+import { ListChecks } from "lucide-react";
 import { IngredientCheckForm } from "@/components/public/ingredient-check-form";
 import { IngredientPhotoUpload } from "@/components/upload/ingredient-photo-upload";
 import { isIngredientPhotoEnabled } from "@/lib/features";
@@ -17,13 +18,19 @@ export const metadata: Metadata = pageMetadata({
 
 export default function IngredientScanPage() {
   return (
-    <div className="mx-auto flex w-full max-w-2xl flex-col gap-4">
-      <h1 className="text-3xl font-semibold">{title}</h1>
-      <p className="text-muted">
-        {photo
-          ? "Photograph the ingredient panel, then confirm the text before SnackCheck evaluates it."
-          : "Paste or type the ingredient list from the package. No photo is processed on this page."}
-      </p>
+    <div className="mx-auto flex w-full max-w-2xl flex-col gap-6">
+      <header className="glass-panel rounded-[28px] px-5 py-7 sm:px-8">
+        <span className="bg-sun-soft text-verify flex size-12 items-center justify-center rounded-[18px]">
+          <ListChecks className="size-6" aria-hidden />
+        </span>
+        <p className="eyebrow mt-5">Ingredient check</p>
+        <h1 className="mt-3 text-4xl font-bold tracking-tight">{title}</h1>
+        <p className="text-muted mt-3 text-lg">
+          {photo
+            ? "Photograph the ingredient panel, then confirm the text before SnackCheck evaluates it."
+            : "Paste or type the ingredient list from the package. No photo is processed on this page."}
+        </p>
+      </header>
       {photo ? (
         <Suspense fallback={<div data-ingredient-capture-slot="loading" />}>
           <IngredientPhotoUpload />
@@ -31,9 +38,11 @@ export default function IngredientScanPage() {
       ) : (
         <div data-ingredient-capture-slot="reserved" />
       )}
-      <Suspense>
-        <IngredientCheckForm />
-      </Suspense>
+      <div className="glass-panel rounded-[28px] p-5 sm:p-7">
+        <Suspense>
+          <IngredientCheckForm />
+        </Suspense>
+      </div>
     </div>
   );
 }

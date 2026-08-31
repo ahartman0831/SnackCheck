@@ -13,12 +13,12 @@ export function AppShell({ children }: { children: ReactNode }) {
   const chromeHidden = hideAppChrome(pathname);
 
   return (
-    <div className="flex min-h-full flex-col">
+    <div className="app-backdrop flex min-h-full flex-col">
       {chromeHidden ? null : <SiteHeader />}
       <main
         className={cn(
-          "mx-auto w-full min-w-0 max-w-5xl flex-1 px-4 py-8",
-          !chromeHidden && "pb-28 md:pb-8",
+          "mx-auto w-full min-w-0 max-w-6xl flex-1 px-4 py-7 sm:px-6 sm:py-10",
+          !chromeHidden && "pb-28 md:pb-12",
         )}
       >
         {children}

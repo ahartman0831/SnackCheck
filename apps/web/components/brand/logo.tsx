@@ -94,7 +94,9 @@ export function Wordmark({ className }: { className?: string }) {
       className={cn("flex items-center gap-2 font-semibold tracking-tight", className)}
     >
       <LogoMark className="size-8" />
-      <span>SnackCheck</span>
+      <span className="bg-gradient-to-r from-[var(--foreground)] to-[var(--accent)] bg-clip-text text-transparent">
+        SnackCheck
+      </span>
     </span>
   );
 }

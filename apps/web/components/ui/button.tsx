@@ -4,21 +4,21 @@ import { forwardRef, type ButtonHTMLAttributes } from "react";
 import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
-  "inline-flex touch-target items-center justify-center gap-2 rounded-[16px] px-4 text-sm font-semibold transition-[background-color,box-shadow,transform] duration-150 disabled:pointer-events-none disabled:opacity-50",
+  "inline-flex touch-target items-center justify-center gap-2 rounded-full px-5 text-sm font-bold transition-[background-color,border-color,box-shadow,transform] duration-200 disabled:pointer-events-none disabled:opacity-50 active:translate-y-px",
   {
     variants: {
       variant: {
         primary:
-          "bg-accent text-on-accent shadow-[var(--highlight)] hover:bg-accent-strong",
+          "bg-accent text-on-accent shadow-[var(--highlight),var(--shadow-soft)] hover:-translate-y-0.5 hover:bg-accent-strong hover:shadow-[var(--highlight),var(--shadow)]",
         secondary:
-          "border-border bg-surface text-foreground border shadow-[var(--highlight)] hover:bg-surface-strong",
-        ghost: "text-foreground hover:bg-surface-strong",
+          "border-border bg-surface/90 text-foreground border shadow-[var(--highlight)] hover:-translate-y-0.5 hover:border-accent/30 hover:bg-surface",
+        ghost: "text-foreground hover:bg-surface-strong hover:text-accent",
         danger: "bg-fail text-white hover:opacity-90",
       },
       size: {
         md: "min-h-11",
         sm: "min-h-11 px-3 text-sm",
-        lg: "min-h-12 px-5 text-base",
+        lg: "min-h-14 px-6 text-base",
       },
     },
     defaultVariants: {
