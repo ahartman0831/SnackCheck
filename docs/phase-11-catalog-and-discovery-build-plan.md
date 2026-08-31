@@ -1,6 +1,6 @@
 # Phase 11 catalog and discovery build plan
 
-**Status:** `IN PROGRESS` — PR #8 candidate ingestion foundation approved
+**Status:** `COMPLETE` for PR #8 candidate ingestion foundation; open and unmerged
 **Owner approval received 2026-08-31 for PR #8 only**
 **Prepared:** 2026-08-31  
 **Planning branch:** `codex/phase-11-catalog-foundation`; implementation begins only after approval
@@ -238,7 +238,7 @@ Lunchbox lists, favorites, personalization, retail availability, and conversatio
 
 ## 9. Delivery slices
 
-### PR #8 — Candidate ingestion foundation
+### PR #8 — Candidate ingestion foundation (`COMPLETE`, open and unmerged)
 
 - Candidate staging migration and RLS/pgTAP.
 - Shared source-record contract.
