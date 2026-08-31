@@ -1,9 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Dialog } from "@/components/ui/dialog";
+import { categoryLabel, discoveryHref } from "@/lib/products/discovery";
 
 export function ApprovedFilters({
   categories,
@@ -17,24 +17,16 @@ export function ApprovedFilters({
     brand?: string;
     freshness?: string;
     verification?: string;
+    packaged?: string;
   };
 }) {
-  const router = useRouter();
   const active = Object.values(values).filter(Boolean);
-
-  function apply(form: HTMLFormElement) {
-    const data = new FormData(form);
-    const params = new URLSearchParams();
-    for (const key of ["brand", "freshness", "verification"] as const) {
-      const value = String(data.get(key) ?? "");
-      if (value) params.set(key, value);
-    }
-    const next = params.toString();
-    router.push(next ? `/approved?${next}` : "/approved");
-  }
 
   const fields = (
     <div className="grid gap-3 sm:grid-cols-3">
+      {values.category ? (
+        <input type="hidden" name="category" value={values.category} />
+      ) : null}
       <label className="text-sm font-semibold">
         Brand
         <select
@@ -51,14 +43,14 @@ export function ApprovedFilters({
         </select>
       </label>
       <label className="text-sm font-semibold">
-        Freshness
+        Package format
         <select
-          name="freshness"
-          defaultValue={values.freshness ?? ""}
+          name="packaged"
+          defaultValue={values.packaged ?? ""}
           className="border-border bg-surface mt-1 min-h-11 w-full rounded-[16px] border px-3"
         >
-          <option value="">Any freshness</option>
-          <option value="CURRENT">CURRENT</option>
+          <option value="">Any format</option>
+          <option value="yes">Individually packaged</option>
         </select>
       </label>
       <label className="text-sm font-semibold">
@@ -86,18 +78,12 @@ export function ApprovedFilters({
             asChild
             variant={values.category === category ? "primary" : "secondary"}
           >
-            <Link href={`/approved/${category}`}>{category}</Link>
+            <Link href={discoveryHref({ category })}>{categoryLabel(category)}</Link>
           </Button>
         ))}
       </fieldset>
 
-      <form
-        className="hidden flex-col gap-3 md:flex"
-        onSubmit={(event) => {
-          event.preventDefault();
-          apply(event.currentTarget);
-        }}
-      >
+      <form className="hidden flex-col gap-3 md:flex" action="/approved" method="get">
         {fields}
         <div className="flex flex-wrap gap-3">
           <Button type="submit" variant="secondary">
@@ -117,13 +103,7 @@ export function ApprovedFilters({
           title="Filter passing products"
           description="These filters only use fields from the published approved projection."
         >
-          <form
-            className="flex flex-col gap-3"
-            onSubmit={(event) => {
-              event.preventDefault();
-              apply(event.currentTarget);
-            }}
-          >
+          <form className="flex flex-col gap-3" action="/approved" method="get">
             {fields}
             <Button type="submit">Apply filters</Button>
           </form>

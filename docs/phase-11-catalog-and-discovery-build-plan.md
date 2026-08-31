@@ -1,6 +1,6 @@
 # Phase 11 catalog and discovery build plan
 
-**Status:** PR #8 candidate ingestion foundation merged; PR #9 review/promotion complete, open and unmerged
+**Status:** PR #8 candidate ingestion and PR #9 protected review/promotion merged; PR #10 discovery and alternatives in progress
 **Owner approval received 2026-08-31 to merge PR #8 and proceed to the next protected slice**
 **Prepared:** 2026-08-31  
 **Current branch:** `codex/phase-11-catalog-review-promotion`
@@ -249,7 +249,7 @@ Lunchbox lists, favorites, personalization, retail availability, and conversatio
 
 **Acceptance:** CI applies the migration twice, generated types match, fixtures cover changed versions/duplicates/invalid GTINs/missing ingredients, no candidate becomes public, and production flags/data remain unchanged.
 
-### PR #9 — Admin review and promotion (`COMPLETE`, open and unmerged)
+### PR #9 — Admin review and promotion (`COMPLETE`, merged)
 
 - Candidate queue/detail pages and authorization.
 - Evidence comparison, reject, queue, and transactional promotion.
@@ -258,7 +258,7 @@ Lunchbox lists, favorites, personalization, retail availability, and conversatio
 
 **Acceptance:** disposable database tests prove unauthorized access fails, stale edits fail, external candidates cannot bypass review, promotion creates exactly one canonical evidence graph, and the approved projection remains empty without a published ruleset and reviewed formulation.
 
-### PR #10 — Discovery and alternatives
+### PR #10 — Discovery and alternatives (`IN PROGRESS`)
 
 - Approved projection exposes only supported discovery attributes.
 - Category-first “What can I bring?” experience.

@@ -23,7 +23,9 @@ export function PageState({
   );
 }
 
-export function SearchEmptyState() {
+export function SearchEmptyState({ query }: { query?: string }) {
+  const requestParams = new URLSearchParams({ request: "product" });
+  if (query) requestParams.set("q", query.slice(0, 80));
   return (
     <PageState
       title="No products matched that search"
@@ -35,6 +37,11 @@ export function SearchEmptyState() {
           </Button>
           <Button asChild variant="secondary">
             <Link href="/scan/ingredients">{ingredientActionLabel()}</Link>
+          </Button>
+          <Button asChild variant="ghost">
+            <Link href={`/scan/ingredients?${requestParams.toString()}`}>
+              Request this product
+            </Link>
           </Button>
         </div>
       }
@@ -102,6 +109,9 @@ export function ProductNotFoundState() {
           </Button>
           <Button asChild variant="secondary">
             <Link href="/scan/ingredients">{ingredientActionLabel()}</Link>
+          </Button>
+          <Button asChild variant="ghost">
+            <Link href="/scan/ingredients?request=product">Request this product</Link>
           </Button>
         </div>
       }

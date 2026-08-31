@@ -66,6 +66,10 @@ function cardFromDev(item: ProductPageModel): PublicProductCard {
     }),
     formulationConflict: item.product.formulationConflict,
     rulesetHash: item.classroom.rulesetHash || null,
+    individuallyPackaged: item.product.individuallyPackaged,
+    evidenceTitle: item.formulation?.sourceTitle ?? null,
+    evidenceUrl: item.formulation?.sourceUrl ?? null,
+    evidenceObservedAt: item.formulation?.lastObservedAt ?? null,
   };
 }
 
@@ -272,6 +276,64 @@ export async function listApprovedProducts(filters?: {
   return (data ?? []).map((row) => mapLiveSearchCard(row));
 }
 
+export async function listApprovedDiscoveryProducts(filters?: {
+  category?: string;
+  brand?: string;
+  verification?: "VERIFIED" | "PACKAGE_VERIFIED";
+  individuallyPackaged?: boolean;
+  limit?: number;
+  offset?: number;
+}): Promise<PublicProductCard[]> {
+  const source = approvedCatalogSource({
+    hasAdminClient: Boolean(createAdminClient()),
+    nodeEnv: nodeEnv(),
+    devCatalogFlag: process.env.DEV_CATALOG_ENABLED,
+  });
+  if (source === "dev-catalog") {
+    const cards = await listApprovedProducts({
+      category: filters?.category,
+      brand: filters?.brand,
+    });
+    return cards.filter((card) => {
+      if (filters?.verification && card.verificationStatus !== filters.verification) {
+        return false;
+      }
+      if (
+        filters?.individuallyPackaged !== undefined &&
+        card.individuallyPackaged !== filters.individuallyPackaged
+      ) {
+        return false;
+      }
+      return true;
+    });
+  }
+
+  const admin = createAdminClient();
+  if (!admin) return [];
+  const { data, error } = await admin.rpc("list_approved_discovery_products", {
+    filter_category: filters?.category,
+    filter_brand: filters?.brand,
+    filter_verification: filters?.verification,
+    filter_individually_packaged: filters?.individuallyPackaged,
+    result_limit: Math.min(Math.max(filters?.limit ?? 100, 1), 500),
+    result_offset: Math.max(filters?.offset ?? 0, 0),
+  });
+  if (error) return [];
+  return (data ?? []).map((row) => mapLiveSearchCard(row));
+}
+
+export async function listApprovedAlternatives(input: {
+  category: string | null;
+  excludeProductId: string;
+  limit?: number;
+}): Promise<PublicProductCard[]> {
+  if (!input.category) return [];
+  const products = await listApprovedDiscoveryProducts({ category: input.category });
+  return products
+    .filter((product) => product.id !== input.excludeProductId)
+    .slice(0, Math.min(Math.max(input.limit ?? 3, 1), 6));
+}
+
 export async function listPublicSitemapEntries(): Promise<
   Array<{ kind: string; path: string }>
 > {
@@ -354,6 +416,35 @@ async function hydrate(
     sourceTitle: null,
     sourceUrl: null,
   };
+  const admin = createAdminClient();
+  if (admin) {
+    const { data: sources } = await admin
+      .from("formulation_sources")
+      .select("source_type,source_reference,source_url,observed_at")
+      .eq("formulation_id", formulation.id)
+      .in("source_type", ["MANUFACTURER", "PACKAGE_PHOTO"])
+      .order("observed_at", { ascending: false })
+      .limit(10);
+    const preferredType =
+      formulation.verificationStatus === "PACKAGE_VERIFIED"
+        ? "PACKAGE_PHOTO"
+        : "MANUFACTURER";
+    const source =
+      sources?.find((candidate) => candidate.source_type === preferredType) ??
+      sources?.[0];
+    if (source) {
+      formulation.sourceType = source.source_type;
+      formulation.sourceTitle =
+        source.source_type === "PACKAGE_PHOTO"
+          ? "Reviewed package photograph"
+          : source.source_reference;
+      formulation.sourceUrl =
+        source.source_type === "MANUFACTURER" && source.source_url?.startsWith("https://")
+          ? source.source_url
+          : null;
+      formulation.lastObservedAt = source.observed_at;
+    }
+  }
   const input = {
     formulation: {
       id: formulation.id,

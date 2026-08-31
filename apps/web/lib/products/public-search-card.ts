@@ -23,6 +23,10 @@ export interface LiveSearchRow {
   freshness_state?: string | null;
   formulation_conflict?: boolean | null;
   ruleset_hash?: string | null;
+  individually_packaged?: boolean | null;
+  evidence_title?: string | null;
+  evidence_url?: string | null;
+  evidence_observed_at?: string | null;
   rank?: number | null;
   similarity?: number | null;
 }
@@ -51,5 +55,9 @@ export function mapLiveSearchCard(row: LiveSearchRow): PublicSearchCard {
         : "UNKNOWN",
     formulationConflict: Boolean(row.formulation_conflict),
     rulesetHash: row.ruleset_hash ?? null,
+    individuallyPackaged: row.individually_packaged ?? null,
+    evidenceTitle: row.evidence_title ?? null,
+    evidenceUrl: row.evidence_url ?? null,
+    evidenceObservedAt: row.evidence_observed_at ?? null,
   };
 }

@@ -180,7 +180,7 @@ export function ProductSearch({
         <ServerErrorState onRetry={() => setRetryToken((value) => value + 1)} />
       ) : null}
       {status === "empty" && !tooShort && online && !showOffline ? (
-        <SearchEmptyState />
+        <SearchEmptyState query={trimmed} />
       ) : null}
       {live && status !== "loading" && visibleResults.length > 0 ? (
         <ul id={listId} role="listbox" className="grid gap-3">

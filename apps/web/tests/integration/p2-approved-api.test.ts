@@ -1,35 +1,38 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-const listApprovedProducts = vi.fn();
+const listApprovedDiscoveryProducts = vi.fn();
 
 vi.mock("server-only", () => ({}));
 vi.mock("@/lib/products/repository", () => ({
-  listApprovedProducts: (...args: unknown[]) => listApprovedProducts(...args),
+  listApprovedDiscoveryProducts: (...args: unknown[]) =>
+    listApprovedDiscoveryProducts(...args),
 }));
 
 import { GET } from "../../app/api/v1/products/approved/route";
 
 describe("GET /api/v1/products/approved", () => {
   beforeEach(() => {
-    listApprovedProducts.mockReset();
+    listApprovedDiscoveryProducts.mockReset();
   });
 
   it("returns the live approved projection instead of a hard-coded empty array", async () => {
-    listApprovedProducts.mockResolvedValue([]);
+    listApprovedDiscoveryProducts.mockResolvedValue([]);
     const response = await GET(
       new Request("http://localhost/api/v1/products/approved?category=bars"),
     );
     expect(response.status).toBe(200);
-    expect(listApprovedProducts).toHaveBeenCalledWith({
+    expect(listApprovedDiscoveryProducts).toHaveBeenCalledWith({
       category: "bars",
       brand: undefined,
+      verification: undefined,
+      individuallyPackaged: undefined,
     });
     const body = await response.json();
     expect(body.data).toEqual([]);
   });
 
   it("passes through current PASS cards with trust and freshness", async () => {
-    listApprovedProducts.mockResolvedValue([
+    listApprovedDiscoveryProducts.mockResolvedValue([
       {
         id: "prod-1",
         slug: "plain-oat-bars",
@@ -46,6 +49,10 @@ describe("GET /api/v1/products/approved", () => {
         freshnessState: "CURRENT",
         formulationConflict: false,
         rulesetHash: "published-hash",
+        individuallyPackaged: true,
+        evidenceTitle: "Manufacturer page",
+        evidenceUrl: "https://manufacturer.example/item",
+        evidenceObservedAt: "2026-08-01T00:00:00.000Z",
       },
     ]);
     const response = await GET(new Request("http://localhost/api/v1/products/approved"));
@@ -54,5 +61,7 @@ describe("GET /api/v1/products/approved", () => {
     expect(body.data[0].verificationStatus).toBe("VERIFIED");
     expect(body.data[0].freshnessState).toBe("CURRENT");
     expect(body.data[0].rulesetHash).toBe("published-hash");
+    expect(body.data[0].individuallyPackaged).toBe(true);
+    expect(body.data[0].evidenceUrl).toBe("https://manufacturer.example/item");
   });
 });
