@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { AdminSignOutButton } from "@/components/admin/admin-sign-out-button";
 import { requireAdmin } from "@/lib/auth/require-admin";
 
 export const metadata: Metadata = {
@@ -41,6 +42,16 @@ export default async function AdminLayout({ children }: { children: React.ReactN
             {label}
           </Link>
         ))}
+        {!auth.allowed ? (
+          <Link
+            href="/admin/login"
+            className="bg-accent text-on-accent rounded-full px-4 py-2 text-sm font-semibold"
+          >
+            Reviewer sign-in
+          </Link>
+        ) : (
+          <AdminSignOutButton />
+        )}
       </div>
       <main>{children}</main>
     </div>
