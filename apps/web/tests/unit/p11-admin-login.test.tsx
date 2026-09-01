@@ -93,6 +93,41 @@ describe("staging reviewer sign-in", () => {
     expect(mocks.replace).not.toHaveBeenCalled();
   });
 
+  it("allows a recent code when staging email delivery is rate limited", async () => {
+    mocks.signInWithOtp.mockResolvedValue({
+      error: { code: "over_email_send_rate_limit", status: 429 },
+    });
+    mocks.createBrowserSupabaseClient.mockReturnValue({
+      auth: { signInWithOtp: mocks.signInWithOtp, verifyOtp: mocks.verifyOtp },
+    });
+    render(<AdminLoginForm />);
+
+    fireEvent.change(screen.getByLabelText("Email address"), {
+      target: { value: "reviewer@example.com" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: /email me/i }));
+
+    expect(await screen.findByLabelText("Sign-in code")).toBeInTheDocument();
+    expect(screen.getByRole("status")).toHaveTextContent(
+      "temporarily paused new sign-in emails",
+    );
+  });
+
+  it("lets a reviewer enter a recent code without requesting another email", async () => {
+    mocks.createBrowserSupabaseClient.mockReturnValue({
+      auth: { signInWithOtp: mocks.signInWithOtp, verifyOtp: mocks.verifyOtp },
+    });
+    render(<AdminLoginForm />);
+
+    fireEvent.change(screen.getByLabelText("Email address"), {
+      target: { value: "reviewer@example.com" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "I already have a code" }));
+
+    expect(screen.getByLabelText("Sign-in code")).toBeInTheDocument();
+    expect(mocks.signInWithOtp).not.toHaveBeenCalled();
+  });
+
   it("does not imply access was granted when Supabase is unavailable", async () => {
     mocks.createBrowserSupabaseClient.mockReturnValue(null);
     render(<AdminLoginForm />);
@@ -100,7 +135,9 @@ describe("staging reviewer sign-in", () => {
     fireEvent.change(screen.getByLabelText("Email address"), {
       target: { value: "reviewer@example.com" },
     });
-    fireEvent.submit(screen.getByRole("button").closest("form")!);
+    fireEvent.submit(
+      screen.getByRole("button", { name: "Email me a sign-in code" }).closest("form")!,
+    );
 
     expect(await screen.findByRole("status")).toHaveTextContent("not configured");
   });
