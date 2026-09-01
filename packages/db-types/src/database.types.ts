@@ -412,7 +412,13 @@ export type Database = {
           candidate_state: string
           canonical_formulation_id: string | null
           canonical_product_id: string | null
+          catalog_automation_route: string | null
           category: string | null
+          classroom_relevance_assessed_at: string | null
+          classroom_relevance_policy_version: string | null
+          classroom_relevance_reasons: Json
+          classroom_relevance_score: number | null
+          classroom_relevance_tier: string | null
           created_at: string
           discontinued: boolean
           engine_version: string
@@ -452,7 +458,13 @@ export type Database = {
           candidate_state: string
           canonical_formulation_id?: string | null
           canonical_product_id?: string | null
+          catalog_automation_route?: string | null
           category?: string | null
+          classroom_relevance_assessed_at?: string | null
+          classroom_relevance_policy_version?: string | null
+          classroom_relevance_reasons?: Json
+          classroom_relevance_score?: number | null
+          classroom_relevance_tier?: string | null
           created_at?: string
           discontinued?: boolean
           engine_version: string
@@ -492,7 +504,13 @@ export type Database = {
           candidate_state?: string
           canonical_formulation_id?: string | null
           canonical_product_id?: string | null
+          catalog_automation_route?: string | null
           category?: string | null
+          classroom_relevance_assessed_at?: string | null
+          classroom_relevance_policy_version?: string | null
+          classroom_relevance_reasons?: Json
+          classroom_relevance_score?: number | null
+          classroom_relevance_tier?: string | null
           created_at?: string
           discontinued?: boolean
           engine_version?: string
@@ -2045,6 +2063,10 @@ export type Database = {
           p_request_id: string
           p_ruleset_id: string
         }
+        Returns: Json
+      }
+      apply_catalog_relevance_assessments: {
+        Args: { p_assessments: Json; p_confirmation: string; p_run: Json }
         Returns: Json
       }
       canonical_json: { Args: { value: Json }; Returns: string }

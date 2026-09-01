@@ -25,21 +25,33 @@ insert into public.catalog_source_records (
   ('82000000-0000-4000-8000-000000000003','81000000-0000-4000-8000-000000000001','USDA_FDC','three','test',repeat('1',64),'012345678929','00012345678929','Fixture Foods','Warning','Cereal','Corn, salt','corn salt',repeat('2',64),'US','https://fdc.nal.usda.gov/fdc-app.html#/food-details/three','FDC three','CC0-1.0','PASS','["PARSER_WARNING"]','test',repeat('d',64),'SCREENED_PASS',false),
   ('82000000-0000-4000-8000-000000000004','81000000-0000-4000-8000-000000000001','USDA_FDC','four','test',repeat('3',64),'012345678936','00012345678936','Fixture Foods','Failed','Candy','Sugar','sugar',repeat('4',64),'US','https://fdc.nal.usda.gov/fdc-app.html#/food-details/four','FDC four','CC0-1.0','FAIL','[]','test',repeat('d',64),'SCREENED_FAIL',false);
 
+update public.catalog_source_records
+set classroom_relevance_policy_version = 'classroom-use-v2',
+    classroom_relevance_score = 80,
+    classroom_relevance_tier = 'HIGH',
+    catalog_automation_route = 'AUTO_EVIDENCE',
+    classroom_relevance_reasons = '["CLASSROOM_CATEGORY_SNACKS"]'::jsonb,
+    classroom_relevance_assessed_at = now()
+where id in (
+  '82000000-0000-4000-8000-000000000001',
+  '82000000-0000-4000-8000-000000000002'
+);
+
 set local role service_role;
 select throws_ok(
-  $$select public.queue_catalog_candidate_shortlist(array['82000000-0000-4000-8000-000000000001'::uuid],jsonb_build_object('algorithmVersion','school-use-v1','targetCount',1,'selectionHash',repeat('a',64),'groupCounts','{"SNACKS":1}'::jsonb),'WRONG')$$,
+  $$select public.queue_catalog_candidate_shortlist(array['82000000-0000-4000-8000-000000000001'::uuid],jsonb_build_object('algorithmVersion','classroom-use-v2','targetCount',1,'selectionHash',repeat('a',64),'groupCounts','{"SNACKS":1}'::jsonb),'WRONG')$$,
   '22023', 'exact staging shortlist confirmation is required', 'exact confirmation is required'
 );
 select throws_ok(
-  $$select public.queue_catalog_candidate_shortlist(array['82000000-0000-4000-8000-000000000003'::uuid],jsonb_build_object('algorithmVersion','school-use-v1','targetCount',1,'selectionHash',repeat('a',64),'groupCounts','{"BREAKFAST":1}'::jsonb),'QUEUE_CATALOG_SHORTLIST_TO_STAGING')$$,
+  $$select public.queue_catalog_candidate_shortlist(array['82000000-0000-4000-8000-000000000003'::uuid],jsonb_build_object('algorithmVersion','classroom-use-v2','targetCount',1,'selectionHash',repeat('a',64),'groupCounts','{"BREAKFAST":1}'::jsonb),'QUEUE_CATALOG_SHORTLIST_TO_STAGING')$$,
   '40001', 'shortlist contains an ineligible or changed candidate', 'quality warnings cannot enter the shortlist'
 );
 select throws_ok(
-  $$select public.queue_catalog_candidate_shortlist(array['82000000-0000-4000-8000-000000000004'::uuid],jsonb_build_object('algorithmVersion','school-use-v1','targetCount',1,'selectionHash',repeat('a',64),'groupCounts','{"TREATS":1}'::jsonb),'QUEUE_CATALOG_SHORTLIST_TO_STAGING')$$,
+  $$select public.queue_catalog_candidate_shortlist(array['82000000-0000-4000-8000-000000000004'::uuid],jsonb_build_object('algorithmVersion','classroom-use-v2','targetCount',1,'selectionHash',repeat('a',64),'groupCounts','{"TREATS":1}'::jsonb),'QUEUE_CATALOG_SHORTLIST_TO_STAGING')$$,
   '40001', 'shortlist contains an ineligible or changed candidate', 'failed screens cannot enter the shortlist'
 );
 select lives_ok(
-  $$select public.queue_catalog_candidate_shortlist(array['82000000-0000-4000-8000-000000000001'::uuid,'82000000-0000-4000-8000-000000000002'::uuid],jsonb_build_object('algorithmVersion','school-use-v1','targetCount',2,'selectionHash',repeat('b',64),'groupCounts','{"SNACKS":1,"BREAKFAST":1}'::jsonb),'QUEUE_CATALOG_SHORTLIST_TO_STAGING')$$,
+  $$select public.queue_catalog_candidate_shortlist(array['82000000-0000-4000-8000-000000000001'::uuid,'82000000-0000-4000-8000-000000000002'::uuid],jsonb_build_object('algorithmVersion','classroom-use-v2','targetCount',2,'selectionHash',repeat('b',64),'groupCounts','{"SNACKS":1,"BREAKFAST":1}'::jsonb),'QUEUE_CATALOG_SHORTLIST_TO_STAGING')$$,
   'service role can queue an eligible bounded shortlist'
 );
 
@@ -50,4 +62,3 @@ select is((select count(*) from public.products),0::bigint,'shortlisting cannot 
 
 select * from finish();
 rollback;
-

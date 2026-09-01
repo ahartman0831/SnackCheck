@@ -33,6 +33,11 @@ type CandidateRow = {
   engine_version: string;
   ruleset_hash: string;
   candidate_state: string;
+  catalog_automation_route?: string | null;
+  classroom_relevance_policy_version?: string | null;
+  classroom_relevance_score?: number | null;
+  classroom_relevance_tier?: string | null;
+  classroom_relevance_reasons?: Json;
   canonical_product_id: string | null;
   canonical_formulation_id: string | null;
   review_reason?: string | null;
@@ -44,6 +49,7 @@ type CandidateRow = {
 
 export type CatalogCandidateFilters = {
   provider: "ALL" | "USDA_FDC" | "OPEN_FOOD_FACTS";
+  route: "ALL" | "AUTO_EVIDENCE" | "HUMAN_EXCEPTION" | "DEPRIORITIZED";
   state: string;
   screen: "ALL" | "PASS" | "FAIL" | "VERIFY";
   query: string;
@@ -61,6 +67,9 @@ export type CatalogCandidateSummary = {
   state: string;
   qualityFlags: string[];
   updatedAt: string;
+  relevanceScore: number | null;
+  relevanceTier: string | null;
+  automationRoute: string | null;
 };
 
 export type CatalogCandidateDetail = CatalogCandidateSummary & {
@@ -86,6 +95,8 @@ export type CatalogCandidateDetail = CatalogCandidateSummary & {
   reviewedAt: string | null;
   canonicalProductId: string | null;
   canonicalFormulationId: string | null;
+  relevancePolicyVersion: string | null;
+  relevanceReasons: string[];
   existingProduct: null | {
     id: string;
     brand: string;
@@ -134,10 +145,15 @@ export function parseCatalogCandidateFilters(
 ): CatalogCandidateFilters {
   const provider = single(values.provider);
   const screen = single(values.screen);
+  const route = single(values.route);
   const state = single(values.state).slice(0, 40);
   return {
     provider:
       provider === "USDA_FDC" || provider === "OPEN_FOOD_FACTS" ? provider : "ALL",
+    route:
+      route === "ALL" || route === "HUMAN_EXCEPTION" || route === "DEPRIORITIZED"
+        ? route
+        : "AUTO_EVIDENCE",
     state: state || "REVIEW_QUEUED",
     screen:
       screen === "PASS" || screen === "FAIL" || screen === "VERIFY" ? screen : "ALL",
@@ -155,6 +171,8 @@ export async function listCatalogCandidates(
   if (!admin) return null;
   let query = admin.from("catalog_source_records").select("*");
   if (filters.provider !== "ALL") query = query.eq("provider", filters.provider);
+  if (filters.route !== "ALL")
+    query = query.eq("catalog_automation_route", filters.route);
   if (filters.state !== "ALL") query = query.eq("candidate_state", filters.state);
   if (filters.screen !== "ALL") query = query.eq("screen_status", filters.screen);
   if (filters.query) {
@@ -178,6 +196,9 @@ export async function listCatalogCandidates(
     state: row.candidate_state,
     qualityFlags: strings(row.quality_flags),
     updatedAt: row.updated_at,
+    relevanceScore: row.classroom_relevance_score ?? null,
+    relevanceTier: row.classroom_relevance_tier ?? null,
+    automationRoute: row.catalog_automation_route ?? null,
   }));
 }
 
@@ -260,6 +281,11 @@ export async function getCatalogCandidate(
       reviewedAt: row.reviewed_at ?? null,
       canonicalProductId: row.canonical_product_id,
       canonicalFormulationId: row.canonical_formulation_id,
+      relevanceScore: row.classroom_relevance_score ?? null,
+      relevanceTier: row.classroom_relevance_tier ?? null,
+      automationRoute: row.catalog_automation_route ?? null,
+      relevancePolicyVersion: row.classroom_relevance_policy_version ?? null,
+      relevanceReasons: strings(row.classroom_relevance_reasons ?? []),
       existingProduct: productResult.data
         ? {
             ...productResult.data,

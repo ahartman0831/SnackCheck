@@ -19,15 +19,27 @@ The consumer-style public UI refresh is merged by PR [#12](https://github.com/ah
 
 The deterministic Phase 11 shortlist is merged by PR [#13](https://github.com/ahartman0831/SnackCheck/pull/13) at `c47f0ca`. After all five required checks passed, migration `0031` was applied only to owner-designated staging project `lhnbxjvqllohlbtdncyg`. The exact guarded operation queued 190 candidates for private evidence review. Read-back verified 190 matching audit rows, 273 candidates still in `SCREENED_PASS`, and zero products and formulations. Nothing was approved, promoted, or published; AI and production were not used.
 
+Phase 11 classroom automation is in progress on the `classroom-use-v2` slice. The
+original category-balanced USDA queue remains private staging test data and is not a
+manual workload for the owner. The replacement deterministic policy scores classroom
+usefulness, excludes pantry/bulk/preparation items such as the individually portioned
+honey record, and routes records to automatic evidence collection, human exception, or
+deprioritized handling. A read-only run assessed all 489 staging records: 95 automatic
+evidence candidates, 6 human exceptions, and 388 deprioritized; no staging data changed.
+Migration `0032` adds bounded, audited assessment persistence but has not been applied to
+staging or production. This slice does not publish products and does not allow AI to
+override deterministic compliance.
+
 The first ten-candidate evidence pilot is recorded in
 [`docs/catalog-evidence-pilot-001.md`](catalog-evidence-pilot-001.md). Two candidates have
 strong enough first-party evidence to place before a human reviewer, three require a
 same-package barcode and ingredient-panel photo, and five remain on hold. Research did not
 promote or publish a product. The current Phase 11 branch also adds one-time email sign-in
 for the private reviewer workspace; authentication still grants no access unless the exact
-user has an active `admin_members` role. The staging database currently has no active
-reviewer member, so all promotion remains blocked until the owner signs in and reviewer-only
-membership is deliberately assigned.
+user has an active `admin_members` role. The original pilot stopped with no active
+reviewer member. On 2026-09-01 the owner explicitly
+authorized the single signed-in staging account as an active `REVIEWER`; the bootstrap was
+audit logged. No regulatory-admin or super-admin authority was granted.
 
 The first staging sign-in exposed a cross-browser PKCE failure: a fresh one-time link reached
 the correct Vercel callback but could not complete when the request and email click occurred

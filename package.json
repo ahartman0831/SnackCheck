@@ -28,6 +28,7 @@
     "check-ingredients": "pnpm exec tsx scripts/check-ingredients.ts",
     "import-products": "pnpm exec tsx scripts/import-products.ts",
     "import:candidates": "pnpm --filter web exec tsx scripts/import-catalog-candidates.ts",
+    "assess:candidates": "pnpm --filter web exec tsx scripts/assess-catalog-candidates.ts",
     "shortlist:candidates": "pnpm --filter web exec tsx scripts/shortlist-catalog-candidates.ts",
     "ops:synthetic": "node scripts/run-synthetic-checks.mjs",
     "ops:retention": "pnpm exec tsx scripts/cleanup-expired-submission-assets.ts"
