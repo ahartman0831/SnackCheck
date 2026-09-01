@@ -409,10 +409,10 @@ export type Database = {
         Row: {
           attribution: string | null
           brand: string
-          catalog_automation_route: string | null
           candidate_state: string
           canonical_formulation_id: string | null
           canonical_product_id: string | null
+          catalog_automation_route: string | null
           category: string | null
           classroom_relevance_assessed_at: string | null
           classroom_relevance_policy_version: string | null
@@ -455,10 +455,10 @@ export type Database = {
         Insert: {
           attribution?: string | null
           brand: string
-          catalog_automation_route?: string | null
           candidate_state: string
           canonical_formulation_id?: string | null
           canonical_product_id?: string | null
+          catalog_automation_route?: string | null
           category?: string | null
           classroom_relevance_assessed_at?: string | null
           classroom_relevance_policy_version?: string | null
@@ -501,10 +501,10 @@ export type Database = {
         Update: {
           attribution?: string | null
           brand?: string
-          catalog_automation_route?: string | null
           candidate_state?: string
           canonical_formulation_id?: string | null
           canonical_product_id?: string | null
+          catalog_automation_route?: string | null
           category?: string | null
           classroom_relevance_assessed_at?: string | null
           classroom_relevance_policy_version?: string | null
