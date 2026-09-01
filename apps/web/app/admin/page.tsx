@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { getOperationsSnapshot } from "@/lib/admin/operations";
 
 function formatAge(value: string | null) {
@@ -16,6 +17,12 @@ export default async function AdminDashboardPage() {
           Sign in with an account that is actively allowlisted as an administrator. No
           operational data was loaded.
         </p>
+        <Link
+          href="/admin/login"
+          className="bg-accent text-on-accent mt-5 inline-block rounded-full px-5 py-3 font-semibold"
+        >
+          Sign in securely
+        </Link>
       </div>
     );
 
