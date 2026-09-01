@@ -36,7 +36,7 @@ export function AdminLoginForm({ next = "/admin/catalog" }: { next?: string }) {
       );
     } else {
       setAwaitingCode(true);
-      setMessage("Enter the six-digit code from your SnackCheck email.");
+      setMessage("Enter the one-time code from your SnackCheck email.");
     }
     setBusy(false);
   }
@@ -79,23 +79,27 @@ export function AdminLoginForm({ next = "/admin/catalog" }: { next?: string }) {
           .
         </p>
         <label className="text-sm font-semibold" htmlFor="admin-code">
-          Six-digit sign-in code
+          Sign-in code
         </label>
         <input
           id="admin-code"
           name="code"
           type="text"
-          inputMode="numeric"
+          inputMode="text"
           autoComplete="one-time-code"
-          pattern="[0-9]{6}"
-          maxLength={6}
+          autoCapitalize="characters"
+          pattern="[A-Za-z0-9]{6,10}"
+          minLength={6}
+          maxLength={10}
           required
           value={code}
-          onChange={(event) => setCode(event.target.value.replace(/\D/g, "").slice(0, 6))}
+          onChange={(event) =>
+            setCode(event.target.value.replace(/[^A-Za-z0-9]/g, "").slice(0, 10))
+          }
           className="border-border bg-surface rounded-xl border px-4 py-3 text-center font-mono text-2xl tracking-[0.3em]"
           aria-describedby="admin-login-status"
         />
-        <Button type="submit" disabled={busy || code.length !== 6}>
+        <Button type="submit" disabled={busy || code.length < 6}>
           {busy ? "Checking code…" : "Sign in"}
         </Button>
         <div className="flex flex-wrap gap-4 text-sm">
