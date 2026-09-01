@@ -22,10 +22,11 @@ export default async function AdminCatalogPage({
     <div>
       <h1 className="text-2xl font-semibold">Catalog candidates</h1>
       <p className="text-muted mt-3">
-        External datasets suggest products. Only a reviewer with independent manufacturer
-        evidence can promote one into SnackCheck.
+        Automated relevance, evidence collection, and deterministic ingredient rules do
+        the routine work. Use this workspace for exceptions and quality sampling; a USDA
+        lead alone never verifies a current package.
       </p>
-      <form className="border-border mt-6 grid gap-3 rounded-2xl border p-4 md:grid-cols-5">
+      <form className="border-border mt-6 grid gap-3 rounded-2xl border p-4 md:grid-cols-6">
         <label className="text-sm font-semibold md:col-span-2">
           Product, brand, or GTIN
           <input
@@ -62,6 +63,19 @@ export default async function AdminCatalogPage({
             <option value="OPEN_FOOD_FACTS">Open Food Facts</option>
           </select>
         </label>
+        <label className="text-sm font-semibold">
+          Automation route
+          <select
+            name="route"
+            defaultValue={filters.route}
+            className="border-border bg-surface mt-1 block w-full rounded-xl border px-3 py-2"
+          >
+            <option value="AUTO_EVIDENCE">Automatic evidence</option>
+            <option value="HUMAN_EXCEPTION">Human exceptions</option>
+            <option value="DEPRIORITIZED">Deprioritized</option>
+            <option value="ALL">All routes</option>
+          </select>
+        </label>
         <div className="flex items-end gap-2">
           <button className="bg-accent text-on-accent rounded-xl px-4 py-2 font-semibold">
             Apply
@@ -85,7 +99,8 @@ export default async function AdminCatalogPage({
                 </p>
               </div>
               <span className="bg-elevated rounded-full px-3 py-2 text-sm font-semibold">
-                {candidate.state.replaceAll("_", " ")}
+                {candidate.automationRoute?.replaceAll("_", " ") ??
+                  candidate.state.replaceAll("_", " ")}
               </span>
             </div>
             {candidate.qualityFlags.length ? (
@@ -93,11 +108,17 @@ export default async function AdminCatalogPage({
                 Quality flags: {candidate.qualityFlags.join(", ")}
               </p>
             ) : null}
+            {candidate.relevanceTier ? (
+              <p className="text-muted mt-2 text-sm">
+                Classroom relevance: {candidate.relevanceTier.toLowerCase()} · score{" "}
+                {candidate.relevanceScore}
+              </p>
+            ) : null}
             <Link
               href={`/admin/catalog/${candidate.id}`}
               className="mt-4 inline-block text-sm font-semibold underline"
             >
-              Review evidence
+              Inspect candidate
             </Link>
           </article>
         ))}

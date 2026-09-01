@@ -1,5 +1,10 @@
 # Phase 11 category-balanced catalog shortlist
 
+> Historical staging pilot: `school-use-v1` proved the bounded queue workflow but was
+> superseded by the classroom-relevance design in
+> [`phase-11-classroom-catalog-automation.md`](phase-11-classroom-catalog-automation.md).
+> The owner is not expected to manually review this 190-record pilot queue.
+
 Date: 2026-08-31
 
 ## Purpose

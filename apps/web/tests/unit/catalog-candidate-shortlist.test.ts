@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  assessClassroomRelevance,
   classifyShortlistCategory,
   selectCatalogShortlist,
   type ShortlistCandidate,
@@ -41,15 +42,61 @@ describe("catalog candidate shortlist", () => {
     expect(classifyShortlistCategory("Seasoning Mixes")).toBeNull();
     expect(classifyShortlistCategory("Cake, Cookie & Cupcake Mixes")).toBeNull();
     expect(classifyShortlistCategory("Frozen Bread & Dough")).toBeNull();
+    expect(classifyShortlistCategory("Honey")).toBeNull();
+    expect(classifyShortlistCategory("Jam, Jelly & Fruit Spreads")).toBeNull();
+  });
+
+  it("routes portable snacks to evidence automation and pantry items away", () => {
+    expect(
+      assessClassroomRelevance(
+        candidate(1, "Chips, Pretzels & Snacks", {
+          productName: "Single-serve pretzel snack packs",
+        }),
+      ),
+    ).toMatchObject({ tier: "HIGH", route: "AUTO_EVIDENCE", group: "SNACKS" });
+    expect(
+      assessClassroomRelevance(candidate(2, "Honey", { productName: "Pure raw honey" })),
+    ).toMatchObject({ tier: "EXCLUDED", route: "DEPRIORITIZED", group: null });
+    expect(
+      assessClassroomRelevance(
+        candidate(3, "Popcorn, Peanuts, Seeds & Related Snacks", {
+          brand: "Example Foodservice",
+          productName: "Bulk popcorn",
+        }),
+      ),
+    ).toMatchObject({ tier: "EXCLUDED", route: "DEPRIORITIZED" });
+  });
+
+  it("sends ingredient uncertainty to the exception queue instead of automation", () => {
+    expect(
+      assessClassroomRelevance(
+        candidate(1, "Snack, Energy & Granola Bars", {
+          productName: "Chocolate granola snack bar",
+          screenStatus: "VERIFY",
+        }),
+      ),
+    ).toMatchObject({ tier: "HIGH", route: "HUMAN_EXCEPTION" });
   });
 
   it("rejects unsafe states and quality warnings", () => {
     const rows = [
-      candidate(1, "Cereal"),
-      candidate(2, "Cereal", { screenStatus: "VERIFY" }),
-      candidate(3, "Cereal", { candidateState: "REVIEW_QUEUED" }),
-      candidate(4, "Cereal", { discontinued: true }),
-      candidate(5, "Cereal", { qualityFlags: ["PARSER_WARNING"] }),
+      candidate(1, "Chips, Pretzels & Snacks", { productName: "Pretzel snack" }),
+      candidate(2, "Chips, Pretzels & Snacks", {
+        productName: "Pretzel snack",
+        screenStatus: "VERIFY",
+      }),
+      candidate(3, "Chips, Pretzels & Snacks", {
+        productName: "Pretzel snack",
+        candidateState: "REVIEW_QUEUED",
+      }),
+      candidate(4, "Chips, Pretzels & Snacks", {
+        productName: "Pretzel snack",
+        discontinued: true,
+      }),
+      candidate(5, "Chips, Pretzels & Snacks", {
+        productName: "Pretzel snack",
+        qualityFlags: ["PARSER_WARNING"],
+      }),
     ];
     expect(selectCatalogShortlist(rows, 10).map((row) => row.id)).toEqual([rows[0]?.id]);
   });
@@ -62,8 +109,17 @@ describe("catalog candidate shortlist", () => {
       "Sport Drinks",
       "Cookies & Biscuits",
     ];
+    const names = [
+      "Individual pretzel snack packs",
+      "Mini cereal snack cups",
+      "Single-serve cheese snack pack",
+      "Juice drink boxes",
+      "Mini sandwich cookies",
+    ];
     const rows = Array.from({ length: 250 }, (_, index) =>
-      candidate(index + 1, categories[index % categories.length] ?? "Other"),
+      candidate(index + 1, categories[index % categories.length] ?? "Other", {
+        productName: names[index % names.length] ?? "Classroom snack",
+      }),
     );
     const first = selectCatalogShortlist(rows, 250);
     const second = selectCatalogShortlist([...rows].reverse(), 250);

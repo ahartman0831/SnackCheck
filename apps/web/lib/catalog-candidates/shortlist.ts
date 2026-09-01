@@ -1,4 +1,5 @@
-export const CATALOG_SHORTLIST_VERSION = "school-use-v1";
+export const CATALOG_RELEVANCE_VERSION = "classroom-use-v2";
+export const CATALOG_SHORTLIST_VERSION = CATALOG_RELEVANCE_VERSION;
 export const DEFAULT_SHORTLIST_TARGET = 190;
 export const MAX_SHORTLIST_TARGET = 200;
 
@@ -31,6 +32,26 @@ export type ShortlistCandidate = {
 export type SelectedShortlistCandidate = ShortlistCandidate & {
   group: ShortlistGroup;
   rank: number;
+  relevance: ClassroomRelevanceAssessment;
+};
+
+export const CLASSROOM_RELEVANCE_TIERS = ["HIGH", "MEDIUM", "LOW", "EXCLUDED"] as const;
+export type ClassroomRelevanceTier = (typeof CLASSROOM_RELEVANCE_TIERS)[number];
+
+export const CATALOG_AUTOMATION_ROUTES = [
+  "AUTO_EVIDENCE",
+  "HUMAN_EXCEPTION",
+  "DEPRIORITIZED",
+] as const;
+export type CatalogAutomationRoute = (typeof CATALOG_AUTOMATION_ROUTES)[number];
+
+export type ClassroomRelevanceAssessment = {
+  version: typeof CATALOG_RELEVANCE_VERSION;
+  group: ShortlistGroup | null;
+  score: number;
+  tier: ClassroomRelevanceTier;
+  route: CatalogAutomationRoute;
+  reasons: string[];
 };
 
 const GROUP_WEIGHTS: Record<ShortlistGroup, number> = {
@@ -57,22 +78,12 @@ const CATEGORY_GROUPS: Record<ShortlistGroup, ReadonlySet<string>> = {
     "yogurt",
     "cereal",
     "cereals products - ready to eat (shelf stable)",
-    "jam, jelly & fruit spreads",
-    "breads & buns",
-    "nut & seed butters",
-    "milk",
-    "honey",
     "croissants, sweet rolls, muffins & other pastries",
   ]),
   LUNCHBOX: new Set([
     "cheese",
-    "canned fruit",
     "pre-packaged fruit & vegetables",
-    "pepperoni, salami & cold cuts",
     "lunch snacks & combinations",
-    "canned meat",
-    "poultry, chicken & turkey",
-    "prepared wraps and burittos",
   ]),
   DRINKS: new Set([
     "fruit & vegetable juice, nectars & fruit drinks",
@@ -82,15 +93,36 @@ const CATEGORY_GROUPS: Record<ShortlistGroup, ReadonlySet<string>> = {
     "water",
   ]),
   TREATS: new Set([
-    "ice cream & frozen yogurt",
     "candy",
     "chocolate",
     "cookies & biscuits",
     "cakes, cupcakes, snack cakes",
     "biscuits/cookies (shelf stable)",
-    "other frozen desserts",
   ]),
 };
+
+const GROUP_BASE_SCORE: Record<ShortlistGroup, number> = {
+  SNACKS: 65,
+  BREAKFAST: 45,
+  LUNCHBOX: 45,
+  DRINKS: 50,
+  TREATS: 60,
+};
+
+const PORTABLE_PRODUCT =
+  /\b(snack|bar|bites?|chips?|crisps?|crackers?|cookies?|wafers?|pretzels?|popcorn|trail mix|fruit snacks?|pouches?|cups?|juice|drink|water|soda|mini|string cheese|cheese sticks?)\b/i;
+const PACKAGE_SIGNAL =
+  /\b(individual|single[ -]?serve|multipacks?|multi[ -]?packs?|pouches?|cups?|boxes|box|packs?|pack of|snack size)\b/i;
+const BULK_OR_FOODSERVICE =
+  /\b(foodservice|food service|restaurant|catering|bulk|gallon|\d+\s*gal\b|ingredient|concentrate)\b/i;
+const GENERIC_OR_PREPARATION =
+  /\b(uncooked|cooking|baking|sauce|syrup|spread|seasoning|marinade|broth|dressing|flour|oil|dough|kabob|steak|fillet)\b/i;
+
+function combinedText(candidate: ShortlistCandidate): string {
+  return [candidate.brand, candidate.productName, candidate.variant, candidate.category]
+    .filter(Boolean)
+    .join(" ");
+}
 
 function normalizedCategory(value: string | null): string {
   return value?.trim() || "Uncategorized";
@@ -103,6 +135,82 @@ export function classifyShortlistCategory(
   return SHORTLIST_GROUPS.find((group) => CATEGORY_GROUPS[group].has(value)) ?? null;
 }
 
+export function assessClassroomRelevance(
+  candidate: ShortlistCandidate,
+): ClassroomRelevanceAssessment {
+  const group = classifyShortlistCategory(candidate.category);
+  const text = combinedText(candidate);
+  const reasons: string[] = [];
+  if (candidate.discontinued) {
+    return {
+      version: CATALOG_RELEVANCE_VERSION,
+      group,
+      score: 0,
+      tier: "EXCLUDED",
+      route: "DEPRIORITIZED",
+      reasons: ["DISCONTINUED_SOURCE_RECORD"],
+    };
+  }
+  if (!group) {
+    return {
+      version: CATALOG_RELEVANCE_VERSION,
+      group: null,
+      score: 0,
+      tier: "EXCLUDED",
+      route: "DEPRIORITIZED",
+      reasons: ["CATEGORY_NOT_CLASSROOM_FOCUSED"],
+    };
+  }
+  if (BULK_OR_FOODSERVICE.test(text)) {
+    return {
+      version: CATALOG_RELEVANCE_VERSION,
+      group,
+      score: 0,
+      tier: "EXCLUDED",
+      route: "DEPRIORITIZED",
+      reasons: ["BULK_OR_FOODSERVICE_SIGNAL"],
+    };
+  }
+
+  let score = GROUP_BASE_SCORE[group];
+  reasons.push(`CLASSROOM_CATEGORY_${group}`);
+  if (PORTABLE_PRODUCT.test(text)) {
+    score += 15;
+    reasons.push("PORTABLE_PRODUCT_SIGNAL");
+  }
+  if (PACKAGE_SIGNAL.test(text)) {
+    score += 10;
+    reasons.push("INDIVIDUAL_PACKAGE_SIGNAL");
+  } else {
+    reasons.push("PACKAGE_FORMAT_UNCONFIRMED");
+  }
+  if (GENERIC_OR_PREPARATION.test(text)) {
+    score -= 25;
+    reasons.push("PREPARATION_ITEM_SIGNAL");
+  }
+  if (!candidate.variant && candidate.productName.trim().split(/\s+/).length <= 2) {
+    score -= 10;
+    reasons.push("GENERIC_PRODUCT_IDENTITY");
+  }
+  score = Math.max(0, Math.min(100, score));
+  const tier: ClassroomRelevanceTier =
+    score >= 70 ? "HIGH" : score >= 50 ? "MEDIUM" : "LOW";
+  const route: CatalogAutomationRoute =
+    candidate.screenStatus === "VERIFY" || candidate.qualityFlags.length > 0
+      ? "HUMAN_EXCEPTION"
+      : candidate.screenStatus === "PASS" && (tier === "HIGH" || tier === "MEDIUM")
+        ? "AUTO_EVIDENCE"
+        : "DEPRIORITIZED";
+  return {
+    version: CATALOG_RELEVANCE_VERSION,
+    group,
+    score,
+    tier,
+    route,
+    reasons,
+  };
+}
+
 function observedAt(candidate: ShortlistCandidate): number {
   const value = candidate.sourceModifiedAt ?? candidate.sourcePublishedAt;
   if (!value) return 0;
@@ -111,9 +219,9 @@ function observedAt(candidate: ShortlistCandidate): number {
 }
 
 function compareCandidates(left: ShortlistCandidate, right: ShortlistCandidate): number {
-  const leftCompleteness = Number(Boolean(left.size)) + Number(Boolean(left.variant));
-  const rightCompleteness = Number(Boolean(right.size)) + Number(Boolean(right.variant));
-  if (leftCompleteness !== rightCompleteness) return rightCompleteness - leftCompleteness;
+  const relevanceDifference =
+    assessClassroomRelevance(right).score - assessClassroomRelevance(left).score;
+  if (relevanceDifference !== 0) return relevanceDifference;
   const dateDifference = observedAt(right) - observedAt(left);
   if (dateDifference !== 0) return dateDifference;
   const brandDifference = left.brand.localeCompare(right.brand);
@@ -124,12 +232,14 @@ function compareCandidates(left: ShortlistCandidate, right: ShortlistCandidate):
 }
 
 function eligible(candidate: ShortlistCandidate): boolean {
+  const relevance = assessClassroomRelevance(candidate);
   return (
     candidate.candidateState === "SCREENED_PASS" &&
     candidate.screenStatus === "PASS" &&
     !candidate.discontinued &&
     candidate.qualityFlags.length === 0 &&
-    classifyShortlistCategory(candidate.category) !== null
+    relevance.tier === "HIGH" &&
+    relevance.route === "AUTO_EVIDENCE"
   );
 }
 
@@ -235,5 +345,6 @@ export function selectCatalogShortlist(
   return selected.slice(0, target).map((candidate, index) => ({
     ...candidate,
     rank: index + 1,
+    relevance: assessClassroomRelevance(candidate),
   }));
 }

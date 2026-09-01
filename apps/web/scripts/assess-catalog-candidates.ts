@@ -2,14 +2,11 @@ import { createHash } from "node:crypto";
 import { createClient } from "@supabase/supabase-js";
 import {
   assessClassroomRelevance,
-  CATALOG_SHORTLIST_VERSION,
-  DEFAULT_SHORTLIST_TARGET,
-  MAX_SHORTLIST_TARGET,
-  selectCatalogShortlist,
+  CATALOG_RELEVANCE_VERSION,
   type ShortlistCandidate,
 } from "../lib/catalog-candidates/shortlist";
 
-const APPLY_CONFIRMATION = "QUEUE_CATALOG_SHORTLIST_TO_STAGING";
+const APPLY_CONFIRMATION = "APPLY_CLASSROOM_RELEVANCE_TO_STAGING";
 
 type CandidateRow = {
   id: string;
@@ -30,14 +27,6 @@ type CandidateRow = {
 function option(argv: string[], name: string): string | undefined {
   const index = argv.indexOf(name);
   return index >= 0 ? argv[index + 1] : undefined;
-}
-
-function parseTarget(argv: string[]): number {
-  const value = Number(option(argv, "--target-count") ?? DEFAULT_SHORTLIST_TARGET);
-  if (!Number.isInteger(value) || value < 1 || value > MAX_SHORTLIST_TARGET) {
-    throw new Error(`--target-count must be between 1 and ${MAX_SHORTLIST_TARGET}.`);
-  }
-  return value;
 }
 
 function projectRefFromUrl(value: string): string {
@@ -70,7 +59,7 @@ function strings(value: unknown): string[] {
     : [];
 }
 
-function mapCandidate(row: CandidateRow): ShortlistCandidate {
+function candidate(row: CandidateRow): ShortlistCandidate {
   return {
     id: row.id,
     brand: row.brand,
@@ -88,17 +77,16 @@ function mapCandidate(row: CandidateRow): ShortlistCandidate {
   };
 }
 
-function counts<T extends string>(values: T[]): Record<T, number> {
-  return values.reduce(
-    (result, value) => ({ ...result, [value]: (result[value] ?? 0) + 1 }),
-    {} as Record<T, number>,
-  );
+function counts(values: string[]): Record<string, number> {
+  return values.reduce<Record<string, number>>((result, value) => {
+    result[value] = (result[value] ?? 0) + 1;
+    return result;
+  }, {});
 }
 
 async function main(): Promise<void> {
   const argv = process.argv.slice(2);
   const apply = argv.includes("--apply");
-  const target = parseTarget(argv);
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
   if (!url || !key) throw new Error("Staging Supabase credentials are required.");
@@ -110,77 +98,77 @@ async function main(): Promise<void> {
     .select(
       "id,brand,product_name,category,variant,size,normalized_gtin14,source_modified_at,source_published_at,quality_flags,screen_status,candidate_state,discontinued",
     )
-    .eq("discontinued", false)
     .limit(1000);
   if (result.error) throw new Error(result.error.message);
-  const candidates = ((result.data ?? []) as CandidateRow[]).map(mapCandidate);
-  const assessments = candidates.map((candidate) => ({
-    candidate,
-    assessment: assessClassroomRelevance(candidate),
-  }));
-  const shortlist = selectCatalogShortlist(candidates, target);
-  if (apply && !shortlist.length) {
-    throw new Error("No new high-relevance candidates were available to queue.");
-  }
+  const assessed = ((result.data ?? []) as CandidateRow[])
+    .map(candidate)
+    .map((item) => ({ item, assessment: assessClassroomRelevance(item) }))
+    .sort((left, right) => left.item.id.localeCompare(right.item.id));
+  if (!assessed.length) throw new Error("No candidates were available to assess.");
 
+  const payload = assessed.map(({ item, assessment }) => ({
+    id: item.id,
+    version: assessment.version,
+    group: assessment.group,
+    score: assessment.score,
+    tier: assessment.tier,
+    route: assessment.route,
+    reasons: assessment.reasons,
+  }));
   const selectionHash = createHash("sha256")
-    .update(
-      `${CATALOG_SHORTLIST_VERSION}\n${shortlist.map((candidate) => candidate.id).join("\n")}`,
-    )
+    .update(JSON.stringify(payload))
     .digest("hex");
-  const groupCounts = counts(shortlist.map((candidate) => candidate.group));
-  const categoryCounts = counts(
-    shortlist.map((candidate) => candidate.category ?? "Uncategorized"),
-  );
   const run = {
-    algorithmVersion: CATALOG_SHORTLIST_VERSION,
-    targetCount: shortlist.length,
+    algorithmVersion: CATALOG_RELEVANCE_VERSION,
+    assessedCount: payload.length,
     selectionHash,
-    groupCounts,
   };
 
   let applyResult: unknown = null;
   if (apply) {
     const rpc = admin.rpc.bind(admin) as unknown as (
-      name: "queue_catalog_candidate_shortlist",
+      name: "apply_catalog_relevance_assessments",
       args: {
-        p_candidate_ids: string[];
+        p_assessments: typeof payload;
         p_run: typeof run;
         p_confirmation: string;
       },
     ) => PromiseLike<{ data: unknown; error: { message: string } | null }>;
-    const queued = await rpc("queue_catalog_candidate_shortlist", {
-      p_candidate_ids: shortlist.map((candidate) => candidate.id),
+    const applied = await rpc("apply_catalog_relevance_assessments", {
+      p_assessments: payload,
       p_run: run,
       p_confirmation: APPLY_CONFIRMATION,
     });
-    if (queued.error) throw new Error(queued.error.message);
-    applyResult = queued.data;
+    if (applied.error) throw new Error(applied.error.message);
+    applyResult = applied.data;
   }
 
+  const autoEvidence = assessed
+    .filter(({ assessment }) => assessment.route === "AUTO_EVIDENCE")
+    .sort((left, right) => right.assessment.score - left.assessment.score);
   console.log(
     JSON.stringify(
       {
         mode: apply ? "APPLY" : "DRY_RUN",
-        sourceCandidates: result.data?.length ?? 0,
-        requestedCandidates: target,
-        selectedCandidates: shortlist.length,
+        algorithmVersion: CATALOG_RELEVANCE_VERSION,
+        assessedCandidates: payload.length,
         selectionHash,
-        groupCounts,
-        categoryCounts: Object.fromEntries(
-          Object.entries(categoryCounts).sort((left, right) => right[1] - left[1]),
+        relevanceTiers: counts(assessed.map(({ assessment }) => assessment.tier)),
+        automationRoutes: counts(assessed.map(({ assessment }) => assessment.route)),
+        routesByCurrentState: counts(
+          assessed.map(
+            ({ item, assessment }) => `${item.candidateState}:${assessment.route}`,
+          ),
         ),
-        uniqueBrands: new Set(shortlist.map((candidate) => candidate.brand)).size,
-        relevanceTiers: counts(assessments.map(({ assessment }) => assessment.tier)),
-        automationRoutes: counts(assessments.map(({ assessment }) => assessment.route)),
-        selectedPreview: shortlist.slice(0, 20).map((candidate) => ({
-          brand: candidate.brand,
-          productName: candidate.productName,
-          category: candidate.category,
-          score: candidate.relevance.score,
-          tier: candidate.relevance.tier,
-          route: candidate.relevance.route,
-        })),
+        topAutoEvidenceCandidates: autoEvidence
+          .slice(0, 25)
+          .map(({ item, assessment }) => ({
+            brand: item.brand,
+            productName: item.productName,
+            category: item.category,
+            score: assessment.score,
+            reasons: assessment.reasons,
+          })),
         applyResult,
       },
       null,
@@ -190,6 +178,8 @@ async function main(): Promise<void> {
 }
 
 main().catch((error: unknown) => {
-  console.error(error instanceof Error ? error.message : "Shortlist generation failed.");
+  console.error(
+    error instanceof Error ? error.message : "Candidate relevance assessment failed.",
+  );
   process.exit(1);
 });
