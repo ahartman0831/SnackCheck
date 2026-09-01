@@ -42,8 +42,8 @@ describe("staging reviewer sign-in", () => {
       email: "reviewer@example.com",
       options: { shouldCreateUser: true },
     });
-    expect(screen.getByLabelText("Six-digit sign-in code")).toBeInTheDocument();
-    expect(screen.getByRole("status")).toHaveTextContent("Enter the six-digit code");
+    expect(screen.getByLabelText("Sign-in code")).toBeInTheDocument();
+    expect(screen.getByRole("status")).toHaveTextContent("Enter the one-time code");
   });
 
   it("verifies the emailed code and opens the private candidate queue", async () => {
@@ -58,14 +58,14 @@ describe("staging reviewer sign-in", () => {
       target: { value: "reviewer@example.com" },
     });
     fireEvent.click(screen.getByRole("button", { name: /email me/i }));
-    const input = await screen.findByLabelText("Six-digit sign-in code");
-    fireEvent.change(input, { target: { value: "123456" } });
+    const input = await screen.findByLabelText("Sign-in code");
+    fireEvent.change(input, { target: { value: "ABCDWXYZ" } });
     fireEvent.click(screen.getByRole("button", { name: "Sign in" }));
 
     await waitFor(() => expect(mocks.verifyOtp).toHaveBeenCalledOnce());
     expect(mocks.verifyOtp).toHaveBeenCalledWith({
       email: "reviewer@example.com",
-      token: "123456",
+      token: "ABCDWXYZ",
       type: "email",
     });
     expect(mocks.replace).toHaveBeenCalledWith("/admin/catalog");
@@ -84,7 +84,7 @@ describe("staging reviewer sign-in", () => {
       target: { value: "reviewer@example.com" },
     });
     fireEvent.click(screen.getByRole("button", { name: /email me/i }));
-    fireEvent.change(await screen.findByLabelText("Six-digit sign-in code"), {
+    fireEvent.change(await screen.findByLabelText("Sign-in code"), {
       target: { value: "123456" },
     });
     fireEvent.click(screen.getByRole("button", { name: "Sign in" }));

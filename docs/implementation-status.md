@@ -31,8 +31,8 @@ membership is deliberately assigned.
 
 The first staging sign-in exposed a cross-browser PKCE failure: a fresh one-time link reached
 the correct Vercel callback but could not complete when the request and email click occurred
-in different browser contexts. The follow-up replaces clickable email links with a six-digit
-email OTP entered on the login page. Authentication and reviewer authorization remain
+in different browser contexts. The follow-up replaces clickable email links with an
+alphanumeric email OTP entered on the login page. Authentication and reviewer authorization remain
 separate; a verified email still receives no private access without an active
 `admin_members` role.
 

@@ -21,7 +21,7 @@ export default async function AdminLoginPage({
       </p>
       <h1 className="mt-3 text-4xl font-semibold">Reviewer sign-in</h1>
       <p className="text-muted mt-3 text-lg">
-        We will email you a six-digit sign-in code. Enter it here to continue. An account
+        We will email you a one-time sign-in code. Enter it here to continue. An account
         still needs an active SnackCheck reviewer role before it can see candidates or
         make decisions.
       </p>
