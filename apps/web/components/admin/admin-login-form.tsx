@@ -5,6 +5,10 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { createBrowserSupabaseClient } from "@/lib/supabase/browser";
 
+function isEmailRateLimitError(error: { code?: string; status?: number }) {
+  return error.status === 429 || error.code === "over_email_send_rate_limit";
+}
+
 export function AdminLoginForm({ next = "/admin/catalog" }: { next?: string }) {
   const router = useRouter();
   const [email, setEmail] = useState("");
@@ -30,7 +34,12 @@ export function AdminLoginForm({ next = "/admin/catalog" }: { next?: string }) {
       options: { shouldCreateUser: true },
     });
 
-    if (error) {
+    if (error && isEmailRateLimitError(error)) {
+      setAwaitingCode(true);
+      setMessage(
+        "Staging has temporarily paused new sign-in emails. Enter your most recent code, or wait up to an hour before requesting another.",
+      );
+    } else if (error) {
       setMessage(
         "The sign-in code could not be sent. Please wait a moment and try again.",
       );
@@ -155,6 +164,17 @@ export function AdminLoginForm({ next = "/admin/catalog" }: { next?: string }) {
       <Button type="submit" disabled={busy || !email.trim()}>
         {busy ? "Sending code…" : "Email me a sign-in code"}
       </Button>
+      <button
+        type="button"
+        className="self-start text-sm font-semibold underline"
+        disabled={busy || !email.trim()}
+        onClick={() => {
+          setAwaitingCode(true);
+          setMessage("Enter the most recent one-time code sent to this email address.");
+        }}
+      >
+        I already have a code
+      </button>
       <p
         id="admin-login-status"
         aria-live="polite"
