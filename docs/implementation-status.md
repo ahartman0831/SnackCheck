@@ -1,6 +1,6 @@
 # Implementation status
 
-Last updated: 2026-08-31
+Last updated: 2026-09-01
 Baseline detail: [`docs/remediation-baseline.md`](remediation-baseline.md)
 Plan: [`docs/SnackCheck-Cursor-Master-Build-Plan.md`](SnackCheck-Cursor-Master-Build-Plan.md)
 Prior plan: [`docs/SnackCheck-Cursor-Remediation-Build-Plan-v2.md`](SnackCheck-Cursor-Remediation-Build-Plan-v2.md)
@@ -28,6 +28,13 @@ for the private reviewer workspace; authentication still grants no access unless
 user has an active `admin_members` role. The staging database currently has no active
 reviewer member, so all promotion remains blocked until the owner signs in and reviewer-only
 membership is deliberately assigned.
+
+The first staging sign-in exposed a cross-browser PKCE failure: a fresh one-time link reached
+the correct Vercel callback but could not complete when the request and email click occurred
+in different browser contexts. The follow-up replaces clickable email links with a six-digit
+email OTP entered on the login page. Authentication and reviewer authorization remain
+separate; a verified email still receives no private access without an active
+`admin_members` role.
 
 PR #9 adds a reviewer-only catalog queue and evidence detail, guarded queue/reject actions, and one atomic promotion transaction. Promotion requires a current queued candidate, explicit reviewer acknowledgement, confirmed ingredient text, and an independent HTTPS manufacturer source; USDA and Open Food Facts cannot verify their own candidates. Existing GTINs with different formulations create an open conflict instead of replacing the active formulation. Promotion records product, formulation, parsed ingredients, source, any valid deterministic evaluation, canonical links, and an audit entry together. There is no bulk approval control and no AI call. GitHub run [33397852039](https://github.com/ahartman0831/SnackCheck/actions/runs/33397852039) passes `verify`, WebKit, migration `0029`, all pgTAP checks twice across clean resets, generated-type parity, private storage integration, and backup/restore rehearsal. No real dataset was downloaded and no staging or production system was changed.
 
