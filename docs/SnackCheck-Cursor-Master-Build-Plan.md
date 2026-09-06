@@ -5,6 +5,8 @@
 **Repository:** `https://github.com/ahartman0831/SnackCheck`  
 **Purpose:** A self-contained execution brief that another Cursor agent can use to take the existing repository from the completed public-UI remediation through a trustworthy Arizona beta and a polished public V1.
 
+**Canonical completion sequence:** [`SnackCheck-Finish-Line-Build-Plan.md`](SnackCheck-Finish-Line-Build-Plan.md). This master plan remains authoritative for technical and safety requirements; the finish-line plan governs the remaining milestone order and beta definition.
+
 > This is an existing-repository continuation, not a greenfield build. Inspect and preserve what exists. Work one numbered phase at a time, validate it completely, update the status document, and stop for approval at each phase boundary.
 
 ## 1. Mission
@@ -25,7 +27,7 @@ This promise is only shown for features that actually work. Manual barcode entry
 
 ## 2. Instructions to the implementing Cursor agent
 
-1. Read this entire document, `apps/web/AGENTS.md`, `docs/implementation-status.md`, `docs/remediation-baseline.md`, `docs/architecture.md`, `docs/design-system.md`, `docs/data-provenance.md`, `docs/regulatory-review.md`, and `docs/launch-runbook.md` before editing.
+1. Read this entire document, `docs/SnackCheck-Finish-Line-Build-Plan.md`, `apps/web/AGENTS.md`, `docs/implementation-status.md`, `docs/remediation-baseline.md`, `docs/architecture.md`, `docs/design-system.md`, `docs/data-provenance.md`, `docs/regulatory-review.md`, and `docs/launch-runbook.md` before editing.
 2. This project uses Next.js 16.3.3 with breaking changes. Before modifying routing, caching, metadata, image handling, proxying, server actions, middleware, service workers, or runtime APIs, read the matching documentation under `apps/web/node_modules/next/dist/docs/`.
 3. Inspect the current implementation before adding a new abstraction. Reuse the monorepo, contracts, deterministic compliance engine, database types, repositories, API envelope, feature flags, UI primitives, ruleset lifecycle, import pipeline, and test harness where sound.
 4. Preserve unrelated user changes. The current working tree contains the Phase 0–4 remediation and is intentionally far ahead of `HEAD`; do not reset, clean, overwrite, or discard it.

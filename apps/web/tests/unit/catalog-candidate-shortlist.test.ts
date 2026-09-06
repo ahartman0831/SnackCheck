@@ -78,6 +78,18 @@ describe("catalog candidate shortlist", () => {
     ).toMatchObject({ tier: "HIGH", route: "HUMAN_EXCEPTION" });
   });
 
+  it("does not create human work for a classroom-irrelevant uncertain record", () => {
+    expect(
+      assessClassroomRelevance(
+        candidate(1, "Honey", {
+          productName: "Pure honey",
+          screenStatus: "VERIFY",
+          qualityFlags: ["PARSER_WARNING"],
+        }),
+      ),
+    ).toMatchObject({ tier: "EXCLUDED", route: "DEPRIORITIZED" });
+  });
+
   it("rejects unsafe states and quality warnings", () => {
     const rows = [
       candidate(1, "Chips, Pretzels & Snacks", { productName: "Pretzel snack" }),

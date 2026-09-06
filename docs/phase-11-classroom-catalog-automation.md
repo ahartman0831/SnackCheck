@@ -59,20 +59,22 @@ is now excluded because its category is not classroom-focused.
 Migration `0032_classroom_relevance_automation.sql` stores assessments and provides a
 service-role-only, bounded function. Applying assessments requires:
 
-- no more than 1,000 unique existing candidates;
+- no more than 1,000 unique existing candidates per transaction, with stable pagination
+  and resumable run/batch identity across the full corpus;
 - exact `classroom-use-v2` metadata and a SHA-256 selection hash;
 - database validation of score/tier/route consistency;
 - exact staging confirmation `APPLY_CLASSROOM_RELEVANCE_TO_STAGING`; and
 - both configured staging project references matching the target URL in the operations
   script.
 
-Every assessment writes an audit record. Automated evidence routing is rejected unless
+Every first-run assessment writes an audit record; an identical retried run is idempotent.
+Automated evidence routing is rejected unless
 the source record is current, has a clean deterministic `PASS`, has no quality flags, and
 is high or medium relevance. Assessment cannot create, promote, or publish a product.
 
 ## Next slice
 
-The next slice should acquire current package/manufacturer evidence for the 87
+The next slice should acquire current package/manufacturer evidence for the 95
 `AUTO_EVIDENCE` candidates, use AI only to extract and compare ingredient text, and send
 source conflicts or uncertain ingredient mappings to `HUMAN_EXCEPTION`. A later guarded
 promotion worker may auto-create public products only after evidence quality, formulation

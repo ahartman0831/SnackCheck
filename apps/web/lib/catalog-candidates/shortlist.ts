@@ -131,7 +131,7 @@ function normalizedCategory(value: string | null): string {
 export function classifyShortlistCategory(
   category: string | null,
 ): ShortlistGroup | null {
-  const value = normalizedCategory(category).toLocaleLowerCase();
+  const value = normalizedCategory(category).toLowerCase();
   return SHORTLIST_GROUPS.find((group) => CATEGORY_GROUPS[group].has(value)) ?? null;
 }
 
@@ -224,11 +224,21 @@ function compareCandidates(left: ShortlistCandidate, right: ShortlistCandidate):
   if (relevanceDifference !== 0) return relevanceDifference;
   const dateDifference = observedAt(right) - observedAt(left);
   if (dateDifference !== 0) return dateDifference;
-  const brandDifference = left.brand.localeCompare(right.brand);
+  const brandDifference =
+    left.brand < right.brand ? -1 : left.brand > right.brand ? 1 : 0;
   if (brandDifference !== 0) return brandDifference;
-  const nameDifference = left.productName.localeCompare(right.productName);
+  const nameDifference =
+    left.productName < right.productName
+      ? -1
+      : left.productName > right.productName
+        ? 1
+        : 0;
   if (nameDifference !== 0) return nameDifference;
-  return left.normalizedGtin14.localeCompare(right.normalizedGtin14);
+  return left.normalizedGtin14 < right.normalizedGtin14
+    ? -1
+    : left.normalizedGtin14 > right.normalizedGtin14
+      ? 1
+      : 0;
 }
 
 function eligible(candidate: ShortlistCandidate): boolean {
@@ -272,7 +282,9 @@ function balancedGroupSelection(
     buckets.set(category, bucket);
   }
   for (const bucket of buckets.values()) bucket.sort(compareCandidates);
-  const categories = [...buckets.keys()].sort((left, right) => left.localeCompare(right));
+  const categories = [...buckets.keys()].sort((left, right) =>
+    left < right ? -1 : left > right ? 1 : 0,
+  );
   const selected: ShortlistCandidate[] = [];
   const selectedIds = new Set<string>();
 
@@ -283,7 +295,7 @@ function balancedGroupSelection(
       for (const category of categories) {
         const bucket = buckets.get(category) ?? [];
         const index = bucket.findIndex((candidate) => {
-          const count = brandCounts.get(candidate.brand.toLocaleLowerCase()) ?? 0;
+          const count = brandCounts.get(candidate.brand.toLowerCase()) ?? 0;
           return !selectedIds.has(candidate.id) && count < brandLimit;
         });
         if (index < 0) continue;
@@ -291,7 +303,7 @@ function balancedGroupSelection(
         if (!candidate) continue;
         selected.push(candidate);
         selectedIds.add(candidate.id);
-        const brand = candidate.brand.toLocaleLowerCase();
+        const brand = candidate.brand.toLowerCase();
         brandCounts.set(brand, (brandCounts.get(brand) ?? 0) + 1);
         advanced = true;
         if (selected.length >= target) break;

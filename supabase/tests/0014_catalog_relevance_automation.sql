@@ -1,5 +1,5 @@
 begin;
-select plan(14);
+select plan(20);
 
 select has_column('public', 'catalog_source_records', 'classroom_relevance_score', 'candidate relevance score exists');
 select has_column('public', 'catalog_source_records', 'classroom_relevance_tier', 'candidate relevance tier exists');
@@ -9,6 +9,7 @@ select has_column('public', 'catalog_source_records', 'classroom_relevance_asses
 select has_function('public', 'apply_catalog_relevance_assessments', array['jsonb','jsonb','text'], 'bounded relevance assessment function exists');
 select function_privs_are('public', 'apply_catalog_relevance_assessments', array['jsonb','jsonb','text'], 'anon', array[]::text[], 'anonymous users cannot assess candidates');
 select function_privs_are('public', 'apply_catalog_relevance_assessments', array['jsonb','jsonb','text'], 'authenticated', array[]::text[], 'ordinary authenticated users cannot assess candidates');
+select function_privs_are('public', 'apply_catalog_relevance_assessments', array['jsonb','jsonb','text'], 'service_role', array['EXECUTE'], 'service role can assess candidates');
 
 insert into public.catalog_import_batches (
   id, provider, dataset_release, source_url, license_identifier, file_sha256,
@@ -26,7 +27,7 @@ insert into public.catalog_source_records (
   quality_flags, engine_version, ruleset_hash, candidate_state, discontinued
 ) values
   ('92000000-0000-4000-8000-000000000001','91000000-0000-4000-8000-000000000001','USDA_FDC','one','test',repeat('b',64),'012345678905','00012345678905','Fixture Foods','Pretzel snack packs','Chips, Pretzels & Snacks','Wheat, salt','wheat salt',repeat('c',64),'US','https://fdc.nal.usda.gov/fdc-app.html#/food-details/one','FDC one','CC0-1.0','PASS','[]','test',repeat('d',64),'SCREENED_PASS',false),
-  ('92000000-0000-4000-8000-000000000002','91000000-0000-4000-8000-000000000001','USDA_FDC','two','test',repeat('e',64),'012345678912','00012345678912','Fixture Foods','Pure honey','Honey','Honey','honey',repeat('f',64),'US','https://fdc.nal.usda.gov/fdc-app.html#/food-details/two','FDC two','CC0-1.0','PASS','[]','test',repeat('d',64),'SCREENED_PASS',false),
+  ('92000000-0000-4000-8000-000000000002','91000000-0000-4000-8000-000000000001','USDA_FDC','two','test',repeat('e',64),'012345678912','00012345678912','Fixture Foods','Pure honey','Honey','Honey','honey',repeat('f',64),'US','https://fdc.nal.usda.gov/fdc-app.html#/food-details/two','FDC two','CC0-1.0','PASS','[]','test',repeat('d',64),'REVIEW_QUEUED',false),
   ('92000000-0000-4000-8000-000000000003','91000000-0000-4000-8000-000000000001','USDA_FDC','three','test',repeat('1',64),'012345678929','00012345678929','Fixture Foods','Chocolate snack bar','Snack, Energy & Granola Bars','Unknown flavor','unknown flavor',repeat('2',64),'US','https://fdc.nal.usda.gov/fdc-app.html#/food-details/three','FDC three','CC0-1.0','VERIFY','[]','test',repeat('d',64),'SCREENED_VERIFY',false);
 
 set local role service_role;
@@ -37,18 +38,42 @@ select throws_ok(
 select lives_ok(
   $$select public.apply_catalog_relevance_assessments(
     '[{"id":"92000000-0000-4000-8000-000000000001","version":"classroom-use-v2","group":"SNACKS","score":80,"tier":"HIGH","route":"AUTO_EVIDENCE","reasons":["CLASSROOM_CATEGORY_SNACKS"]},{"id":"92000000-0000-4000-8000-000000000002","version":"classroom-use-v2","group":null,"score":0,"tier":"EXCLUDED","route":"DEPRIORITIZED","reasons":["CATEGORY_NOT_CLASSROOM_FOCUSED"]},{"id":"92000000-0000-4000-8000-000000000003","version":"classroom-use-v2","group":"SNACKS","score":80,"tier":"HIGH","route":"HUMAN_EXCEPTION","reasons":["CLASSROOM_CATEGORY_SNACKS"]}]'::jsonb,
-    jsonb_build_object('algorithmVersion','classroom-use-v2','assessedCount',3,'selectionHash',repeat('b',64)),
+    jsonb_build_object('algorithmVersion','classroom-use-v2','assessedCount',3,'selectionHash',repeat('b',64),'corpusHash',repeat('b',64),'runId','93000000-0000-4000-8000-000000000001','batchIndex',0,'batchCount',1),
     'APPLY_CLASSROOM_RELEVANCE_TO_STAGING'
   )$$,
   'service role can save bounded relevance assessments'
 );
+select lives_ok(
+  $$select public.apply_catalog_relevance_assessments(
+    '[{"id":"92000000-0000-4000-8000-000000000001","version":"classroom-use-v2","group":"SNACKS","score":80,"tier":"HIGH","route":"AUTO_EVIDENCE","reasons":["CLASSROOM_CATEGORY_SNACKS"]},{"id":"92000000-0000-4000-8000-000000000002","version":"classroom-use-v2","group":null,"score":0,"tier":"EXCLUDED","route":"DEPRIORITIZED","reasons":["CATEGORY_NOT_CLASSROOM_FOCUSED"]},{"id":"92000000-0000-4000-8000-000000000003","version":"classroom-use-v2","group":"SNACKS","score":80,"tier":"HIGH","route":"HUMAN_EXCEPTION","reasons":["CLASSROOM_CATEGORY_SNACKS"]}]'::jsonb,
+    jsonb_build_object('algorithmVersion','classroom-use-v2','assessedCount',3,'selectionHash',repeat('b',64),'corpusHash',repeat('b',64),'runId','93000000-0000-4000-8000-000000000001','batchIndex',0,'batchCount',1),
+    'APPLY_CLASSROOM_RELEVANCE_TO_STAGING'
+  )$$,
+  'an identical relevance run is idempotent'
+);
 select throws_ok(
   $$select public.apply_catalog_relevance_assessments(
     '[{"id":"92000000-0000-4000-8000-000000000003","version":"classroom-use-v2","group":"SNACKS","score":80,"tier":"HIGH","route":"AUTO_EVIDENCE","reasons":["CLASSROOM_CATEGORY_SNACKS"]}]'::jsonb,
-    jsonb_build_object('algorithmVersion','classroom-use-v2','assessedCount',1,'selectionHash',repeat('c',64)),
+    jsonb_build_object('algorithmVersion','classroom-use-v2','assessedCount',1,'selectionHash',repeat('c',64),'corpusHash',repeat('c',64),'runId','93000000-0000-4000-8000-000000000002','batchIndex',0,'batchCount',1),
     'APPLY_CLASSROOM_RELEVANCE_TO_STAGING'
   )$$,
   '40001', 'only clean passing candidates can use automated evidence routing', 'uncertain ingredients cannot enter automatic evidence routing'
+);
+select throws_ok(
+  $$select public.apply_catalog_relevance_assessments(
+    '[{"id":"92000000-0000-4000-8000-000000000001","version":"classroom-use-v2","group":"SNACKS","score":80,"tier":"LOW","route":"DEPRIORITIZED","reasons":["INVALID_TIER"]}]'::jsonb,
+    jsonb_build_object('algorithmVersion','classroom-use-v2','assessedCount',1,'selectionHash',repeat('d',64),'corpusHash',repeat('d',64),'runId','93000000-0000-4000-8000-000000000003','batchIndex',0,'batchCount',1),
+    'APPLY_CLASSROOM_RELEVANCE_TO_STAGING'
+  )$$,
+  '22023', 'every relevance assessment must be valid', 'score and tier must be consistent'
+);
+select throws_ok(
+  $$select public.apply_catalog_relevance_assessments(
+    '[{"id":"92000000-0000-4000-8000-000000000001","version":"classroom-use-v2","group":"SNACKS","score":80,"tier":"HIGH","route":"AUTO_EVIDENCE","reasons":["ONE"]},{"id":"92000000-0000-4000-8000-000000000001","version":"classroom-use-v2","group":"SNACKS","score":80,"tier":"HIGH","route":"AUTO_EVIDENCE","reasons":["TWO"]}]'::jsonb,
+    jsonb_build_object('algorithmVersion','classroom-use-v2','assessedCount',2,'selectionHash',repeat('e',64),'corpusHash',repeat('e',64),'runId','93000000-0000-4000-8000-000000000004','batchIndex',0,'batchCount',1),
+    'APPLY_CLASSROOM_RELEVANCE_TO_STAGING'
+  )$$,
+  '22023', 'relevance assessments must contain unique candidates', 'duplicate candidate ids are rejected'
 );
 
 reset role;
@@ -58,6 +83,8 @@ select results_eq(
   'assessments persist the expected routes'
 );
 select is((select count(*) from public.admin_audit_log where action='CATALOG_RELEVANCE_ASSESSED'),3::bigint,'every assessment is audited');
+select is((select candidate_state from public.catalog_source_records where id='92000000-0000-4000-8000-000000000002'),'SCREENED_PASS','deprioritized records leave the old review queue');
+select is((select review_reason from public.catalog_source_records where id='92000000-0000-4000-8000-000000000002'),null,'deprioritized records clear the old review reason');
 select is((select count(*) from public.products),0::bigint,'relevance assessment cannot create public products');
 
 select * from finish();

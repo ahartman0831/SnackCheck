@@ -22,4 +22,23 @@ describe("catalog candidate automation filters", () => {
       "AUTO_EVIDENCE",
     );
   });
+
+  it("makes newly imported unassessed candidates discoverable across states", () => {
+    expect(parseCatalogCandidateFilters({ route: "UNASSESSED" })).toMatchObject({
+      route: "UNASSESSED",
+      state: "ALL",
+    });
+  });
+
+  it("validates states and removes PostgREST filter syntax from search text", () => {
+    expect(
+      parseCatalogCandidateFilters({
+        state: "DROP TABLE",
+        query: 'Snack*,brand.eq.secret,(test)%_\\"',
+      }),
+    ).toMatchObject({
+      state: "REVIEW_QUEUED",
+      query: "Snack brand eq secret test",
+    });
+  });
 });

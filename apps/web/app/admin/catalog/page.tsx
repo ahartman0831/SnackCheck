@@ -73,6 +73,7 @@ export default async function AdminCatalogPage({
             <option value="AUTO_EVIDENCE">Automatic evidence</option>
             <option value="HUMAN_EXCEPTION">Human exceptions</option>
             <option value="DEPRIORITIZED">Deprioritized</option>
+            <option value="UNASSESSED">Unassessed</option>
             <option value="ALL">All routes</option>
           </select>
         </label>

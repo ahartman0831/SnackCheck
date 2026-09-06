@@ -1,12 +1,15 @@
-import { createHash } from "node:crypto";
+import { createHash, randomUUID } from "node:crypto";
 import { createClient } from "@supabase/supabase-js";
 import {
   assessClassroomRelevance,
   CATALOG_RELEVANCE_VERSION,
   type ShortlistCandidate,
 } from "../lib/catalog-candidates/shortlist";
+import { assertStagingApplySafety } from "../lib/catalog-candidates/operation-safety";
 
 const APPLY_CONFIRMATION = "APPLY_CLASSROOM_RELEVANCE_TO_STAGING";
+const PAGE_SIZE = 500;
+const APPLY_BATCH_SIZE = 1000;
 
 type CandidateRow = {
   id: string;
@@ -24,33 +27,19 @@ type CandidateRow = {
   discontinued: boolean;
 };
 
+type AssessmentRun = {
+  algorithmVersion: typeof CATALOG_RELEVANCE_VERSION;
+  assessedCount: number;
+  selectionHash: string;
+  corpusHash: string;
+  runId: string;
+  batchIndex: number;
+  batchCount: number;
+};
+
 function option(argv: string[], name: string): string | undefined {
   const index = argv.indexOf(name);
   return index >= 0 ? argv[index + 1] : undefined;
-}
-
-function projectRefFromUrl(value: string): string {
-  const hostname = new URL(value).hostname;
-  const suffix = ".supabase.co";
-  if (!hostname.endsWith(suffix)) throw new Error("The Supabase URL is invalid.");
-  return hostname.slice(0, -suffix.length);
-}
-
-function assertApplySafety(argv: string[], url: string): void {
-  if (option(argv, "--target") !== "staging") {
-    throw new Error("Apply requires --target staging.");
-  }
-  if (option(argv, "--confirm") !== APPLY_CONFIRMATION) {
-    throw new Error(`Apply requires --confirm ${APPLY_CONFIRMATION}.`);
-  }
-  const projectRef = projectRefFromUrl(url);
-  const designated = process.env.CATALOG_STAGING_SUPABASE_PROJECT_REF ?? "";
-  const configured = process.env.SUPABASE_PROJECT_ID ?? "";
-  if (!designated || designated !== projectRef || configured !== projectRef) {
-    throw new Error(
-      "Apply requires both staging project references to match the target URL.",
-    );
-  }
 }
 
 function strings(value: unknown): string[] {
@@ -90,20 +79,29 @@ async function main(): Promise<void> {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
   if (!url || !key) throw new Error("Staging Supabase credentials are required.");
-  if (apply) assertApplySafety(argv, url);
+  if (apply) assertStagingApplySafety({ argv, confirmation: APPLY_CONFIRMATION, url });
 
   const admin = createClient(url, key, { auth: { persistSession: false } });
-  const result = await admin
-    .from("catalog_source_records")
-    .select(
-      "id,brand,product_name,category,variant,size,normalized_gtin14,source_modified_at,source_published_at,quality_flags,screen_status,candidate_state,discontinued",
-    )
-    .limit(1000);
-  if (result.error) throw new Error(result.error.message);
-  const assessed = ((result.data ?? []) as CandidateRow[])
+  const rows: CandidateRow[] = [];
+  for (let offset = 0; ; offset += PAGE_SIZE) {
+    const page = await admin
+      .from("catalog_source_records")
+      .select(
+        "id,brand,product_name,category,variant,size,normalized_gtin14,source_modified_at,source_published_at,quality_flags,screen_status,candidate_state,discontinued",
+      )
+      .order("id", { ascending: true })
+      .range(offset, offset + PAGE_SIZE - 1);
+    if (page.error) throw new Error(page.error.message);
+    const pageRows = (page.data ?? []) as CandidateRow[];
+    rows.push(...pageRows);
+    if (pageRows.length < PAGE_SIZE) break;
+  }
+  const assessed = rows
     .map(candidate)
     .map((item) => ({ item, assessment: assessClassroomRelevance(item) }))
-    .sort((left, right) => left.item.id.localeCompare(right.item.id));
+    .sort((left, right) =>
+      left.item.id < right.item.id ? -1 : left.item.id > right.item.id ? 1 : 0,
+    );
   if (!assessed.length) throw new Error("No candidates were available to assess.");
 
   const payload = assessed.map(({ item, assessment }) => ({
@@ -118,29 +116,49 @@ async function main(): Promise<void> {
   const selectionHash = createHash("sha256")
     .update(JSON.stringify(payload))
     .digest("hex");
-  const run = {
-    algorithmVersion: CATALOG_RELEVANCE_VERSION,
-    assessedCount: payload.length,
-    selectionHash,
-  };
+  const runId = option(argv, "--run-id") ?? randomUUID();
+  if (
+    !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/.test(
+      runId,
+    )
+  ) {
+    throw new Error("--run-id must be a lowercase UUID.");
+  }
 
-  let applyResult: unknown = null;
+  const applyResults: unknown[] = [];
   if (apply) {
     const rpc = admin.rpc.bind(admin) as unknown as (
       name: "apply_catalog_relevance_assessments",
       args: {
         p_assessments: typeof payload;
-        p_run: typeof run;
+        p_run: AssessmentRun;
         p_confirmation: string;
       },
     ) => PromiseLike<{ data: unknown; error: { message: string } | null }>;
-    const applied = await rpc("apply_catalog_relevance_assessments", {
-      p_assessments: payload,
-      p_run: run,
-      p_confirmation: APPLY_CONFIRMATION,
-    });
-    if (applied.error) throw new Error(applied.error.message);
-    applyResult = applied.data;
+    const batchCount = Math.ceil(payload.length / APPLY_BATCH_SIZE);
+    for (let batchIndex = 0; batchIndex < batchCount; batchIndex += 1) {
+      const batch = payload.slice(
+        batchIndex * APPLY_BATCH_SIZE,
+        (batchIndex + 1) * APPLY_BATCH_SIZE,
+      );
+      const batchHash = createHash("sha256").update(JSON.stringify(batch)).digest("hex");
+      const run: AssessmentRun = {
+        algorithmVersion: CATALOG_RELEVANCE_VERSION,
+        assessedCount: batch.length,
+        selectionHash: batchHash,
+        corpusHash: selectionHash,
+        runId,
+        batchIndex,
+        batchCount,
+      };
+      const applied = await rpc("apply_catalog_relevance_assessments", {
+        p_assessments: batch,
+        p_run: run,
+        p_confirmation: APPLY_CONFIRMATION,
+      });
+      if (applied.error) throw new Error(applied.error.message);
+      applyResults.push(applied.data);
+    }
   }
 
   const autoEvidence = assessed
@@ -153,6 +171,7 @@ async function main(): Promise<void> {
         algorithmVersion: CATALOG_RELEVANCE_VERSION,
         assessedCandidates: payload.length,
         selectionHash,
+        runId,
         relevanceTiers: counts(assessed.map(({ assessment }) => assessment.tier)),
         automationRoutes: counts(assessed.map(({ assessment }) => assessment.route)),
         routesByCurrentState: counts(
@@ -169,7 +188,7 @@ async function main(): Promise<void> {
             score: assessment.score,
             reasons: assessment.reasons,
           })),
-        applyResult,
+        applyResults,
       },
       null,
       2,

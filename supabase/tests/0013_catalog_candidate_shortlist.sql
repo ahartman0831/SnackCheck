@@ -1,9 +1,10 @@
 begin;
-select plan(10);
+select plan(13);
 
 select has_function('public', 'queue_catalog_candidate_shortlist', array['uuid[]','jsonb','text'], 'bounded shortlist queue function exists');
 select function_privs_are('public', 'queue_catalog_candidate_shortlist', array['uuid[]','jsonb','text'], 'anon', array[]::text[], 'anonymous users cannot queue a shortlist');
 select function_privs_are('public', 'queue_catalog_candidate_shortlist', array['uuid[]','jsonb','text'], 'authenticated', array[]::text[], 'ordinary authenticated users cannot queue a shortlist');
+select function_privs_are('public', 'queue_catalog_candidate_shortlist', array['uuid[]','jsonb','text'], 'service_role', array['EXECUTE'], 'service role can queue a shortlist');
 
 insert into public.catalog_import_batches (
   id, provider, dataset_release, source_url, license_identifier, file_sha256,
@@ -43,16 +44,32 @@ select throws_ok(
   '22023', 'exact staging shortlist confirmation is required', 'exact confirmation is required'
 );
 select throws_ok(
-  $$select public.queue_catalog_candidate_shortlist(array['82000000-0000-4000-8000-000000000003'::uuid],jsonb_build_object('algorithmVersion','classroom-use-v2','targetCount',1,'selectionHash',repeat('a',64),'groupCounts','{"BREAKFAST":1}'::jsonb),'QUEUE_CATALOG_SHORTLIST_TO_STAGING')$$,
+  $$select public.queue_catalog_candidate_shortlist(array['82000000-0000-4000-8000-000000000003'::uuid],jsonb_build_object('algorithmVersion','classroom-use-v2','targetCount',1,'selectionHash',repeat('a',64),'runId','83000000-0000-4000-8000-000000000001','groupCounts','{"BREAKFAST":1}'::jsonb),'QUEUE_CATALOG_SHORTLIST_TO_STAGING')$$,
   '40001', 'shortlist contains an ineligible or changed candidate', 'quality warnings cannot enter the shortlist'
 );
 select throws_ok(
-  $$select public.queue_catalog_candidate_shortlist(array['82000000-0000-4000-8000-000000000004'::uuid],jsonb_build_object('algorithmVersion','classroom-use-v2','targetCount',1,'selectionHash',repeat('a',64),'groupCounts','{"TREATS":1}'::jsonb),'QUEUE_CATALOG_SHORTLIST_TO_STAGING')$$,
+  $$select public.queue_catalog_candidate_shortlist(array['82000000-0000-4000-8000-000000000004'::uuid],jsonb_build_object('algorithmVersion','classroom-use-v2','targetCount',1,'selectionHash',repeat('a',64),'runId','83000000-0000-4000-8000-000000000002','groupCounts','{"TREATS":1}'::jsonb),'QUEUE_CATALOG_SHORTLIST_TO_STAGING')$$,
   '40001', 'shortlist contains an ineligible or changed candidate', 'failed screens cannot enter the shortlist'
 );
+update public.catalog_source_records
+set classroom_relevance_score = 60,
+    classroom_relevance_tier = 'MEDIUM'
+where id = '82000000-0000-4000-8000-000000000002';
+select throws_ok(
+  $$select public.queue_catalog_candidate_shortlist(array['82000000-0000-4000-8000-000000000002'::uuid],jsonb_build_object('algorithmVersion','classroom-use-v2','targetCount',1,'selectionHash',repeat('a',64),'runId','83000000-0000-4000-8000-000000000003','groupCounts','{"BREAKFAST":1}'::jsonb),'QUEUE_CATALOG_SHORTLIST_TO_STAGING')$$,
+  '40001', 'shortlist contains an ineligible or changed candidate', 'medium relevance cannot enter the high-relevance shortlist'
+);
+update public.catalog_source_records
+set classroom_relevance_score = 80,
+    classroom_relevance_tier = 'HIGH'
+where id = '82000000-0000-4000-8000-000000000002';
 select lives_ok(
-  $$select public.queue_catalog_candidate_shortlist(array['82000000-0000-4000-8000-000000000001'::uuid,'82000000-0000-4000-8000-000000000002'::uuid],jsonb_build_object('algorithmVersion','classroom-use-v2','targetCount',2,'selectionHash',repeat('b',64),'groupCounts','{"SNACKS":1,"BREAKFAST":1}'::jsonb),'QUEUE_CATALOG_SHORTLIST_TO_STAGING')$$,
+  $$select public.queue_catalog_candidate_shortlist(array['82000000-0000-4000-8000-000000000001'::uuid,'82000000-0000-4000-8000-000000000002'::uuid],jsonb_build_object('algorithmVersion','classroom-use-v2','targetCount',2,'selectionHash',repeat('b',64),'runId','83000000-0000-4000-8000-000000000004','groupCounts','{"SNACKS":1,"BREAKFAST":1}'::jsonb),'QUEUE_CATALOG_SHORTLIST_TO_STAGING')$$,
   'service role can queue an eligible bounded shortlist'
+);
+select lives_ok(
+  $$select public.queue_catalog_candidate_shortlist(array['82000000-0000-4000-8000-000000000001'::uuid,'82000000-0000-4000-8000-000000000002'::uuid],jsonb_build_object('algorithmVersion','classroom-use-v2','targetCount',2,'selectionHash',repeat('b',64),'runId','83000000-0000-4000-8000-000000000004','groupCounts','{"SNACKS":1,"BREAKFAST":1}'::jsonb),'QUEUE_CATALOG_SHORTLIST_TO_STAGING')$$,
+  'an identical shortlist run is idempotent'
 );
 
 reset role;

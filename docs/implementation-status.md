@@ -1,8 +1,9 @@
 # Implementation status
 
-Last updated: 2026-09-01
+Last updated: 2026-09-06
 Baseline detail: [`docs/remediation-baseline.md`](remediation-baseline.md)
-Plan: [`docs/SnackCheck-Cursor-Master-Build-Plan.md`](SnackCheck-Cursor-Master-Build-Plan.md)
+Canonical finish-line plan: [`docs/SnackCheck-Finish-Line-Build-Plan.md`](SnackCheck-Finish-Line-Build-Plan.md)
+Technical master plan: [`docs/SnackCheck-Cursor-Master-Build-Plan.md`](SnackCheck-Cursor-Master-Build-Plan.md)
 Prior plan: [`docs/SnackCheck-Cursor-Remediation-Build-Plan-v2.md`](SnackCheck-Cursor-Remediation-Build-Plan-v2.md)
 Design system: [`docs/design-system.md`](design-system.md)
 Review checklist: [`docs/phase-4c-review-checklist.md`](phase-4c-review-checklist.md)
@@ -29,6 +30,20 @@ evidence candidates, 6 human exceptions, and 388 deprioritized; no staging data 
 Migration `0032` adds bounded, audited assessment persistence but has not been applied to
 staging or production. This slice does not publish products and does not allow AI to
 override deterministic compliance.
+
+Milestone 1 hardening is implemented locally but not committed, pushed, applied, or
+merged. The candidate operations now explicitly refuse known production Vercel and
+Supabase targets, page through the full source-record corpus in stable ID order, support
+resumable/idempotent run identity, lock candidate rows during database validation, expose
+unassessed records in the private workspace, and remove deprioritized records from the old
+human-review queue. Search filters are bounded before reaching PostgREST, generated table
+types replace the handwritten candidate row, and the intended relevance-first handling of
+classroom-irrelevant uncertain records is regression-tested. Local Node 22 validation
+passes 38 compliance, 5 contract, and 203 web unit tests; 4 non-Docker integrations;
+typecheck; lint; focused formatting; and the 39-route webpack production build. The
+default local Turbopack build reached this Mac sandbox's known internal-port restriction.
+Database/pgTAP and default Turbopack validation still require the authorized GitHub CI
+environment before any staging apply.
 
 The first ten-candidate evidence pilot is recorded in
 [`docs/catalog-evidence-pilot-001.md`](catalog-evidence-pilot-001.md). Two candidates have
