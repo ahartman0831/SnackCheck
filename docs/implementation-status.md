@@ -37,6 +37,17 @@ matching audit entries; and zero stranded deprioritized review records. Products
 formulations both remain zero. This slice does not publish products and does not allow AI
 to override deterministic compliance.
 
+PR [#19](https://github.com/ahartman0831/SnackCheck/pull/19) was merged without
+squashing at `ee1b1c5`. Required post-merge `main` checks are green on run
+[34041127695](https://github.com/ahartman0831/SnackCheck/actions/runs/34041127695).
+Milestone 2 has started on `codex/phase-11-evidence-collection` with a dry-run-first,
+adapter-based evidence collector. Its first slice rejects search, social, retailer,
+insecure, credential-bearing, and unapproved hosts; distinguishes manufacturer evidence
+from permitted secondary evidence; and enforces candidate, request, response-size, and
+timeout limits. Every candidate produces an explicit outcome and apply mode requires a
+writer. No live requests, AI calls, staging writes, approvals, promotions, or publications
+are part of this initial slice.
+
 Milestone 1 hardening is committed and pushed on PR #19. The candidate operations now
 explicitly refuse known production Vercel and
 Supabase targets, page through the full source-record corpus in stable ID order, support

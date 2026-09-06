@@ -49,9 +49,11 @@ The permanent architecture principle remains:
 - The current Supabase project is owner-designated staging/non-production.
 - Production camera, photo, AI, and affiliate features remain off.
 - The public approved catalog remains empty until evidence, ruleset, and promotion gates pass.
-- PR #19 contains `classroom-use-v2` routing. Migration `0032` and the guarded 489-record assessment were applied only to staging. Independent read-back confirmed 95 `AUTO_EVIDENCE`, 6 `HUMAN_EXCEPTION`, 388 `DEPRIORITIZED`, 489 matching audit entries, and zero products or formulations. PR #19 is ready to merge after its final documentation-only CI run.
+- PR #19 merged at `ee1b1c5` after migration `0032` and the guarded 489-record assessment were applied only to staging. Independent read-back confirmed 95 `AUTO_EVIDENCE`, 6 `HUMAN_EXCEPTION`, 388 `DEPRIORITIZED`, 489 matching audit entries, and zero products or formulations. Post-merge `main` CI is green on run 34041127695.
 
 ## Milestone 1 — Complete classroom relevance routing
+
+Status: `COMPLETE`
 
 ### Work
 
@@ -72,6 +74,9 @@ The permanent architecture principle remains:
 - The admin queue remains usable across the documented migration-first deployment.
 
 ## Milestone 2 — Automated independent evidence collection
+
+Status: `PARTIAL` on `codex/phase-11-evidence-collection`. The first local slice
+defines the bounded collector and source policy with no live requests or data writes.
 
 ### Work
 
