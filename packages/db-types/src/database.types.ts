@@ -330,6 +330,195 @@ export type Database = {
         }
         Relationships: []
       }
+      catalog_evidence_attempts: {
+        Row: {
+          attempt_sha256: string
+          attribution: string | null
+          byte_size: number | null
+          candidate_id: string
+          content_sha256: string | null
+          created_at: string
+          evidence_text: string | null
+          evidence_title: string | null
+          id: string
+          ingredient_text: string | null
+          license_identifier: string | null
+          media_type: string | null
+          observed_at: string | null
+          outcome: string
+          reason_code: string
+          request_count: number
+          retrieved_at: string | null
+          run_id: string
+          source_host: string | null
+          source_kind: string | null
+          source_url: string | null
+        }
+        Insert: {
+          attempt_sha256: string
+          attribution?: string | null
+          byte_size?: number | null
+          candidate_id: string
+          content_sha256?: string | null
+          created_at?: string
+          evidence_text?: string | null
+          evidence_title?: string | null
+          id?: string
+          ingredient_text?: string | null
+          license_identifier?: string | null
+          media_type?: string | null
+          observed_at?: string | null
+          outcome: string
+          reason_code: string
+          request_count: number
+          retrieved_at?: string | null
+          run_id: string
+          source_host?: string | null
+          source_kind?: string | null
+          source_url?: string | null
+        }
+        Update: {
+          attempt_sha256?: string
+          attribution?: string | null
+          byte_size?: number | null
+          candidate_id?: string
+          content_sha256?: string | null
+          created_at?: string
+          evidence_text?: string | null
+          evidence_title?: string | null
+          id?: string
+          ingredient_text?: string | null
+          license_identifier?: string | null
+          media_type?: string | null
+          observed_at?: string | null
+          outcome?: string
+          reason_code?: string
+          request_count?: number
+          retrieved_at?: string | null
+          run_id?: string
+          source_host?: string | null
+          source_kind?: string | null
+          source_url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "catalog_evidence_attempts_candidate_id_fkey"
+            columns: ["candidate_id"]
+            isOneToOne: false
+            referencedRelation: "catalog_source_records"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "catalog_evidence_attempts_run_id_fkey"
+            columns: ["run_id"]
+            isOneToOne: false
+            referencedRelation: "catalog_evidence_runs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      catalog_evidence_run_candidates: {
+        Row: {
+          candidate_id: string
+          created_at: string
+          ordinal: number
+          run_id: string
+        }
+        Insert: {
+          candidate_id: string
+          created_at?: string
+          ordinal: number
+          run_id: string
+        }
+        Update: {
+          candidate_id?: string
+          created_at?: string
+          ordinal?: number
+          run_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "catalog_evidence_run_candidates_candidate_id_fkey"
+            columns: ["candidate_id"]
+            isOneToOne: false
+            referencedRelation: "catalog_source_records"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "catalog_evidence_run_candidates_run_id_fkey"
+            columns: ["run_id"]
+            isOneToOne: false
+            referencedRelation: "catalog_evidence_runs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      catalog_evidence_runs: {
+        Row: {
+          attempted_candidates: number
+          blocked: number
+          collector_version: string
+          completed_at: string | null
+          created_at: string
+          evidence_found: number
+          failed: number
+          id: string
+          max_requests_per_candidate: number
+          max_requests_per_run: number
+          max_response_bytes: number
+          not_found: number
+          planned_candidates: number
+          request_count: number
+          retrieved_bytes: number
+          selection_hash: string
+          source_policy_version: string
+          started_at: string
+          status: string
+        }
+        Insert: {
+          attempted_candidates?: number
+          blocked?: number
+          collector_version: string
+          completed_at?: string | null
+          created_at?: string
+          evidence_found?: number
+          failed?: number
+          id: string
+          max_requests_per_candidate: number
+          max_requests_per_run: number
+          max_response_bytes: number
+          not_found?: number
+          planned_candidates: number
+          request_count?: number
+          retrieved_bytes?: number
+          selection_hash: string
+          source_policy_version: string
+          started_at?: string
+          status?: string
+        }
+        Update: {
+          attempted_candidates?: number
+          blocked?: number
+          collector_version?: string
+          completed_at?: string | null
+          created_at?: string
+          evidence_found?: number
+          failed?: number
+          id?: string
+          max_requests_per_candidate?: number
+          max_requests_per_run?: number
+          max_response_bytes?: number
+          not_found?: number
+          planned_candidates?: number
+          request_count?: number
+          retrieved_bytes?: number
+          selection_hash?: string
+          source_policy_version?: string
+          started_at?: string
+          status?: string
+        }
+        Relationships: []
+      }
       catalog_import_batches: {
         Row: {
           completed_at: string | null
@@ -2069,6 +2258,10 @@ export type Database = {
         Args: { p_assessments: Json; p_confirmation: string; p_run: Json }
         Returns: Json
       }
+      begin_catalog_evidence_run: {
+        Args: { p_candidate_ids: string[]; p_confirmation: string; p_run: Json }
+        Returns: Json
+      }
       canonical_json: { Args: { value: Json }; Returns: string }
       claim_ai_extraction_slot: { Args: { p_limit: number }; Returns: boolean }
       claim_photo_processing_slot: {
@@ -2078,6 +2271,10 @@ export type Database = {
       clone_ruleset_to_draft: {
         Args: { source_ruleset_id: string }
         Returns: string
+      }
+      complete_catalog_evidence_run: {
+        Args: { p_run_id: string; p_status: string }
+        Returns: Json
       }
       complete_catalog_import_batch: {
         Args: { p_batch_id: string; p_summary: Json }
@@ -2241,6 +2438,10 @@ export type Database = {
       }
       queue_catalog_candidate_shortlist: {
         Args: { p_candidate_ids: string[]; p_confirmation: string; p_run: Json }
+        Returns: Json
+      }
+      record_catalog_evidence_attempt: {
+        Args: { p_attempt: Json; p_run_id: string }
         Returns: Json
       }
       refresh_product_search_document: {
