@@ -55,6 +55,15 @@ account for every planned candidate, and only unchanged, clean `AUTO_EVIDENCE` c
 may enter. The migration remains unapplied outside ephemeral CI; the branch still makes no
 live requests and cannot create, approve, promote, or publish a product.
 
+The first secondary-evidence adapter is implemented for exact-barcode Open Food Facts
+reads. It requires the documented identifying User-Agent, stays below 15 product reads per
+minute, limits each response to 250 KB, verifies the returned barcode, stores only a
+bounded evidence excerpt with ODbL/DbCL attribution, and prints no ingredient text to the
+console. The command is not run automatically. Both dry-run and apply remain blocked from
+live use until the owner completes OFF's API usage form and an identifying contact is
+configured; apply additionally requires the exact staging confirmation and migration
+`0033`.
+
 Milestone 1 hardening is committed and pushed on PR #19. The candidate operations now
 explicitly refuse known production Vercel and
 Supabase targets, page through the full source-record corpus in stable ID order, support

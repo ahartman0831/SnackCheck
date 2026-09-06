@@ -40,7 +40,7 @@ export interface EvidenceCollectionAdapter {
   retrieve(
     reference: DiscoveredEvidenceReference,
     options: { maxBytes: number; signal: AbortSignal },
-  ): Promise<{ requestCount: number; evidence: RetrievedEvidence }>;
+  ): Promise<{ requestCount: number; evidence: RetrievedEvidence | null }>;
 }
 
 export type EvidenceAttemptOutcome =
@@ -274,10 +274,6 @@ export async function collectCatalogEvidence(input: {
           );
           candidateRequests += requestCount(retrieved.requestCount);
           requestsMade += retrieved.requestCount;
-          const finalSource = assessEvidenceSource(
-            retrieved.evidence.url,
-            candidate.manufacturerHosts,
-          );
           if (
             candidateRequests > limits.maxRequestsPerCandidate ||
             requestsMade > limits.maxRequestsPerRun
@@ -288,6 +284,13 @@ export async function collectCatalogEvidence(input: {
               "RETRIEVAL_REQUEST_LIMIT",
               candidateRequests,
             );
+          } else if (!retrieved.evidence) {
+            attempt = failure(
+              candidate.id,
+              "NOT_FOUND",
+              "SOURCE_RECORD_NOT_FOUND",
+              candidateRequests,
+            );
           } else if (retrieved.evidence.byteSize > limits.maxResponseBytes) {
             attempt = failure(
               candidate.id,
@@ -295,33 +298,39 @@ export async function collectCatalogEvidence(input: {
               "RESPONSE_TOO_LARGE",
               candidateRequests,
             );
-          } else if (!finalSource.accepted) {
-            attempt = failure(
-              candidate.id,
-              "BLOCKED_BY_POLICY",
-              "FINAL_URL_NOT_ALLOWED",
-              candidateRequests,
-            );
-          } else if (!validEvidence(retrieved.evidence)) {
-            attempt = failure(
-              candidate.id,
-              "BLOCKED_BY_POLICY",
-              "INVALID_EVIDENCE_METADATA",
-              candidateRequests,
-            );
           } else {
-            attempt = {
-              candidateId: candidate.id,
-              outcome: "EVIDENCE_FOUND",
-              reasonCode: "ALLOWED_SOURCE_RETRIEVED",
-              requestCount: candidateRequests,
-              evidence: {
-                ...retrieved.evidence,
-                url: finalSource.normalizedUrl,
-                sourceKind: finalSource.kind,
-                hostname: finalSource.hostname,
-              },
-            };
+            const finalSource = assessEvidenceSource(
+              retrieved.evidence.url,
+              candidate.manufacturerHosts,
+            );
+            if (!finalSource.accepted) {
+              attempt = failure(
+                candidate.id,
+                "BLOCKED_BY_POLICY",
+                "FINAL_URL_NOT_ALLOWED",
+                candidateRequests,
+              );
+            } else if (!validEvidence(retrieved.evidence)) {
+              attempt = failure(
+                candidate.id,
+                "BLOCKED_BY_POLICY",
+                "INVALID_EVIDENCE_METADATA",
+                candidateRequests,
+              );
+            } else {
+              attempt = {
+                candidateId: candidate.id,
+                outcome: "EVIDENCE_FOUND",
+                reasonCode: "ALLOWED_SOURCE_RETRIEVED",
+                requestCount: candidateRequests,
+                evidence: {
+                  ...retrieved.evidence,
+                  url: finalSource.normalizedUrl,
+                  sourceKind: finalSource.kind,
+                  hostname: finalSource.hostname,
+                },
+              };
+            }
           }
         }
       }
