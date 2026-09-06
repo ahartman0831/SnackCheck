@@ -48,6 +48,13 @@ timeout limits. Every candidate produces an explicit outcome and apply mode requ
 writer. No live requests, AI calls, staging writes, approvals, promotions, or publications
 are part of this initial slice.
 
+The follow-up persistence slice adds migration `0033` with service-role-only evidence
+runs, exact candidate manifests, immutable per-candidate dossiers, atomic budget counters,
+idempotent start/attempt/complete operations, and audit entries. A completed run must
+account for every planned candidate, and only unchanged, clean `AUTO_EVIDENCE` candidates
+may enter. The migration remains unapplied outside ephemeral CI; the branch still makes no
+live requests and cannot create, approve, promote, or publish a product.
+
 Milestone 1 hardening is committed and pushed on PR #19. The candidate operations now
 explicitly refuse known production Vercel and
 Supabase targets, page through the full source-record corpus in stable ID order, support

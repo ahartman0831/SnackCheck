@@ -56,7 +56,8 @@ export type EvidenceAttempt = {
   outcome: EvidenceAttemptOutcome;
   reasonCode: string;
   requestCount: number;
-  evidence: (RetrievedEvidence & { sourceKind: EvidenceSourceKind }) | null;
+  evidence:
+    (RetrievedEvidence & { sourceKind: EvidenceSourceKind; hostname: string }) | null;
 };
 
 export interface EvidenceAttemptWriter {
@@ -318,6 +319,7 @@ export async function collectCatalogEvidence(input: {
                 ...retrieved.evidence,
                 url: finalSource.normalizedUrl,
                 sourceKind: finalSource.kind,
+                hostname: finalSource.hostname,
               },
             };
           }
