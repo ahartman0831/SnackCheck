@@ -20,19 +20,25 @@ The consumer-style public UI refresh is merged by PR [#12](https://github.com/ah
 
 The deterministic Phase 11 shortlist is merged by PR [#13](https://github.com/ahartman0831/SnackCheck/pull/13) at `c47f0ca`. After all five required checks passed, migration `0031` was applied only to owner-designated staging project `lhnbxjvqllohlbtdncyg`. The exact guarded operation queued 190 candidates for private evidence review. Read-back verified 190 matching audit rows, 273 candidates still in `SCREENED_PASS`, and zero products and formulations. Nothing was approved, promoted, or published; AI and production were not used.
 
-Phase 11 classroom automation is in progress on the `classroom-use-v2` slice. The
+Phase 11 classroom automation is complete on the `classroom-use-v2` slice. The
 original category-balanced USDA queue remains private staging test data and is not a
 manual workload for the owner. The replacement deterministic policy scores classroom
 usefulness, excludes pantry/bulk/preparation items such as the individually portioned
 honey record, and routes records to automatic evidence collection, human exception, or
 deprioritized handling. A read-only run assessed all 489 staging records: 95 automatic
-evidence candidates, 6 human exceptions, and 388 deprioritized; no staging data changed.
-Migration `0032` adds bounded, audited assessment persistence but has not been applied to
-staging or production. This slice does not publish products and does not allow AI to
-override deterministic compliance.
+evidence candidates, 6 human exceptions, and 388 deprioritized. Migration `0032` was
+applied only to owner-designated staging project `lhnbxjvqllohlbtdncyg`, then the exact
+guarded operation saved all 489 assessments under run
+`c3749631-01dc-4215-9681-1deadf8e53d5` with selection hash
+`147fbdefedf5ff5a34ad2991bc8271f0ce1c0ac524ce1afc5daafbc42c1bba6c`.
+Independent read-back confirmed 95 automatic-evidence, 6 human-exception, and 388
+deprioritized routes; 56 high, 51 medium, 49 low, and 333 excluded relevance tiers; 489
+matching audit entries; and zero stranded deprioritized review records. Products and
+formulations both remain zero. This slice does not publish products and does not allow AI
+to override deterministic compliance.
 
-Milestone 1 hardening is implemented locally but not committed, pushed, applied, or
-merged. The candidate operations now explicitly refuse known production Vercel and
+Milestone 1 hardening is committed and pushed on PR #19. The candidate operations now
+explicitly refuse known production Vercel and
 Supabase targets, page through the full source-record corpus in stable ID order, support
 resumable/idempotent run identity, lock candidate rows during database validation, expose
 unassessed records in the private workspace, and remove deprioritized records from the old
@@ -42,8 +48,10 @@ classroom-irrelevant uncertain records is regression-tested. Local Node 22 valid
 passes 38 compliance, 5 contract, and 203 web unit tests; 4 non-Docker integrations;
 typecheck; lint; focused formatting; and the 39-route webpack production build. The
 default local Turbopack build reached this Mac sandbox's known internal-port restriction.
-Database/pgTAP and default Turbopack validation still require the authorized GitHub CI
-environment before any staging apply.
+GitHub Actions run [34040373009](https://github.com/ahartman0831/SnackCheck/actions/runs/34040373009)
+passes `verify`, Ubuntu WebKit, and two clean local-Supabase/pgTAP resets with generated
+type parity. The high-severity dependency audit is clean after pinning the patched
+`browserslist` release.
 
 The first ten-candidate evidence pilot is recorded in
 [`docs/catalog-evidence-pilot-001.md`](catalog-evidence-pilot-001.md). Two candidates have
