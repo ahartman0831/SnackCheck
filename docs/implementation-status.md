@@ -64,6 +64,11 @@ live use until the owner completes OFF's API usage form and an identifying conta
 configured; apply additionally requires the exact staging confirmation and migration
 `0033`.
 
+GitHub Actions run [34048327317](https://github.com/ahartman0831/SnackCheck/actions/runs/34048327317)
+passes `verify`, Ubuntu WebKit, both clean local-Supabase resets, all pgTAP tests
+including 28 new evidence-persistence assertions, generated-type parity, private-storage
+integration, and backup/restore rehearsal. Migration `0033` remains unapplied to staging.
+
 Milestone 1 hardening is committed and pushed on PR #19. The candidate operations now
 explicitly refuse known production Vercel and
 Supabase targets, page through the full source-record corpus in stable ID order, support

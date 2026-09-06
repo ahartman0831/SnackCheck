@@ -2,6 +2,9 @@
 
 Status: `PARTIAL`
 
+Implementation CI is green on GitHub Actions run 34048327317. Migration `0033` remains
+unapplied to staging.
+
 This slice turns the 95 promising private candidates into a bounded evidence workload.
 It does not approve, promote, publish, or rank a product. Open Food Facts records are
 secondary leads only; they cannot satisfy SnackCheck's independent manufacturer/package

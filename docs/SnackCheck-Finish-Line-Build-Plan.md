@@ -78,7 +78,8 @@ Status: `COMPLETE`
 Status: `PARTIAL` on `codex/phase-11-evidence-collection`. The first local slice
 defines the bounded collector and source policy with no live requests or data writes.
 Migration `0033` adds private, service-only run manifests and immutable evidence dossiers;
-it must pass isolated database CI and generated-type parity before any staging apply.
+isolated database CI and generated-type parity pass on run 34048327317. It remains
+unapplied to staging pending the controlled-pilot gate.
 
 ### Work
 
