@@ -86,6 +86,21 @@ export default async function CatalogCandidatePage({
               ? candidate.qualityFlags.join(", ")
               : "None recorded"}
           </p>
+          {candidate.relevanceTier ? (
+            <>
+              <h3 className="mt-4 font-semibold">Classroom relevance</h3>
+              <p className="mt-2 text-sm font-semibold">
+                {candidate.relevanceTier} · score {candidate.relevanceScore} ·{" "}
+                {candidate.automationRoute?.replaceAll("_", " ")}
+              </p>
+              <p className="text-muted mt-2 text-sm">
+                {candidate.relevanceReasons.join(", ")}
+              </p>
+              <p className="text-muted mt-2 text-xs">
+                Policy {candidate.relevancePolicyVersion}
+              </p>
+            </>
+          ) : null}
         </article>
       </section>
       <section>
@@ -117,7 +132,7 @@ export default async function CatalogCandidatePage({
         </section>
       ) : null}
       <section>
-        <h2 className="text-xl font-semibold">Reviewer decision</h2>
+        <h2 className="text-xl font-semibold">Exception review and evidence sample</h2>
         <div className="mt-3">
           <CatalogCandidateControls
             candidateId={candidate.id}

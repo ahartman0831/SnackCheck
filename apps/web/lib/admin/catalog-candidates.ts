@@ -1,49 +1,15 @@
 import "server-only";
-import type { Json } from "@snackcheck/db-types";
+import type { Database, Json } from "@snackcheck/db-types";
 import { requireAdmin } from "@/lib/auth/require-admin";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 const REVIEW_ROLES = ["REVIEWER", "REGULATORY_ADMIN", "SUPER_ADMIN"] as const;
 
-type CandidateRow = {
-  id: string;
-  provider: string;
-  external_record_id: string;
-  source_version: string;
-  source_gtin: string;
-  normalized_gtin14: string;
-  brand: string;
-  product_name: string;
-  variant: string | null;
-  size: string | null;
-  category: string | null;
-  raw_ingredient_text: string;
-  normalized_ingredient_text: string;
-  market_country: string;
-  source_modified_at: string | null;
-  source_published_at: string | null;
-  discontinued: boolean;
-  source_url: string;
-  source_reference: string;
-  license_identifier: string;
-  attribution: string | null;
-  screen_status: string;
-  quality_flags: Json;
-  matched_rule_ids: Json;
-  engine_version: string;
-  ruleset_hash: string;
-  candidate_state: string;
-  canonical_product_id: string | null;
-  canonical_formulation_id: string | null;
-  review_reason?: string | null;
-  reviewed_by?: string | null;
-  reviewed_at?: string | null;
-  created_at: string;
-  updated_at: string;
-};
+type CandidateRow = Database["public"]["Tables"]["catalog_source_records"]["Row"];
 
 export type CatalogCandidateFilters = {
   provider: "ALL" | "USDA_FDC" | "OPEN_FOOD_FACTS";
+  route: "ALL" | "UNASSESSED" | "AUTO_EVIDENCE" | "HUMAN_EXCEPTION" | "DEPRIORITIZED";
   state: string;
   screen: "ALL" | "PASS" | "FAIL" | "VERIFY";
   query: string;
@@ -61,6 +27,9 @@ export type CatalogCandidateSummary = {
   state: string;
   qualityFlags: string[];
   updatedAt: string;
+  relevanceScore: number | null;
+  relevanceTier: string | null;
+  automationRoute: string | null;
 };
 
 export type CatalogCandidateDetail = CatalogCandidateSummary & {
@@ -86,6 +55,8 @@ export type CatalogCandidateDetail = CatalogCandidateSummary & {
   reviewedAt: string | null;
   canonicalProductId: string | null;
   canonicalFormulationId: string | null;
+  relevancePolicyVersion: string | null;
+  relevanceReasons: string[];
   existingProduct: null | {
     id: string;
     brand: string;
@@ -134,14 +105,38 @@ export function parseCatalogCandidateFilters(
 ): CatalogCandidateFilters {
   const provider = single(values.provider);
   const screen = single(values.screen);
-  const state = single(values.state).slice(0, 40);
+  const route = single(values.route);
+  const selectedRoute =
+    route === "ALL" ||
+    route === "UNASSESSED" ||
+    route === "HUMAN_EXCEPTION" ||
+    route === "DEPRIORITIZED"
+      ? route
+      : "AUTO_EVIDENCE";
+  const requestedState = single(values.state);
+  const state = [
+    "ALL",
+    "SCREENED_PASS",
+    "SCREENED_VERIFY",
+    "SCREENED_FAIL",
+    "REVIEW_QUEUED",
+    "PROMOTED",
+    "REJECTED",
+  ].includes(requestedState)
+    ? requestedState
+    : "";
   return {
     provider:
       provider === "USDA_FDC" || provider === "OPEN_FOOD_FACTS" ? provider : "ALL",
-    state: state || "REVIEW_QUEUED",
+    route: selectedRoute,
+    state: state || (selectedRoute === "UNASSESSED" ? "ALL" : "REVIEW_QUEUED"),
     screen:
       screen === "PASS" || screen === "FAIL" || screen === "VERIFY" ? screen : "ALL",
-    query: single(values.query).trim().slice(0, 100),
+    query: single(values.query)
+      .replaceAll(/[^\p{L}\p{N}\s-]/gu, " ")
+      .replaceAll(/\s+/g, " ")
+      .trim()
+      .slice(0, 100),
     order: single(values.order) === "newest" ? "newest" : "oldest",
   };
 }
@@ -155,19 +150,22 @@ export async function listCatalogCandidates(
   if (!admin) return null;
   let query = admin.from("catalog_source_records").select("*");
   if (filters.provider !== "ALL") query = query.eq("provider", filters.provider);
+  if (filters.route === "UNASSESSED") query = query.is("catalog_automation_route", null);
+  else if (filters.route !== "ALL")
+    query = query.eq("catalog_automation_route", filters.route);
   if (filters.state !== "ALL") query = query.eq("candidate_state", filters.state);
   if (filters.screen !== "ALL") query = query.eq("screen_status", filters.screen);
   if (filters.query) {
-    const cleaned = filters.query.replaceAll(/[,%()]/g, " ");
     query = query.or(
-      `brand.ilike.%${cleaned}%,product_name.ilike.%${cleaned}%,normalized_gtin14.ilike.%${cleaned}%`,
+      `brand.ilike.%${filters.query}%,product_name.ilike.%${filters.query}%,normalized_gtin14.ilike.%${filters.query}%`,
     );
   }
   const result = await query
     .order("updated_at", { ascending: filters.order === "oldest" })
+    .order("id", { ascending: true })
     .limit(50);
   if (result.error) throw new Error("The catalog candidate queue could not be loaded.");
-  return ((result.data ?? []) as unknown as CandidateRow[]).map((row) => ({
+  return ((result.data ?? []) as CandidateRow[]).map((row) => ({
     id: row.id,
     provider: row.provider,
     brand: row.brand,
@@ -178,6 +176,9 @@ export async function listCatalogCandidates(
     state: row.candidate_state,
     qualityFlags: strings(row.quality_flags),
     updatedAt: row.updated_at,
+    relevanceScore: row.classroom_relevance_score ?? null,
+    relevanceTier: row.classroom_relevance_tier ?? null,
+    automationRoute: row.catalog_automation_route ?? null,
   }));
 }
 
@@ -200,7 +201,7 @@ export async function getCatalogCandidate(
   if (candidateResult.error)
     throw new Error("The catalog candidate could not be loaded.");
   if (!candidateResult.data) return { kind: "not-found" };
-  const row = candidateResult.data as unknown as CandidateRow;
+  const row = candidateResult.data as CandidateRow;
   const [productResult, auditResult] = await Promise.all([
     admin
       .from("products")
@@ -260,6 +261,11 @@ export async function getCatalogCandidate(
       reviewedAt: row.reviewed_at ?? null,
       canonicalProductId: row.canonical_product_id,
       canonicalFormulationId: row.canonical_formulation_id,
+      relevanceScore: row.classroom_relevance_score ?? null,
+      relevanceTier: row.classroom_relevance_tier ?? null,
+      automationRoute: row.catalog_automation_route ?? null,
+      relevancePolicyVersion: row.classroom_relevance_policy_version ?? null,
+      relevanceReasons: strings(row.classroom_relevance_reasons ?? []),
       existingProduct: productResult.data
         ? {
             ...productResult.data,
