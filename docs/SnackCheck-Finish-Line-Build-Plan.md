@@ -104,6 +104,11 @@ Reject search snippets, unverifiable retailer copy, mismatched flavors or sizes,
 
 ## Milestone 3 — AI-assisted evidence extraction and comparison
 
+Status: `PARTIAL` on `codex/phase-11-evidence-collection`. Strict comparison contracts,
+the non-retained OpenAI adapter, deterministic conflict override, guarded persistence, and
+detailed central spend accounting are implemented locally. Migration `0034`, pgTAP, and
+generated types still require CI proof; no paid comparison or staging write is authorized.
+
 ### Work
 
 Use AI only to read and compare evidence:

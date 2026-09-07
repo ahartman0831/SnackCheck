@@ -130,6 +130,20 @@ Official OpenAI API reference used for the structured-output and usage boundary:
 No paid AI comparison or staging comparison write is enabled by this slice. A guarded
 comparison ledger and explicit pilot approval remain required before live use.
 
+Migration `0034` adds that guarded ledger as the next reviewable slice. It keeps AI run
+manifests, one claimed call per candidate, immutable structured outcomes, detailed token
+fields, a snapshot of the verified rate card, calculated input/output/total cost, and a
+link into the existing central `ai_usage_ledger`. It defaults to a closed kill switch and a
+five-call daily ceiling. A run may include at most five candidates and may begin only when
+each candidate has bounded manufacturer ingredient evidence from migration `0033`.
+
+Only guarded service-role functions may begin a run, claim spend, record a result, or close
+the run. The database independently rejects optimistic continuation when identity,
+ingredient agreement, discrepancy, confidence, or deterministic-conflict gates fail.
+Start, attempt, and close actions are audited, and no comparison function can create or
+publish a product. Migration `0034` is not applied to staging, its generated types are not
+yet reconciled, and no live comparison is authorized.
+
 Applied staging persistence additionally requires all of the following:
 
 - `--apply`

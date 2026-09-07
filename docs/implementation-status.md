@@ -89,6 +89,14 @@ confidence, invalid output, timeout, disabled use, or budget exhaustion routes t
 `HUMAN_EXCEPTION`. Twenty focused tests pass. No real manufacturer page or paid model was
 called, and no new staging or production write occurred.
 
+Migration `0034` is the unproven persistence follow-up: a private, service-only AI
+comparison run/attempt ledger, a closed-by-default kill switch, a five-call daily limit,
+one claim per candidate, manufacturer-evidence prerequisites, immutable outputs, full token
+and rate-card cost accounting in the central AI usage ledger, and database-enforced
+fail-closed continuation gates. The migration and 35 pgTAP assertions are local only; they
+have not passed database CI, generated types are not reconciled, and nothing was applied or
+called outside the local tree.
+
 Milestone 1 hardening is committed and pushed on PR #19. The candidate operations now
 explicitly refuse known production Vercel and
 Supabase targets, page through the full source-record corpus in stable ID order, support
