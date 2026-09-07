@@ -2,8 +2,8 @@
 
 Status: `PARTIAL`
 
-Implementation CI is green on GitHub Actions run 34048327317. Migration `0033` remains
-unapplied to staging.
+Implementation CI is green on GitHub Actions run 34129932286. Migration `0033` was applied
+only to the owner-designated staging project on 2026-09-07.
 
 This slice turns the 95 promising private candidates into a bounded evidence workload.
 It does not approve, promote, publish, or rank a product. Open Food Facts records are
@@ -64,6 +64,29 @@ record must remain a conflict requiring better evidence; it is not an
 automatic match. All five OFF records remain community-supplied secondary evidence and
 cannot independently approve or publish a product.
 
+## First persisted staging pilot
+
+After explicit owner approval, migration `0033` was applied as a single SQL file to staging
+project `lhnbxjvqllohlbtdncyg`. A normal migration push was not used because the remote
+migration-history table stops at `0022` even though later schemas were previously applied
+individually; repairing that bookkeeping remains a separate operational task.
+
+Run `3f156574-689b-4b6c-aed7-c42b342ea967` persisted the same five-candidate selection
+under selection hash
+`6046ee95dd593428e255dc533b8ee221c22f68bec9c5e7a468909fa0fb311bb4`.
+Independent database read-back confirmed:
+
+- status `COMPLETED`, with five planned and five attempted candidates;
+- five immutable evidence attempts and five exact manifest rows;
+- five requests and 8,453 retrieved bytes;
+- five OFF records with the required host, ODbL/DbCL license, and attribution;
+- four exact normalized ingredient matches and one difference;
+- zero missing, blocked, or failed outcomes; and
+- two run audit entries, covering start and close.
+
+The pilot created no product or formulation and made no AI call, approval, promotion, or
+publication.
+
 Applied staging persistence additionally requires all of the following:
 
 - `--apply`
@@ -73,4 +96,3 @@ Applied staging persistence additionally requires all of the following:
 - a lowercase UUID supplied with `--run-id` for deterministic retries
 
 Do not run either mode without an identifying contact in `OPEN_FOOD_FACTS_USER_AGENT`.
-Do not apply migration `0033` to staging without explicit owner approval.

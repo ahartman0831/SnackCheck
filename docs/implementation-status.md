@@ -52,8 +52,8 @@ The follow-up persistence slice adds migration `0033` with service-role-only evi
 runs, exact candidate manifests, immutable per-candidate dossiers, atomic budget counters,
 idempotent start/attempt/complete operations, and audit entries. A completed run must
 account for every planned candidate, and only unchanged, clean `AUTO_EVIDENCE` candidates
-may enter. The migration remains unapplied outside ephemeral CI; the branch still makes no
-live requests and cannot create, approve, promote, or publish a product.
+may enter. Migration `0033` was applied only to owner-designated staging on 2026-09-07; the
+branch still cannot create, approve, promote, or publish a product.
 
 The first secondary-evidence adapter is implemented for exact-barcode Open Food Facts
 reads. It requires the documented identifying User-Agent, stays below 15 product reads per
@@ -66,14 +66,17 @@ exact staging confirmation and migration `0033`.
 
 A five-candidate read-only OFF pilot on 2026-09-07 returned five exact-barcode records with
 no request failures. Four ingredient statements exactly matched the normalized USDA text;
-one Cheez-It snack-mix record differed and remains a conflict. The pilot made no staging
-writes, AI calls, approvals, promotions, or publications. Migration `0033` remains
-unapplied to staging.
+one Cheez-It snack-mix record differed and remains a conflict. After explicit approval, a
+five-candidate staging run (`3f156574-689b-4b6c-aed7-c42b342ea967`) persisted the same
+results. Independent read-back confirmed five manifest rows, five immutable attempts, five
+requests, 8,453 retrieved bytes, five attributed OFF records, four matches, one difference,
+zero failures, and two audit entries. It made no AI calls, approvals, promotions, or
+publications.
 
-GitHub Actions run [34048327317](https://github.com/ahartman0831/SnackCheck/actions/runs/34048327317)
+GitHub Actions run [34129932286](https://github.com/ahartman0831/SnackCheck/actions/runs/34129932286)
 passes `verify`, Ubuntu WebKit, both clean local-Supabase resets, all pgTAP tests
 including 28 new evidence-persistence assertions, generated-type parity, private-storage
-integration, and backup/restore rehearsal. Migration `0033` remains unapplied to staging.
+integration, and backup/restore rehearsal.
 
 Milestone 1 hardening is committed and pushed on PR #19. The candidate operations now
 explicitly refuse known production Vercel and

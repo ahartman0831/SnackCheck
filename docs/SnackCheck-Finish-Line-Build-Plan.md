@@ -75,11 +75,11 @@ Status: `COMPLETE`
 
 ## Milestone 2 — Automated independent evidence collection
 
-Status: `PARTIAL` on `codex/phase-11-evidence-collection`. The first local slice
-defines the bounded collector and source policy with no live requests or data writes.
-Migration `0033` adds private, service-only run manifests and immutable evidence dossiers;
-isolated database CI and generated-type parity pass on run 34048327317. It remains
-unapplied to staging pending the controlled-pilot gate.
+Status: `PARTIAL` on `codex/phase-11-evidence-collection`. The bounded collector, source
+policy, exact-barcode OFF adapter, and private persistence layer are implemented. Migration
+`0033` and a five-candidate controlled evidence run were applied only to owner-designated
+staging after explicit approval. Independent read-back confirmed five dossiers, four exact
+ingredient matches, one conflict, and zero failures. GitHub CI is green on run 34129932286.
 
 ### Work
 
