@@ -31,6 +31,7 @@
     "assess:candidates": "pnpm --filter web exec tsx scripts/assess-catalog-candidates.ts",
     "shortlist:candidates": "pnpm --filter web exec tsx scripts/shortlist-catalog-candidates.ts",
     "collect:evidence:off": "pnpm --filter web exec tsx scripts/collect-open-food-facts-evidence.ts",
+    "collect:evidence:manufacturer": "pnpm --filter web exec tsx scripts/collect-manufacturer-evidence.ts",
     "ops:synthetic": "node scripts/run-synthetic-checks.mjs",
     "ops:retention": "pnpm exec tsx scripts/cleanup-expired-submission-assets.ts"
   },

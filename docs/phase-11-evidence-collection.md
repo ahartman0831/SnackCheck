@@ -87,6 +87,49 @@ Independent database read-back confirmed:
 The pilot created no product or formulation and made no AI call, approval, promotion, or
 publication.
 
+## Manufacturer evidence foundation
+
+The next local slice adds a manifest-driven official manufacturer collector. It does not
+search or scrape the general web. Each manifest entry must bind one eligible candidate and
+GTIN to one credential-free HTTPS product page on an explicitly reviewed manufacturer
+host. The entry also records the terms/collection-policy reference and a review date that
+must be no more than one year old.
+
+The adapter reads at most one bounded HTML or JSON response per candidate, follows the
+existing final-URL policy, hashes the original response, and preserves a compact product
+snapshot rather than a full web page. It extracts only declared Product JSON-LD/meta facts
+and a bounded visible ingredient section. A manufacturer page that declares a different
+GTIN is blocked before it can become evidence. Retailers, search results, unreviewed hosts,
+stale terms reviews, unsafe redirects, unsupported content, and oversized responses remain
+fail-closed.
+
+`pnpm collect:evidence:manufacturer -- --manifest <path>` is dry-run by default. It accepts
+at most 15 reviewed entries, one request per candidate, and 500 KB per response. Apply mode
+uses the same exact staging confirmation and private persistence functions as other
+evidence runs. No real manufacturer manifest or live request is included in this slice.
+
+## AI comparison foundation
+
+The local AI comparison layer compares candidate identity and ingredient text against up
+to four supplied evidence records. It uses a strict structured-output schema and a
+non-retained OpenAI Responses API request with no tools or browsing. Provider request ID,
+model, prompt version, latency, input/cached/output/reasoning tokens, outcome, confidence,
+and discrepancy codes are returned for later persistence and pricing.
+
+The model may only recommend `CONTINUE_DETERMINISTIC` or `HUMAN_EXCEPTION`; it cannot emit
+or set compliance, eligibility, approval, PASS, FAIL, or VERIFY. Continuation requires a
+matching identity, exact/formatting-only ingredient agreement, no discrepancy codes, and
+confidence of at least 0.95. A deterministic normalized-text mismatch, missing ingredient
+evidence, low confidence, invalid output, timeout, budget rejection, or provider failure
+overrides the model and routes safely to `HUMAN_EXCEPTION`.
+
+Official OpenAI API reference used for the structured-output and usage boundary:
+
+- <https://developers.openai.com/api/reference/typescript/resources/beta/subresources/responses/methods/create>
+
+No paid AI comparison or staging comparison write is enabled by this slice. A guarded
+comparison ledger and explicit pilot approval remain required before live use.
+
 Applied staging persistence additionally requires all of the following:
 
 - `--apply`

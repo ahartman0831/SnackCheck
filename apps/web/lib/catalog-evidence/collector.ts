@@ -64,6 +64,13 @@ export interface EvidenceAttemptWriter {
   saveAttempt(runId: string, attempt: EvidenceAttempt): Promise<void>;
 }
 
+export class EvidenceCollectionPolicyError extends Error {
+  constructor(readonly reasonCode: string) {
+    super(reasonCode);
+    this.name = "EvidenceCollectionPolicyError";
+  }
+}
+
 export type EvidenceCollectorLimits = {
   maxCandidates: number;
   maxRequestsPerCandidate: number;
@@ -335,12 +342,12 @@ export async function collectCatalogEvidence(input: {
         }
       }
     } catch (error) {
+      const timedOut = error instanceof Error && error.name === "AbortError";
+      const policyError = error instanceof EvidenceCollectionPolicyError;
       attempt = failure(
         candidate.id,
-        error instanceof Error && error.name === "AbortError" ? "TIMEOUT" : "ERROR",
-        error instanceof Error && error.name === "AbortError"
-          ? "REQUEST_TIMEOUT"
-          : "ADAPTER_ERROR",
+        timedOut ? "TIMEOUT" : policyError ? "BLOCKED_BY_POLICY" : "ERROR",
+        timedOut ? "REQUEST_TIMEOUT" : policyError ? error.reasonCode : "ADAPTER_ERROR",
         candidateRequests,
       );
     }

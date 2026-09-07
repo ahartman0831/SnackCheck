@@ -6,6 +6,7 @@ import type {
   EvidenceCollectionAdapter,
   RetrievedEvidence,
 } from "./collector";
+import { readBoundedResponseBytes } from "./bounded-response";
 
 const OffResponseSchema = z.object({
   status: z.union([z.number(), z.string()]).optional(),
@@ -35,34 +36,6 @@ export type OpenFoodFactsEvidenceAdapterOptions = {
 
 function gtinForLookup(gtin14: string): string {
   return gtin14.replace(/^0+/, "") || gtin14;
-}
-
-async function boundedBytes(response: Response, maxBytes: number): Promise<Uint8Array> {
-  const statedLength = Number(response.headers.get("content-length"));
-  if (Number.isFinite(statedLength) && statedLength > maxBytes) {
-    throw new Error("Open Food Facts response exceeded the byte limit.");
-  }
-  if (!response.body) return new Uint8Array();
-  const reader = response.body.getReader();
-  const chunks: Uint8Array[] = [];
-  let total = 0;
-  for (;;) {
-    const { done, value } = await reader.read();
-    if (done) break;
-    total += value.byteLength;
-    if (total > maxBytes) {
-      await reader.cancel();
-      throw new Error("Open Food Facts response exceeded the byte limit.");
-    }
-    chunks.push(value);
-  }
-  const result = new Uint8Array(total);
-  let offset = 0;
-  for (const chunk of chunks) {
-    result.set(chunk, offset);
-    offset += chunk.byteLength;
-  }
-  return result;
 }
 
 function observedAt(value: number | string | undefined): string | null {
@@ -151,7 +124,15 @@ export class OpenFoodFactsEvidenceAdapter implements EvidenceCollectionAdapter {
     const contentType = response.headers.get("content-type")?.split(";")[0].trim() ?? "";
     if (contentType !== "application/json")
       throw new Error("Open Food Facts returned an unexpected content type.");
-    const bytes = await boundedBytes(response, options.maxBytes);
+    let bytes: Uint8Array;
+    try {
+      bytes = await readBoundedResponseBytes(response, options.maxBytes);
+    } catch (error) {
+      if (error instanceof Error && error.message.includes("byte limit")) {
+        throw new Error("Open Food Facts response exceeded the byte limit.");
+      }
+      throw error;
+    }
     const parsed = OffResponseSchema.safeParse(
       JSON.parse(new TextDecoder().decode(bytes)),
     );

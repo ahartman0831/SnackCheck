@@ -80,6 +80,8 @@ policy, exact-barcode OFF adapter, and private persistence layer are implemented
 `0033` and a five-candidate controlled evidence run were applied only to owner-designated
 staging after explicit approval. Independent read-back confirmed five dossiers, four exact
 ingredient matches, one conflict, and zero failures. GitHub CI is green on run 34129932286.
+The follow-up local slice adds reviewed-manifest manufacturer collection and a structured,
+non-authoritative AI comparison layer; live manufacturer and paid-AI pilots remain gated.
 
 ### Work
 

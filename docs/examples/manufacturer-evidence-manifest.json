@@ -1,0 +1,11 @@
+[
+  {
+    "candidateId": "00000000-0000-4000-8000-000000000001",
+    "normalizedGtin14": "00012345678905",
+    "sourceUrl": "https://manufacturer.example/products/example-product",
+    "manufacturerHost": "manufacturer.example",
+    "termsStatus": "ALLOWED",
+    "termsReviewedAt": "2026-09-07T00:00:00.000Z",
+    "termsReferenceUrl": "https://manufacturer.example/terms"
+  }
+]

@@ -78,6 +78,17 @@ passes `verify`, Ubuntu WebKit, both clean local-Supabase resets, all pgTAP test
 including 28 new evidence-persistence assertions, generated-type parity, private-storage
 integration, and backup/restore rehearsal.
 
+The next PR #20 local slice adds a manifest-driven manufacturer collector and a fail-closed
+AI evidence comparator. Manufacturer collection requires an exact candidate/GTIN, a
+reviewed official host, a current terms reference, one bounded request, and final-URL
+revalidation; pages declaring another GTIN are blocked. The AI layer uses strict,
+non-retained structured output with no browsing or tools and reports provider/model,
+prompt, latency, detailed token usage, confidence, and discrepancies. It cannot emit a
+compliance determination, and deterministic text disagreement, missing evidence, low
+confidence, invalid output, timeout, disabled use, or budget exhaustion routes to
+`HUMAN_EXCEPTION`. Twenty focused tests pass. No real manufacturer page or paid model was
+called, and no new staging or production write occurred.
+
 Milestone 1 hardening is committed and pushed on PR #19. The candidate operations now
 explicitly refuse known production Vercel and
 Supabase targets, page through the full source-record corpus in stable ID order, support
