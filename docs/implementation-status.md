@@ -61,8 +61,14 @@ minute, limits each response to 250 KB, verifies the returned barcode, stores on
 bounded evidence excerpt with ODbL/DbCL attribution, and prints no ingredient text to the
 console. The command is not run automatically. Both dry-run and apply remain blocked from
 live use until the owner completes OFF's API usage form and an identifying contact is
-configured; apply additionally requires the exact staging confirmation and migration
-`0033`.
+configured; the owner submitted the form on 2026-09-07. Apply additionally requires the
+exact staging confirmation and migration `0033`.
+
+A five-candidate read-only OFF pilot on 2026-09-07 returned five exact-barcode records with
+no request failures. Four ingredient statements exactly matched the normalized USDA text;
+one Cheez-It snack-mix record differed and remains a conflict. The pilot made no staging
+writes, AI calls, approvals, promotions, or publications. Migration `0033` remains
+unapplied to staging.
 
 GitHub Actions run [34048327317](https://github.com/ahartman0831/SnackCheck/actions/runs/34048327317)
 passes `verify`, Ubuntu WebKit, both clean local-Supabase resets, all pgTAP tests

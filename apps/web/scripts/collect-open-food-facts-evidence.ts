@@ -6,6 +6,7 @@ import {
   type EvidenceCandidate,
 } from "../lib/catalog-evidence/collector";
 import { OpenFoodFactsEvidenceAdapter } from "../lib/catalog-evidence/open-food-facts-adapter";
+import { summarizeOpenFoodFactsComparison } from "../lib/catalog-evidence/open-food-facts-comparison";
 import {
   createEvidenceRunStore,
   EVIDENCE_STAGING_CONFIRMATION,
@@ -19,7 +20,14 @@ const MAX_RESPONSE_BYTES = 250_000;
 
 type CandidateRow = Pick<
   Database["public"]["Tables"]["catalog_source_records"]["Row"],
-  "id" | "provider" | "brand" | "product_name" | "variant" | "size" | "normalized_gtin14"
+  | "id"
+  | "provider"
+  | "brand"
+  | "product_name"
+  | "variant"
+  | "size"
+  | "normalized_gtin14"
+  | "normalized_ingredient_text"
 >;
 
 function option(argv: string[], name: string): string | undefined {
@@ -71,7 +79,9 @@ async function main(): Promise<void> {
   const admin = createClient<Database>(url, key, { auth: { persistSession: false } });
   const selected = await admin
     .from("catalog_source_records")
-    .select("id,provider,brand,product_name,variant,size,normalized_gtin14")
+    .select(
+      "id,provider,brand,product_name,variant,size,normalized_gtin14,normalized_ingredient_text",
+    )
     .eq("candidate_state", "REVIEW_QUEUED")
     .eq("screen_status", "PASS")
     .eq("catalog_automation_route", "AUTO_EVIDENCE")
@@ -136,6 +146,26 @@ async function main(): Promise<void> {
           notFound: summary.notFound,
           blocked: summary.blocked,
           failed: summary.failed,
+          comparisons: summary.attempts
+            .map((attempt) => {
+              const candidate = candidates.find(({ id }) => id === attempt.candidateId);
+              const row = (selected.data ?? []).find(
+                ({ id }) => id === attempt.candidateId,
+              );
+              if (!candidate || !row) return null;
+              return summarizeOpenFoodFactsComparison(
+                {
+                  id: candidate.id,
+                  normalizedGtin14: candidate.normalizedGtin14,
+                  brand: candidate.brand,
+                  productName: candidate.productName,
+                  size: candidate.size,
+                  normalizedIngredientText: row.normalized_ingredient_text,
+                },
+                attempt,
+              );
+            })
+            .filter((comparison) => comparison !== null),
           outcomes: summary.attempts.map(({ candidateId, outcome, reasonCode }) => ({
             candidateId,
             outcome,

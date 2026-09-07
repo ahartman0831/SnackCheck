@@ -46,8 +46,23 @@ References:
 
 ## Command behavior
 
-`pnpm collect:evidence:off` is dry-run by default but does make controlled OFF read
-requests. It outputs only counts and candidate outcome codes, not ingredient text.
+The owner submitted the API usage form on 2026-09-07. `pnpm collect:evidence:off` is
+dry-run by default but does make controlled OFF read requests. It outputs counts,
+candidate outcome codes, product identity fields, and an exact/different/missing ingredient
+comparison verdict. It does not print ingredient text.
+
+## First read-only OFF pilot
+
+On 2026-09-07, after the usage form was submitted, two bounded dry runs read the same five
+exact barcodes. Both runs made five requests, found five records, and had zero missing,
+blocked, or failed outcomes. Neither run wrote to staging or called an AI provider.
+
+The comparison run (`1e91db83-6074-4d9d-ba8e-88f6cc42976c`, selection hash
+`6046ee95dd593428e255dc533b8ee221c22f68bec9c5e7a468909fa0fb311bb4`) found four
+exact normalized ingredient matches and one difference. The differing Cheez-It snack-mix
+record must remain a conflict requiring better evidence; it is not an
+automatic match. All five OFF records remain community-supplied secondary evidence and
+cannot independently approve or publish a product.
 
 Applied staging persistence additionally requires all of the following:
 
@@ -57,6 +72,5 @@ Applied staging persistence additionally requires all of the following:
 - matching `CATALOG_STAGING_SUPABASE_PROJECT_REF` and `SUPABASE_PROJECT_ID`
 - a lowercase UUID supplied with `--run-id` for deterministic retries
 
-Do not run either mode until the owner has submitted the OFF API usage form and configured
-an identifying contact in `OPEN_FOOD_FACTS_USER_AGENT`. Do not apply migration `0033` to
-staging until PR #20 database CI and generated-type parity are green.
+Do not run either mode without an identifying contact in `OPEN_FOOD_FACTS_USER_AGENT`.
+Do not apply migration `0033` to staging without explicit owner approval.
