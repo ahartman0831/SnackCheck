@@ -157,12 +157,14 @@ begin
       or existing_run.planned_candidates <> candidate_count
       or exists (
         select 1
-        from pg_catalog.unnest(p_candidate_ids,p_evidence_attempt_ids) requested(candidate_id,evidence_id)
+        from pg_catalog.unnest(p_candidate_ids) with ordinality as requested_candidate(candidate_id, position)
+        join pg_catalog.unnest(p_evidence_attempt_ids) with ordinality as requested_evidence(evidence_id, position)
+          using (position)
         where not exists (
           select 1 from public.catalog_evidence_ai_run_candidates stored
           where stored.run_id=run_id_value
-            and stored.candidate_id=requested.candidate_id
-            and stored.evidence_attempt_id=requested.evidence_id
+            and stored.candidate_id=requested_candidate.candidate_id
+            and stored.evidence_attempt_id=requested_evidence.evidence_id
         )
       ) then
       raise exception using errcode = '40001', message = 'AI comparison run id was already used differently';
@@ -171,9 +173,11 @@ begin
   end if;
   if (
     select pg_catalog.count(*)
-    from pg_catalog.unnest(p_candidate_ids, p_evidence_attempt_ids) plan(candidate_id, evidence_id)
-    join public.catalog_source_records candidate on candidate.id = plan.candidate_id
-    join public.catalog_evidence_attempts evidence on evidence.id = plan.evidence_id and evidence.candidate_id = plan.candidate_id
+    from pg_catalog.unnest(p_candidate_ids) with ordinality as planned_candidate(candidate_id, position)
+    join pg_catalog.unnest(p_evidence_attempt_ids) with ordinality as planned_evidence(evidence_id, position)
+      using (position)
+    join public.catalog_source_records candidate on candidate.id = planned_candidate.candidate_id
+    join public.catalog_evidence_attempts evidence on evidence.id = planned_evidence.evidence_id and evidence.candidate_id = planned_candidate.candidate_id
     where candidate.candidate_state = 'REVIEW_QUEUED'
       and candidate.screen_status = 'PASS'
       and candidate.catalog_automation_route = 'AUTO_EVIDENCE'
@@ -193,8 +197,10 @@ begin
   insert into public.catalog_evidence_ai_run_candidates (
     run_id,candidate_id,evidence_attempt_id,ordinal
   )
-  select run_id_value,candidate_id,evidence_id,(ordinality - 1)::smallint
-  from pg_catalog.unnest(p_candidate_ids,p_evidence_attempt_ids) with ordinality plan(candidate_id,evidence_id,ordinality);
+  select run_id_value,planned_candidate.candidate_id,planned_evidence.evidence_id,(planned_candidate.position - 1)::smallint
+  from pg_catalog.unnest(p_candidate_ids) with ordinality as planned_candidate(candidate_id, position)
+  join pg_catalog.unnest(p_evidence_attempt_ids) with ordinality as planned_evidence(evidence_id, position)
+    using (position);
   insert into public.admin_audit_log (
     actor_user_id,action,entity_type,entity_id,after_json,request_id
   ) values (
