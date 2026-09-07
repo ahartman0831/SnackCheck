@@ -366,7 +366,7 @@ begin
   order by effective_from desc limit 1;
   if found and (input_tokens_value is not null or output_tokens_value is not null) then
     input_cost := (
-      pg_catalog.greatest(coalesce(input_tokens_value,0)-coalesce(cached_tokens_value,0),0) * pricing.input_usd_per_million
+      greatest(coalesce(input_tokens_value,0)-coalesce(cached_tokens_value,0),0) * pricing.input_usd_per_million
       + coalesce(cached_tokens_value,0) * coalesce(pricing.cached_input_usd_per_million,pricing.input_usd_per_million)
     ) / 1000000;
     output_cost := coalesce(output_tokens_value,0) * pricing.output_usd_per_million / 1000000;
