@@ -188,6 +188,24 @@ again, and is dry-run by default. Apply mode retains the existing staging projec
 checks and requires the exact `ASSEMBLE_CATALOG_EVIDENCE_DOSSIER_IN_STAGING`
 confirmation. No staging dossier or new external request is created by this local slice.
 
+After all required GitHub jobs passed on run `34285271755`, migration `0036` was applied as
+one SQL file to owner-designated staging project `lhnbxjvqllohlbtdncyg`. Read-back confirmed
+zero dossiers and items, row-level security on both tables, service-role execution, and no
+authenticated-user execution.
+
+The planned manufacturer recollection then stopped before making a request. A current
+official-terms review found that [Blue Diamond](https://www.bluediamond.com/terms/) limits
+site access to personal, noncommercial, non-automated use;
+[Simple Mills](https://simplemills.com/terms-of-service.aspx) prohibits data-mining/robot
+collection without permission; and [PepsiCo
+Partners](https://www.pepsicopartners.com/pepsico/en/USD/navigation/terms-and-conditions-us)
+limits content copying to personal, private, noncommercial use. Those sites cannot
+honestly receive `termsStatus: ALLOWED` for this
+collector. Their next legitimate evidence routes are written manufacturer permission or
+an API/feed, licensed secondary data such as OFF, or a user-supplied current package photo.
+No dossier, evidence attempt, AI call, product decision, or publication resulted from the
+stopped recollection.
+
 Applied staging persistence additionally requires all of the following:
 
 - `--apply`

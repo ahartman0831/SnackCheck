@@ -88,6 +88,12 @@ records in an immutable dossier instead of flattening unlike sources into one cl
 Clean first-party recollection and a staging dossier pilot remain before this milestone can
 complete.
 
+The first current terms review blocked automated collection from Blue Diamond, Simple
+Mills, and PepsiCo Partners before any new request was made. Do not bypass that result.
+Obtain written permission or a supported manufacturer feed, or use licensed OFF evidence
+and user-contributed current-package evidence. The dossier model remains the correct place
+to combine those independently sourced records.
+
 ### Work
 
 Build a bounded collector for the 95 promising candidates. For each candidate, attempt to locate and preserve:

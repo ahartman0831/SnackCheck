@@ -135,8 +135,13 @@ ingredients, or supporting evidence without combining their claims. The guarded 
 retains the dossier ID and passes each source separately; it requires at least one clean
 manufacturer ingredient record and keeps deterministic mismatch handling unchanged. A
 bounded, dry-run-first assembly command resolves only exact stored source URLs and retains
-the staging-only confirmation gate. This migration is not yet applied to staging, no clean
-manufacturer recollection has run, and no product was approved, promoted, or published.
+the staging-only confirmation gate. Required GitHub run `34285271755` passed, and migration
+`0036` was then applied as a single file to owner-designated staging. Read-back confirmed
+zero dossiers/items, row-level security, and service-only creation. A current official-
+terms review then stopped manufacturer recollection before any request: Blue Diamond,
+Simple Mills, and PepsiCo Partners do not permit the proposed automated commercial
+collection under their published terms. No source was falsely marked allowed, no AI call
+was made, and no product was approved, promoted, or published.
 
 Milestone 1 hardening is committed and pushed on PR #19. The candidate operations now
 explicitly refuse known production Vercel and
