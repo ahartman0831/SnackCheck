@@ -130,6 +130,16 @@ Official OpenAI API reference used for the structured-output and usage boundary:
 No paid AI comparison or staging comparison write was enabled by the initial local slice.
 A guarded comparison ledger and explicit pilot approval were required before live use.
 
+The protected-preview retry is now complete. A private administrator-only runner enforces
+preview-only execution, matching staging project identity, explicit 1–5 candidate
+selection, and the existing database budgets. Five provider calls completed across one-
+and four-product runs for an estimated `$0.002568000`; all five routed to
+`HUMAN_EXCEPTION` because the stored manufacturer snapshots were noisy or incomplete.
+This validated authentication, structured output, persistence, token/cost accounting,
+and fail-closed routing without approving or publishing anything. The prompt remains
+unchanged; evidence extraction was tightened at the source. Full results are in
+[`docs/catalog-evidence-ai-pilot-001.md`](catalog-evidence-ai-pilot-001.md).
+
 Migration `0034` adds that guarded ledger as the next reviewable slice. It keeps AI run
 manifests, one claimed call per candidate, immutable structured outcomes, detailed token
 fields, a snapshot of the verified rate card, calculated input/output/total cost, and a

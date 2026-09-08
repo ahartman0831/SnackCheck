@@ -91,6 +91,21 @@ function meta(html: string, key: string): string | null {
   return null;
 }
 
+const INGREDIENT_SECTION_STOP =
+  /\b(?:nutrition(?:al)? facts?|allergen(?:s| information)?|contains|may contain|made on (?:a|the) line|directions|preparation|legal disclaimer|terms (?:and|&) conditions|privacy policy|add to cart)\b|©/i;
+const INGREDIENT_BOILERPLATE =
+  /\b(?:please refer to (?:the|your) (?:product )?label|product information can change|information updated|leaving smartlabel|shipping calculated|site navigation|log in|cookie preferences)\b/i;
+
+export function isPlausibleIngredientStatement(value: string | null): boolean {
+  if (!value) return false;
+  const candidate = value.replace(/\s+/g, " ").trim();
+  if (candidate.length < 3 || candidate.length > 1_500) return false;
+  if (INGREDIENT_BOILERPLATE.test(candidate)) return false;
+  const words = candidate.match(/[\p{L}\p{N}]+/gu) ?? [];
+  if (words.length === 0 || words.length > 220) return false;
+  return /[,.;()]/.test(candidate) || words.length <= 8;
+}
+
 function visibleIngredientWindow(html: string): string | null {
   const visible = decodeHtml(
     html
@@ -98,12 +113,25 @@ function visibleIngredientWindow(html: string): string | null {
       .replace(/<style\b[\s\S]*?<\/style>/gi, " ")
       .replace(/<[^>]+>/g, " "),
   ).replace(/\s+/g, " ");
-  const match = visible.match(/\bingredients?\s*:?\s*([\s\S]{1,3000})/i);
-  if (!match) return null;
-  const bounded = match[1].split(
-    /\b(?:nutrition facts|allergen information|directions|preparation|legal disclaimer)\b/i,
-  )[0];
-  return text(bounded);
+  const candidates: Array<{ value: string; score: number }> = [];
+  const pattern = /\b(?:simple\s+)?ingredients?\s*:?\s*/gi;
+  for (const match of visible.matchAll(pattern)) {
+    const start = (match.index ?? 0) + match[0].length;
+    if (/^or\s+less\b/i.test(visible.slice(start))) continue;
+    const bounded = visible.slice(start, start + 3_000).split(INGREDIENT_SECTION_STOP)[0];
+    const candidate = text(
+      bounded.replace(/^(?:(?:simple\s+)?ingredients?\s*:?\s*)+/i, ""),
+    );
+    if (!isPlausibleIngredientStatement(candidate)) continue;
+    const punctuation = candidate!.match(/[,();]/g)?.length ?? 0;
+    const labeled = /simple\s+ingredients/i.test(match[0]) ? 20 : 0;
+    candidates.push({
+      value: candidate!,
+      score: labeled + punctuation * 3 - Math.floor(candidate!.length / 400),
+    });
+  }
+  candidates.sort((left, right) => right.score - left.score);
+  return candidates[0]?.value ?? null;
 }
 
 export function extractManufacturerPageSnapshot(

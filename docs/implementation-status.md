@@ -99,8 +99,10 @@ passes verification, WebKit, both clean local-Supabase resets, 252 pgTAP asserti
 generated-type parity, private-storage integration, and backup/restore rehearsal.
 
 On 2026-09-08 migration `0034` was applied only to owner-designated staging. Evidence run
-`58f4a446-a57a-43a0-a0ea-4e818d9d68e1` saved five official manufacturer ingredient
-records after a clean five-page dry run. AI run
+`58f4a446-a57a-43a0-a0ea-4e818d9d68e1` saved five official manufacturer page snapshots.
+The later live comparison showed those visible-text ingredient fields contained page
+boilerplate or lacked actual ingredients; they remain immutable but are no longer
+considered clean evidence. AI run
 `60b112f6-3ec6-499a-84c8-de28432d087c` then claimed and recorded exactly five attempts,
 but the local shell's OpenAI credential was invalid, so all five failed before returning
 model output or usage. The ledger records five fail-closed provider errors, five central
@@ -113,6 +115,19 @@ pilot's five independently verified authentication rejections were reconciled in
 with one audit record, leaving five historical claims, five releases, and zero effective
 billable reservations. Details are in
 [`docs/catalog-evidence-ai-pilot-001.md`](catalog-evidence-ai-pilot-001.md).
+
+The protected Phase 11 preview now has a private, active-admin-only AI runner with explicit
+1–5 candidate selection, matching staging-project checks, and an unconditional production
+deployment denial. Runs `86e1857b-deda-4ba1-bdcc-5fd2e2f52413` and
+`2992e395-5496-44d7-9cc6-2672830252ff` made five successful `gpt-5.6-luna` comparisons
+for a combined estimated `$0.002568000`. Provider authentication, structured output,
+token/cost persistence, budgets, and circuit controls worked. All five routed to human
+exceptions because source identity or ingredient evidence was incomplete or noisy; zero
+products were approved, promoted, or published, and the kill switch ended `true`. The
+prompt was not loosened. The manufacturer parser now rejects boilerplate and implausibly
+long text, handles real ingredient-section boundaries, and returns no ingredient statement
+for dynamic SmartLabel HTML that does not contain one. The runner also blocks reuse of the
+old noisy records. Clean multi-source recollection is the next Phase 11 task.
 
 Milestone 1 hardening is committed and pushed on PR #19. The candidate operations now
 explicitly refuse known production Vercel and

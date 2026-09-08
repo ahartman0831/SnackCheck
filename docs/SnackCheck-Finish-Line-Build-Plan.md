@@ -77,11 +77,13 @@ Status: `COMPLETE`
 
 Status: `PARTIAL` on `codex/phase-11-evidence-collection`. The bounded collector, source
 policy, exact-barcode OFF adapter, and private persistence layer are implemented. Migration
-`0033` and a five-candidate controlled evidence run were applied only to owner-designated
-staging after explicit approval. Independent read-back confirmed five dossiers, four exact
-ingredient matches, one conflict, and zero failures. GitHub CI is green on run 34129932286.
-The follow-up local slice adds reviewed-manifest manufacturer collection and a structured,
-non-authoritative AI comparison layer; live manufacturer and paid-AI pilots remain gated.
+`0033` and controlled evidence runs were applied only to owner-designated staging after
+explicit approval. The OFF pilot produced five secondary dossiers with four exact
+ingredient matches and one conflict. The first manufacturer run persisted five official
+page snapshots, but the paid comparison exposed that all five visible-text ingredient
+fields were noisy or incomplete. The parser now rejects page boilerplate and the paid
+runner refuses implausible stored evidence. Clean first-party recollection remains before
+this milestone can complete.
 
 ### Work
 
@@ -105,9 +107,12 @@ Reject search snippets, unverifiable retailer copy, mismatched flavors or sizes,
 ## Milestone 3 — AI-assisted evidence extraction and comparison
 
 Status: `PARTIAL` on `codex/phase-11-evidence-collection`. Strict comparison contracts,
-the non-retained OpenAI adapter, deterministic conflict override, guarded persistence, and
-detailed central spend accounting are implemented locally. Migration `0034`, pgTAP, and
-generated types still require CI proof; no paid comparison or staging write is authorized.
+the non-retained OpenAI adapter, deterministic conflict override, guarded persistence,
+detailed central spend accounting, and a private preview-only admin runner are implemented.
+Migrations `0034` and `0035` are applied to staging. Five live comparisons completed for
+`$0.002568000`, with zero provider failures and five safe human exceptions caused by noisy
+or incomplete evidence. Authentication, accounting, and fail-closed behavior are proven;
+clean multi-source evidence and a representative accuracy sample remain.
 
 ### Work
 

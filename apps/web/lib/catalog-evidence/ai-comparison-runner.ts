@@ -13,6 +13,7 @@ import {
   type AiComparisonRpcClient,
 } from "./ai-comparison-persistence";
 import { OpenAiEvidenceComparisonProvider } from "./openai-comparison-provider";
+import { isPlausibleIngredientStatement } from "./manufacturer-page";
 
 export const CATALOG_AI_MAX_CANDIDATES = 5;
 export const CATALOG_AI_EXPECTED_DAILY_LIMIT = 50;
@@ -89,7 +90,7 @@ function comparisonInput(
   if (
     evidence.source_kind !== "MANUFACTURER" ||
     !evidence.source_url ||
-    !evidence.ingredient_text ||
+    !isPlausibleIngredientStatement(evidence.ingredient_text) ||
     !evidence.evidence_text
   ) {
     throw new Error(`Candidate ${candidate.id} lacks manufacturer ingredient evidence.`);

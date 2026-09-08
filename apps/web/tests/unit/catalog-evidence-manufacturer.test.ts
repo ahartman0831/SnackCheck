@@ -83,6 +83,51 @@ describe("manufacturer page extraction", () => {
       ingredientText: "Wheat flour, salt.",
     });
   });
+
+  it("chooses the actual labeled ingredient section instead of page navigation", () => {
+    expect(
+      extractManufacturerPageSnapshot(
+        `<nav>Bulk & Ingredients Log in Search Site navigation Cart</nav>
+         <main>Ingredients: Apricots, sulfur dioxide. Nutrition Facts 90 calories</main>`,
+        "text/html",
+      ),
+    ).toMatchObject({ ingredientText: "Apricots, sulfur dioxide." });
+  });
+
+  it("does not confuse an Ingredients or Less recipe link with a product label", () => {
+    expect(
+      extractManufacturerPageSnapshot(
+        `<nav>Recipes 5 Ingredients or Less Slow Cooker Seasonal</nav>
+         <main>Ingredients Pasteurized Milk, Jalapeno Peppers, Salt. Nutritional Facts</main>`,
+        "text/html",
+      ),
+    ).toMatchObject({
+      ingredientText: "Pasteurized Milk, Jalapeno Peppers, Salt.",
+    });
+  });
+
+  it("trims manufacturer copy and allergen/footer text around ingredients", () => {
+    expect(
+      extractManufacturerPageSnapshot(
+        `<main>Feelin' spicy? SIMPLE INGREDIENTS: Almonds, sunflower seeds,
+        flax seeds, sea salt. CONTAINS: Almonds. Terms and Conditions</main>`,
+        "text/html",
+      ),
+    ).toMatchObject({
+      ingredientText: "Almonds, sunflower seeds, flax seeds, sea salt.",
+    });
+  });
+
+  it("returns no ingredient evidence for SmartLabel boilerplate", () => {
+    expect(
+      extractManufacturerPageSnapshot(
+        `<main>Product Information Can Change At Any Time. Please Refer To Your Product
+        Label For The Most Accurate Nutrition, Ingredient, Allergen And Other Product
+        Information. Information updated on 14-Sep-2023. Privacy Policy.</main>`,
+        "text/html",
+      ),
+    ).toMatchObject({ ingredientText: null });
+  });
 });
 
 describe("manufacturer evidence adapter", () => {
