@@ -37,15 +37,30 @@ automatic shutdown path.
 - Final kill switch: `true`
 
 A separate non-inference model-access check identified the local shell credential as an
-invalid OpenAI API key. No sixth comparison was attempted and the daily counter was not
-reset or bypassed. The error was fail-closed: every candidate remained private and routed
-away from automatic continuation. No product, formulation, approval, or publication was
-created.
+invalid OpenAI API key. No sixth comparison was attempted. The error was fail-closed:
+every candidate remained private and routed away from automatic continuation. No product,
+formulation, approval, or publication was created.
+
+## Budget-control correction
+
+Migration `0035` was applied to staging on 2026-09-08 after local application validation.
+It retains the five-product run boundary, permits 15 billable-or-uncertain calls per
+rolling hour and 50 per UTC day, and separately tracks definite non-billable releases.
+Authentication failure closes the switch and stops the runner after the first rejected
+item. A release is allowed only after an immutable attempt proves that the provider
+returned no request ID, tokens, or cost.
+
+The original five failures predated the specific authentication failure code. After the
+invalid credential was independently verified, a one-time staging transaction released
+those five reservations without modifying or deleting their attempt records. The action
+was recorded once in the admin audit log. Staging now reports five historical claims,
+five non-billable releases, and zero effective daily usage; the kill switch remains
+`true`.
 
 ## Required retry
 
 Before a second pilot, replace the stale local OpenAI credential without printing or
-committing it. Wait for the UTC daily counter to reset, confirm the kill switch is closed,
-and use a new run ID. Do not exceed five new comparisons. The comparison layer now maps
-authentication, invalid-request, and rate-limit responses to redacted failure codes so
-future diagnosis does not require exposing provider details.
+committing it, confirm the kill switch is closed, and use a new run ID. No time-based wait
+is required. Keep each reviewed run at five or fewer comparisons. The comparison layer
+maps authentication, invalid-request, and rate-limit responses to redacted failure codes
+so future diagnosis does not require exposing provider details.

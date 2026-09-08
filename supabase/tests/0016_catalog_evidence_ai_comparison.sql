@@ -1,5 +1,5 @@
 begin;
-select plan(35);
+select plan(54);
 
 select has_table('public','catalog_evidence_ai_runs','AI comparison run table exists');
 select has_table('public','catalog_evidence_ai_run_candidates','AI comparison manifest exists');
@@ -11,6 +11,10 @@ select table_privs_are('public','catalog_evidence_ai_attempts','service_role',ar
 select function_privs_are('public','begin_catalog_evidence_ai_run',array['jsonb','uuid[]','uuid[]','text'],'service_role',array['EXECUTE']::text[],'service role can begin AI runs');
 select function_privs_are('public','claim_catalog_evidence_ai_slot',array['uuid','uuid'],'anon',array[]::text[],'anonymous users cannot claim model spend');
 select function_privs_are('public','record_catalog_evidence_ai_attempt',array['uuid','jsonb'],'authenticated',array[]::text[],'ordinary users cannot record AI comparisons');
+select has_column('public','catalog_evidence_ai_run_candidates','reservation_released_at','AI reservation releases are preserved');
+select has_column('public','catalog_evidence_ai_daily_counters','released_nonbillable_count','non-billable releases are counted separately');
+select function_privs_are('public','reconcile_catalog_evidence_ai_reservation',array['uuid','uuid'],'service_role',array['EXECUTE']::text[],'service role can reconcile a recorded reservation');
+select function_privs_are('public','reconcile_catalog_evidence_ai_reservation',array['uuid','uuid'],'authenticated',array[]::text[],'ordinary users cannot release AI capacity');
 
 insert into public.catalog_import_batches (
   id,provider,dataset_release,source_url,license_identifier,file_sha256,file_byte_size,
@@ -163,6 +167,46 @@ select is((select estimated_total_cost_usd from public.catalog_evidence_ai_attem
 select is((select count(*) from public.ai_usage_ledger where catalog_evidence_ai_attempt_id is not null),1::bigint,'central AI spend ledger links the catalog comparison');
 select is((select count(*) from public.admin_audit_log where request_id='catalog-evidence-ai-b5000000-0000-4000-8000-000000000001'),3::bigint,'AI run start attempt and close are audited');
 select is((select count(*) from public.products),0::bigint,'AI comparison cannot create products');
+
+select is((select (value #>> '{}')::integer from public.application_settings where key='catalog_evidence_ai_daily_limit'),50,'daily protection permits controlled testing');
+select is((select (value #>> '{}')::integer from public.application_settings where key='catalog_evidence_ai_hourly_limit'),15,'rolling hourly protection limits runaway batches');
+set local role service_role;
+select lives_ok(
+  $$select public.begin_catalog_evidence_ai_run(
+    jsonb_build_object('runId','b5000000-0000-4000-8000-000000000003','promptVersion','catalog-evidence-compare-v1','provider','openai','model','fixture-model','selectionHash',repeat('8',64)),
+    array['b2000000-0000-4000-8000-000000000001'::uuid],array['b4000000-0000-4000-8000-000000000001'::uuid],'COMPARE_CATALOG_EVIDENCE_WITH_AI_IN_STAGING'
+  )$$,
+  'a second bounded run can begin'
+);
+select is(public.claim_catalog_evidence_ai_slot('b5000000-0000-4000-8000-000000000003','b2000000-0000-4000-8000-000000000001'),true,'an eligible candidate can reserve capacity in a later run');
+select lives_ok(
+  $$select public.record_catalog_evidence_ai_attempt(
+    'b5000000-0000-4000-8000-000000000003',
+    jsonb_build_object('candidateId','b2000000-0000-4000-8000-000000000001','evidenceAttemptId','b4000000-0000-4000-8000-000000000001','provider','openai','model','fixture-model','promptVersion','catalog-evidence-compare-v1','outcome','ERROR','failureCode','PROVIDER_AUTH','discrepancyCodes','[]'::jsonb,'advisoryRoute','HUMAN_EXCEPTION','deterministicConflict',true,'latencyMs',10)
+  )$$,
+  'a redacted provider authentication failure is recorded'
+);
+select lives_ok(
+  $$select public.reconcile_catalog_evidence_ai_reservation(
+    'b5000000-0000-4000-8000-000000000003','b2000000-0000-4000-8000-000000000001'
+  )$$,
+  'a definite non-billable authentication failure releases capacity'
+);
+select lives_ok(
+  $$select public.reconcile_catalog_evidence_ai_reservation(
+    'b5000000-0000-4000-8000-000000000003','b2000000-0000-4000-8000-000000000001'
+  )$$,
+  'reservation reconciliation is idempotent'
+);
+reset role;
+select isnt((select reservation_released_at from public.catalog_evidence_ai_run_candidates where run_id='b5000000-0000-4000-8000-000000000003'),null::timestamptz,'released reservations retain their timestamp');
+select is((select reservation_release_reason from public.catalog_evidence_ai_run_candidates where run_id='b5000000-0000-4000-8000-000000000003'),'PROVIDER_AUTH','release reason is preserved');
+select is((select claimed_count from public.catalog_evidence_ai_daily_counters where occurred_on=(pg_catalog.timezone('utc',pg_catalog.now()))::date),2,'all reservations remain auditable');
+select is((select released_nonbillable_count from public.catalog_evidence_ai_daily_counters where occurred_on=(pg_catalog.timezone('utc',pg_catalog.now()))::date),1,'definite non-billable work is refunded once');
+select is((select claimed_count-released_nonbillable_count from public.catalog_evidence_ai_daily_counters where occurred_on=(pg_catalog.timezone('utc',pg_catalog.now()))::date),1,'only billable or uncertain work consumes the daily allowance');
+select is((select (value #>> '{}')::boolean from public.application_settings where key='catalog_evidence_ai_kill_switch'),true,'provider authentication failure opens the circuit breaker');
+select is((select count(*) from public.admin_audit_log where request_id='catalog-evidence-ai-b5000000-0000-4000-8000-000000000003' and action='CATALOG_EVIDENCE_AI_RESERVATION_RELEASED'),1::bigint,'capacity release is audited once');
+select is((select count(*) from public.admin_audit_log where request_id='catalog-evidence-ai-b5000000-0000-4000-8000-000000000003' and action='CATALOG_EVIDENCE_AI_CIRCUIT_OPENED'),1::bigint,'automatic circuit breaker is audited once');
 
 select * from finish();
 rollback;

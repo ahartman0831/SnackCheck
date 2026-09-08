@@ -119,6 +119,25 @@ export function createAiComparisonRunStore(client: AiComparisonRpcClient) {
       return result.data;
     },
 
+    async reconcileReservation(
+      runId: string,
+      candidateId: string,
+    ): Promise<{
+      released: boolean;
+      circuitOpened: boolean;
+    }> {
+      const result = await client.rpc("reconcile_catalog_evidence_ai_reservation", {
+        p_run_id: runId,
+        p_candidate_id: candidateId,
+      });
+      rpcError("Reconciling AI comparison reservation", result.error);
+      const data = result.data as { released?: unknown; circuitOpened?: unknown } | null;
+      return {
+        released: data?.released === true,
+        circuitOpened: data?.circuitOpened === true,
+      };
+    },
+
     async complete(runId: string, status: "COMPLETED" | "FAILED"): Promise<unknown> {
       const result = await client.rpc("complete_catalog_evidence_ai_run", {
         p_run_id: runId,

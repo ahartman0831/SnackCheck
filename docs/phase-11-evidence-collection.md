@@ -133,9 +133,9 @@ A guarded comparison ledger and explicit pilot approval were required before liv
 Migration `0034` adds that guarded ledger as the next reviewable slice. It keeps AI run
 manifests, one claimed call per candidate, immutable structured outcomes, detailed token
 fields, a snapshot of the verified rate card, calculated input/output/total cost, and a
-link into the existing central `ai_usage_ledger`. It defaults to a closed kill switch and a
-five-call daily ceiling. A run may include at most five candidates and may begin only when
-each candidate has bounded manufacturer ingredient evidence from migration `0033`.
+link into the existing central `ai_usage_ledger`. It defaults to a closed kill switch. A
+run may include at most five candidates and may begin only when each candidate has bounded
+manufacturer ingredient evidence from migration `0033`.
 
 Only guarded service-role functions may begin a run, claim spend, record a result, or close
 the run. The database independently rejects optimistic continuation when identity,
@@ -147,6 +147,15 @@ reconciled. The first five-attempt pilot failed closed because the local OpenAI 
 was invalid: no model output or token usage was returned, estimated spend was zero, all
 five candidates stayed private, and the kill switch was restored to `true`. See
 [`docs/catalog-evidence-ai-pilot-001.md`](catalog-evidence-ai-pilot-001.md).
+
+Migration `0035` replaces the pilot's overly blunt five-attempt daily ceiling with three
+independent controls: five candidates per reviewed run, 15 billable-or-uncertain
+reservations per rolling hour, and 50 per UTC day. Definite authentication or invalid-
+request rejections are refunded only when the provider returned no request ID, no tokens,
+and no cost. The immutable attempt remains in both ledgers. Provider authentication
+failure also closes the kill switch immediately, and the runner stops after the first
+such rejection instead of repeating it across the batch. Reservation releases and circuit
+breaker actions are service-only, idempotent, and audited.
 
 Applied staging persistence additionally requires all of the following:
 

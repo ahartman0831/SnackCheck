@@ -15,6 +15,8 @@ import { OpenAiEvidenceComparisonProvider } from "../lib/catalog-evidence/openai
 import { assertStagingApplySafety } from "../lib/catalog-candidates/operation-safety";
 
 const MAX_CANDIDATES = 5;
+const EXPECTED_DAILY_LIMIT = 50;
+const EXPECTED_HOURLY_LIMIT = 15;
 const DEFAULT_TIMEOUT_MS = 30_000;
 
 const SnapshotSchema = z.object({
@@ -227,7 +229,11 @@ async function main(): Promise<void> {
   const settingsResult = await admin
     .from("application_settings")
     .select("key,value")
-    .in("key", ["catalog_evidence_ai_kill_switch", "catalog_evidence_ai_daily_limit"]);
+    .in("key", [
+      "catalog_evidence_ai_kill_switch",
+      "catalog_evidence_ai_daily_limit",
+      "catalog_evidence_ai_hourly_limit",
+    ]);
   if (settingsResult.error) throw new Error(settingsResult.error.message);
   const settings = settingsResult.data ?? [];
   if (settingValue(settings, "catalog_evidence_ai_kill_switch") !== false) {
@@ -235,8 +241,15 @@ async function main(): Promise<void> {
       "Catalog evidence AI kill switch must be explicitly opened for the pilot.",
     );
   }
-  if (settingValue(settings, "catalog_evidence_ai_daily_limit") !== MAX_CANDIDATES) {
-    throw new Error("Catalog evidence AI daily limit must equal five for the pilot.");
+  if (
+    settingValue(settings, "catalog_evidence_ai_daily_limit") !== EXPECTED_DAILY_LIMIT
+  ) {
+    throw new Error("Catalog evidence AI daily limit must equal 50.");
+  }
+  if (
+    settingValue(settings, "catalog_evidence_ai_hourly_limit") !== EXPECTED_HOURLY_LIMIT
+  ) {
+    throw new Error("Catalog evidence AI hourly limit must equal 15.");
   }
 
   const store = createAiComparisonRunStore(admin as unknown as AiComparisonRpcClient);
@@ -270,6 +283,7 @@ async function main(): Promise<void> {
         evidenceAttemptId: evidence.id,
         result,
       });
+      const reservation = await store.reconcileReservation(runId, candidate.id);
       outcomes.push({
         candidateId: candidate.id,
         evidenceAttemptId: evidence.id,
@@ -281,11 +295,22 @@ async function main(): Promise<void> {
         discrepancyCodes: result.ok ? result.comparison.discrepancyCodes : [],
         confidence: result.ok ? result.comparison.confidence : null,
         outcome: result.attempt.outcome,
+        failureCode: result.ok ? null : result.code,
+        reservationReleased: reservation.released,
+        circuitOpened: reservation.circuitOpened,
         inputTokens: result.attempt.usage?.inputTokens ?? null,
         cachedInputTokens: result.attempt.usage?.cachedInputTokens ?? null,
         outputTokens: result.attempt.usage?.outputTokens ?? null,
         reasoningTokens: result.attempt.usage?.reasoningTokens ?? null,
       });
+      if (
+        !result.ok &&
+        (result.code === "PROVIDER_AUTH" || result.code === "PROVIDER_REQUEST_INVALID")
+      ) {
+        throw new Error(
+          `AI comparison stopped after a non-billable ${result.code} failure.`,
+        );
+      }
     }
     await store.complete(runId, "COMPLETED");
   } catch (error) {

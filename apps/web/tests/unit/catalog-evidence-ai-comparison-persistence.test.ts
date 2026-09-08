@@ -103,6 +103,21 @@ describe("AI comparison persistence", () => {
     });
   });
 
+  it("reconciles a recorded non-billable reservation through the guarded RPC", async () => {
+    const rpcClient = client({ released: true, circuitOpened: true });
+    const store = createAiComparisonRunStore(rpcClient);
+    await expect(
+      store.reconcileReservation("run-1", candidates[0].candidateId),
+    ).resolves.toEqual({ released: true, circuitOpened: true });
+    expect(rpcClient.rpc).toHaveBeenCalledWith(
+      "reconcile_catalog_evidence_ai_reservation",
+      {
+        p_run_id: "run-1",
+        p_candidate_id: candidates[0].candidateId,
+      },
+    );
+  });
+
   it("does not record a kill-switch or budget rejection that made no provider call", async () => {
     const store = createAiComparisonRunStore(client());
     await expect(

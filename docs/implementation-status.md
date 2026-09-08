@@ -105,8 +105,13 @@ records after a clean five-page dry run. AI run
 but the local shell's OpenAI credential was invalid, so all five failed before returning
 model output or usage. The ledger records five fail-closed provider errors, five central
 usage rows, seven audit rows, zero continuations, and zero estimated cost. The kill switch
-was restored to `true`; the five-call UTC daily ceiling was not bypassed; no product was
-approved, promoted, or published. Details are in
+was restored to `true`; no product was approved, promoted, or published. Migration `0035`
+then introduced a five-item run cap, 15-call rolling-hour cap, and 50-call UTC daily cap.
+Only definite zero-request-ID, zero-token, zero-cost authentication/request rejections can
+release a reservation; authentication failure immediately closes the circuit. The first
+pilot's five independently verified authentication rejections were reconciled in staging
+with one audit record, leaving five historical claims, five releases, and zero effective
+billable reservations. Details are in
 [`docs/catalog-evidence-ai-pilot-001.md`](catalog-evidence-ai-pilot-001.md).
 
 Milestone 1 hardening is committed and pushed on PR #19. The candidate operations now

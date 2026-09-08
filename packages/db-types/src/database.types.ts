@@ -475,16 +475,19 @@ export type Database = {
         Row: {
           claimed_count: number
           occurred_on: string
+          released_nonbillable_count: number
           updated_at: string
         }
         Insert: {
           claimed_count?: number
           occurred_on?: string
+          released_nonbillable_count?: number
           updated_at?: string
         }
         Update: {
           claimed_count?: number
           occurred_on?: string
+          released_nonbillable_count?: number
           updated_at?: string
         }
         Relationships: []
@@ -496,6 +499,8 @@ export type Database = {
           created_at: string
           evidence_attempt_id: string
           ordinal: number
+          reservation_release_reason: string | null
+          reservation_released_at: string | null
           run_id: string
         }
         Insert: {
@@ -504,6 +509,8 @@ export type Database = {
           created_at?: string
           evidence_attempt_id: string
           ordinal: number
+          reservation_release_reason?: string | null
+          reservation_released_at?: string | null
           run_id: string
         }
         Update: {
@@ -512,6 +519,8 @@ export type Database = {
           created_at?: string
           evidence_attempt_id?: string
           ordinal?: number
+          reservation_release_reason?: string | null
+          reservation_released_at?: string | null
           run_id?: string
         }
         Relationships: [
@@ -2720,6 +2729,10 @@ export type Database = {
       }
       queue_catalog_candidate_shortlist: {
         Args: { p_candidate_ids: string[]; p_confirmation: string; p_run: Json }
+        Returns: Json
+      }
+      reconcile_catalog_evidence_ai_reservation: {
+        Args: { p_candidate_id: string; p_run_id: string }
         Returns: Json
       }
       record_catalog_evidence_ai_attempt: {
