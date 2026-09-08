@@ -127,8 +127,8 @@ Official OpenAI API reference used for the structured-output and usage boundary:
 
 - <https://developers.openai.com/api/reference/typescript/resources/beta/subresources/responses/methods/create>
 
-No paid AI comparison or staging comparison write is enabled by this slice. A guarded
-comparison ledger and explicit pilot approval remain required before live use.
+No paid AI comparison or staging comparison write was enabled by the initial local slice.
+A guarded comparison ledger and explicit pilot approval were required before live use.
 
 Migration `0034` adds that guarded ledger as the next reviewable slice. It keeps AI run
 manifests, one claimed call per candidate, immutable structured outcomes, detailed token
@@ -141,8 +141,12 @@ Only guarded service-role functions may begin a run, claim spend, record a resul
 the run. The database independently rejects optimistic continuation when identity,
 ingredient agreement, discrepancy, confidence, or deterministic-conflict gates fail.
 Start, attempt, and close actions are audited, and no comparison function can create or
-publish a product. Migration `0034` is not applied to staging, its generated types are not
-yet reconciled, and no live comparison is authorized.
+publish a product. Migration `0034` passed the complete GitHub database suite and was
+applied only to the owner-designated staging project on 2026-09-08. Generated types are
+reconciled. The first five-attempt pilot failed closed because the local OpenAI credential
+was invalid: no model output or token usage was returned, estimated spend was zero, all
+five candidates stayed private, and the kill switch was restored to `true`. See
+[`docs/catalog-evidence-ai-pilot-001.md`](catalog-evidence-ai-pilot-001.md).
 
 Applied staging persistence additionally requires all of the following:
 

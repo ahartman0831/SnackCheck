@@ -1,6 +1,6 @@
 # Implementation status
 
-Last updated: 2026-09-06
+Last updated: 2026-09-08
 Baseline detail: [`docs/remediation-baseline.md`](remediation-baseline.md)
 Canonical finish-line plan: [`docs/SnackCheck-Finish-Line-Build-Plan.md`](SnackCheck-Finish-Line-Build-Plan.md)
 Technical master plan: [`docs/SnackCheck-Cursor-Master-Build-Plan.md`](SnackCheck-Cursor-Master-Build-Plan.md)
@@ -89,13 +89,25 @@ confidence, invalid output, timeout, disabled use, or budget exhaustion routes t
 `HUMAN_EXCEPTION`. Twenty focused tests pass. No real manufacturer page or paid model was
 called, and no new staging or production write occurred.
 
-Migration `0034` is the unproven persistence follow-up: a private, service-only AI
+Migration `0034` is the guarded persistence follow-up: a private, service-only AI
 comparison run/attempt ledger, a closed-by-default kill switch, a five-call daily limit,
 one claim per candidate, manufacturer-evidence prerequisites, immutable outputs, full token
 and rate-card cost accounting in the central AI usage ledger, and database-enforced
-fail-closed continuation gates. The migration and 35 pgTAP assertions are local only; they
-have not passed database CI, generated types are not reconciled, and nothing was applied or
-called outside the local tree.
+fail-closed continuation gates. GitHub Actions run
+[34138037659](https://github.com/ahartman0831/SnackCheck/actions/runs/34138037659)
+passes verification, WebKit, both clean local-Supabase resets, 252 pgTAP assertions,
+generated-type parity, private-storage integration, and backup/restore rehearsal.
+
+On 2026-09-08 migration `0034` was applied only to owner-designated staging. Evidence run
+`58f4a446-a57a-43a0-a0ea-4e818d9d68e1` saved five official manufacturer ingredient
+records after a clean five-page dry run. AI run
+`60b112f6-3ec6-499a-84c8-de28432d087c` then claimed and recorded exactly five attempts,
+but the local shell's OpenAI credential was invalid, so all five failed before returning
+model output or usage. The ledger records five fail-closed provider errors, five central
+usage rows, seven audit rows, zero continuations, and zero estimated cost. The kill switch
+was restored to `true`; the five-call UTC daily ceiling was not bypassed; no product was
+approved, promoted, or published. Details are in
+[`docs/catalog-evidence-ai-pilot-001.md`](catalog-evidence-ai-pilot-001.md).
 
 Milestone 1 hardening is committed and pushed on PR #19. The candidate operations now
 explicitly refuse known production Vercel and

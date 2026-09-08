@@ -52,6 +52,19 @@ function mayContinue(comparison: EvidenceComparisonOutput): boolean {
   );
 }
 
+function providerFailureCode(error: unknown): EvidenceComparisonFailureCode {
+  const status =
+    typeof error === "object" && error !== null && "status" in error
+      ? Number(error.status)
+      : null;
+  if (status === 401 || status === 403) return "PROVIDER_AUTH";
+  if (status === 400 || status === 404 || status === 422) {
+    return "PROVIDER_REQUEST_INVALID";
+  }
+  if (status === 429) return "PROVIDER_RATE_LIMITED";
+  return "PROVIDER_ERROR";
+}
+
 export async function orchestrateEvidenceComparison(options: {
   input: EvidenceComparisonInput;
   provider: EvidenceComparisonProvider;
@@ -108,7 +121,7 @@ export async function orchestrateEvidenceComparison(options: {
       ? "PROVIDER_TIMEOUT"
       : error instanceof EvidenceComparisonOutputError
         ? error.code
-        : "PROVIDER_ERROR";
+        : providerFailureCode(error);
     return {
       ok: false,
       code,

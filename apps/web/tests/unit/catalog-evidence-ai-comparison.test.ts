@@ -135,6 +135,27 @@ describe("AI evidence comparison", () => {
     expect(exhaustedProvider.compare).not.toHaveBeenCalled();
   });
 
+  it("classifies provider failures without preserving sensitive error details", async () => {
+    const failingProvider = provider();
+    vi.mocked(failingProvider.compare).mockRejectedValue({
+      status: 401,
+      message: "sensitive provider detail",
+    });
+    await expect(
+      orchestrateEvidenceComparison({
+        input,
+        provider: failingProvider,
+        budget: { claim: vi.fn().mockResolvedValue(true) },
+        enabled: true,
+        timeoutMs: 1_000,
+      }),
+    ).resolves.toMatchObject({
+      ok: false,
+      code: "PROVIDER_AUTH",
+      attempt: { outcome: "ERROR", failureCode: "PROVIDER_AUTH" },
+    });
+  });
+
   it("rejects prose, invalid schemas, oversized output, and compliance fields", () => {
     expect(() => parseEvidenceComparisonOutput("looks fine")).toThrow("JSON object");
     expect(() =>
