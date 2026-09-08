@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const mocks = vi.hoisted(() => ({
-  requireAdmin: vi.fn(),
+  requireAdminFromRequest: vi.fn(),
   createAdminClient: vi.fn(),
   plan: vi.fn(),
   execute: vi.fn(),
@@ -10,7 +10,9 @@ const mocks = vi.hoisted(() => ({
 }));
 
 vi.mock("server-only", () => ({}));
-vi.mock("@/lib/auth/require-admin", () => ({ requireAdmin: mocks.requireAdmin }));
+vi.mock("@/lib/auth/require-admin", () => ({
+  requireAdminFromRequest: mocks.requireAdminFromRequest,
+}));
 vi.mock("@/lib/supabase/admin", () => ({
   createAdminClient: mocks.createAdminClient,
 }));
@@ -46,7 +48,7 @@ describe("Phase 11 controlled catalog AI route", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mocks.safety.mockReset();
-    mocks.requireAdmin.mockResolvedValue({ allowed: true });
+    mocks.requireAdminFromRequest.mockResolvedValue({ allowed: true });
     const query = {
       select: vi.fn().mockReturnThis(),
       eq: vi.fn().mockReturnThis(),
@@ -70,7 +72,7 @@ describe("Phase 11 controlled catalog AI route", () => {
   });
 
   it("requires active owner access", async () => {
-    mocks.requireAdmin.mockResolvedValue({ allowed: false });
+    mocks.requireAdminFromRequest.mockResolvedValue({ allowed: false });
     const response = await POST(
       request({
         candidateIds: [candidateId],

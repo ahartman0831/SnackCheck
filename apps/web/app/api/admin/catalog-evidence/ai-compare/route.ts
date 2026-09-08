@@ -2,7 +2,7 @@ import { randomUUID } from "node:crypto";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { fail, ok, requestId } from "@/lib/api/envelope";
-import { requireAdmin } from "@/lib/auth/require-admin";
+import { requireAdminFromRequest } from "@/lib/auth/require-admin";
 import {
   executeCatalogAiComparisons,
   planCatalogAiComparisons,
@@ -20,7 +20,7 @@ const BodySchema = z.object({
 
 export async function POST(request: Request) {
   const id = requestId();
-  const auth = await requireAdmin(["SUPER_ADMIN"]);
+  const auth = await requireAdminFromRequest(request, ["SUPER_ADMIN"]);
   if (!auth.allowed) {
     return NextResponse.json(
       fail("FORBIDDEN", "Active owner access is required.", { id }),
