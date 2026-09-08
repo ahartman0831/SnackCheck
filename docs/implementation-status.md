@@ -8,23 +8,23 @@ remain background, not evidence that production is ready. See
 
 - **COMPLETE / VERIFIED — database foundation:** all 37 migrations applied to a
   disposable local Supabase stack; 19 pgTAP files / 290 assertions pass. Generated
-  types match migration 0036 apart from a trailing newline; 0037 changes only the
-  existing freshness function, with no type signature change. Real storage
+  types match the final schema after migration 0037 using the generator's normal
+  newline normalization. The new migration changes no type signature. Real storage
   integration: 6 assertions across 3 files pass, including both private-storage
   cases. Disposable backup/restore rehearsal passes. No hosted database changed.
 - **COMPLETE / VERIFIED — session refresh:** proxy refreshes incoming and outgoing
   cookies; pages/routes/SQL still enforce active roles. A real temporary local
   reviewer refreshed an expired session, entered the workspace and signed out in
   Chrome. Account removed after testing. Production SMTP remains unverified.
-- **IN PROGRESS — security/reliability remediation:** repaired production rate
+- **COMPLETE / VERIFIED LOCALLY — security/reliability remediation:** repaired production rate
   windows and per-visitor keys, Redis timeout behavior, evidence-date gates in
   engine and SQL, safe analytics HMAC defaults, inactive barcode records, provider
   cache recovery, extraction failure handling and lost usage for malformed model
-  output. Targeted regressions pass; final full checks follow final changes.
-- **IN PROGRESS — UX/browser checks:** actual local-database ingredient check,
+  output. The full unit run passes 319 tests and final targeted regressions pass; final build, lint, types and browser evidence are recorded in RELEASE_AUDIT.md.
+- **COMPLETE / VERIFIED IN CHROME — UX/browser checks:** actual local-database ingredient check,
   retained draft, unauthorized submission/admin access and invalid pagination pass
   in Chrome. Wider browser testing found insufficient contrast on homepage step
-  numbers; repaired and awaiting rerun. Production dev-gallery assertions now
+  numbers; repaired and the rerun passes (46 public browser cases plus 4 real-database journeys). Production dev-gallery assertions now
   verify that the gallery is inaccessible.
 - **COMPLETE / VERIFIED — architecture consolidation:** unreferenced `lib/vision`
   removed; `lib/ai` remains the extractor. OpenAI adapters disable SDK retries so
@@ -53,7 +53,7 @@ remain background, not evidence that production is ready. See
   1.62.1 does not support WebKit on this Mac's macOS 13 ARM runtime. Linux CI retains
   default build and WebKit gates and now includes the real-database browser journey.
 
-Final verification results and owner gates will be recorded in RELEASE_AUDIT.md.
+Final verification results and owner gates are recorded in [RELEASE_AUDIT.md](RELEASE_AUDIT.md). Automatic approval review blocked pushing the private branch to GitHub; explicit upload approval is required before CI can run.
 No merge, hosted migration, provider purchase/run, production feature enablement
 or public launch has been performed during this takeover.
 

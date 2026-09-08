@@ -1,5 +1,7 @@
 # SnackCheck Finish-Line Build Plan
 
+> Historical roadmap. Current execution authority is the [takeover audit](SNACKCHECK_TAKEOVER_AUDIT.md), [definition of done](DEFINITION_OF_DONE.md), and [release audit](RELEASE_AUDIT.md). Preserve the source-permission, regulatory-review and production-approval boundaries described here; old phase ordering and per-slice stop instructions are superseded by the owner's takeover request.
+
 **Recorded:** September 6, 2026  
 **Objective:** Take the existing SnackCheck repository from its current staging state to a trustworthy public Arizona beta, then complete the optional commercial and expansion layers without weakening product integrity.
 
