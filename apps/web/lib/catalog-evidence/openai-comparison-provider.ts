@@ -18,7 +18,7 @@ export class OpenAiEvidenceComparisonProvider implements EvidenceComparisonProvi
     apiKey: string,
     client?: OpenAI,
   ) {
-    this.client = client ?? new OpenAI({ apiKey });
+    this.client = client ?? new OpenAI({ apiKey, maxRetries: 0 });
   }
 
   async compare(

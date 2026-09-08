@@ -8,6 +8,7 @@ import {
 import { EvaluationContextSchema } from "@snackcheck/contracts";
 import { fail, ok, requestId } from "@/lib/api/envelope";
 import { loadPublishedArizonaRuleset } from "@/lib/rules/arizona";
+import { enforceRateLimit } from "@/lib/rate-limit/request";
 
 const BodySchema = z.object({
   ingredients: z.string().min(1).max(10_000),
@@ -16,6 +17,14 @@ const BodySchema = z.object({
 
 export async function POST(request: Request) {
   const id = requestId();
+  const rateLimit = await enforceRateLimit({
+    request,
+    scope: "evaluate",
+    max: 30,
+    windowMs: 60_000,
+    requestId: id,
+  });
+  if (rateLimit) return rateLimit;
   const parsed = BodySchema.safeParse(await request.json().catch(() => null));
   if (!parsed.success) {
     return NextResponse.json(

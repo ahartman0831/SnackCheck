@@ -12,7 +12,7 @@ import { sharedExtractionExecutionPolicy } from "@/lib/ai/execution-policy";
 import { fail, ok, requestId } from "@/lib/api/envelope";
 import { env } from "@/lib/env";
 import { isPhotoExtractionEnabled } from "@/lib/features";
-import { getRateLimiter } from "@/lib/rate-limit";
+import { enforceRateLimit } from "@/lib/rate-limit/request";
 import { ownsSubmission } from "@/lib/submissions/submission-ownership";
 import { createAdminClient } from "@/lib/supabase/admin";
 
@@ -60,18 +60,15 @@ export async function POST(
     );
   }
 
-  const limiter = await getRateLimiter();
-  const limited = await limiter.limit(`extract:${id}`, 4, 60_000);
-  if (!limited.success) {
-    return NextResponse.json(
-      fail(
-        "RATE_LIMITED",
-        "Extraction is temporarily unavailable. Paste the ingredient list or try again later.",
-        { retryable: true, id: reqId },
-      ),
-      { status: 429 },
-    );
-  }
+  const rateLimit = await enforceRateLimit({
+    request,
+    scope: "extract",
+    max: 4,
+    windowMs: 60000,
+    requestId: reqId,
+    ownedResourceId: id,
+  });
+  if (rateLimit) return rateLimit;
 
   const body = BodySchema.safeParse(await request.json().catch(() => ({})));
   if (!body.success) {

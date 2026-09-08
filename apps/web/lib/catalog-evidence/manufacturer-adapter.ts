@@ -85,7 +85,8 @@ export class ManufacturerEvidenceAdapter implements EvidenceCollectionAdapter {
         Accept: "text/html, application/json;q=0.9",
         "User-Agent": this.options.userAgent.trim(),
       },
-      redirect: "follow",
+      // Require a reviewed canonical URL; reject redirects before fetching their target.
+      redirect: "error",
       signal: options.signal,
     });
     if (response.status === 404 || response.status === 410) {

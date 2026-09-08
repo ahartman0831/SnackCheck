@@ -6,6 +6,8 @@ import {
 } from "@snackcheck/compliance";
 import type { PublicProductCard } from "@snackcheck/contracts";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { AppError } from "@/lib/errors";
+
 import {
   isUsablePublishedRuleset,
   loadPublishedArizonaRuleset,
@@ -25,6 +27,15 @@ import {
 import { mapLiveSearchCard } from "./public-search-card";
 import { clampSearchLimit } from "./search-query";
 import type { FormulationRecord, ProductPageModel, ProductRecord } from "./types";
+
+function assertReadSucceeded(error: unknown): void {
+  if (error)
+    throw new AppError(
+      "CATALOG_UNAVAILABLE",
+      "The product catalog is temporarily unavailable. Please try again shortly.",
+      { retryable: true, status: 503 },
+    );
+}
 
 function nodeEnv(): string {
   return process.env.NODE_ENV ?? "development";
@@ -112,27 +123,30 @@ export async function getProductBySlug(slug: string): Promise<ProductPageModel |
     return resolveMiss(false, false) === "dev-catalog" ? findDevProduct(slug) : null;
   }
 
-  const { data: product } = await admin
+  const { data: product, error: productError } = await admin
     .from("products")
     .select("*")
     .eq("slug", slug)
     .eq("active", true)
     .maybeSingle();
+  assertReadSucceeded(productError);
   if (!product) {
-    const { data: redirect } = await admin
+    const { data: redirect, error: redirectReadError } = await admin
       .from("product_redirects")
       .select("to_product_id")
       .eq("from_slug", slug)
       .maybeSingle();
+    assertReadSucceeded(redirectReadError);
     if (redirect) {
-      const { data: target } = await admin
+      const { data: target, error: targetReadError } = await admin
         .from("products")
         .select("*")
         .eq("id", redirect.to_product_id)
         .eq("active", true)
         .maybeSingle();
+      assertReadSucceeded(targetReadError);
       if (target) {
-        const { data: targetFormulation } = await admin
+        const { data: targetFormulation, error: targetFormulationReadError } = await admin
           .from("formulations")
           .select("*")
           .eq("product_id", target.id)
@@ -141,13 +155,14 @@ export async function getProductBySlug(slug: string): Promise<ProductPageModel |
           .order("version", { ascending: false })
           .limit(1)
           .maybeSingle();
+        assertReadSucceeded(targetFormulationReadError);
         return hydrate(mapProduct(target), targetFormulation);
       }
     }
     return resolveMiss(true, false) === "dev-catalog" ? findDevProduct(slug) : null;
   }
 
-  const { data: formulation } = await admin
+  const { data: formulation, error: formulationReadError } = await admin
     .from("formulations")
     .select("*")
     .eq("product_id", product.id)
@@ -158,6 +173,7 @@ export async function getProductBySlug(slug: string): Promise<ProductPageModel |
     .order("id", { ascending: false })
     .limit(1)
     .maybeSingle();
+  assertReadSucceeded(formulationReadError);
 
   return hydrate(mapProduct(product), formulation);
 }
@@ -187,9 +203,7 @@ export async function searchProducts(
     cursor_name: options?.cursorName,
     cursor_id: options?.cursorId,
   });
-  if (error) {
-    return [];
-  }
+  assertReadSucceeded(error);
   return (data ?? []).map((row) => mapLiveSearchCard(row));
 }
 
@@ -198,23 +212,26 @@ export async function getProductByGtin(gtin14: string): Promise<ProductPageModel
   if (!admin) {
     return resolveMiss(false, false) === "dev-catalog" ? findDevByGtin(gtin14) : null;
   }
-  const { data: identifier } = await admin
+  const { data: identifier, error: identifierError } = await admin
     .from("product_identifiers")
     .select("product_id")
     .eq("normalized_gtin14", gtin14)
     .maybeSingle();
+  assertReadSucceeded(identifierError);
   if (!identifier) {
     return resolveMiss(true, false) === "dev-catalog" ? findDevByGtin(gtin14) : null;
   }
-  const { data: product } = await admin
+  const { data: product, error: productReadError } = await admin
     .from("products")
     .select("*")
     .eq("id", identifier.product_id)
+    .eq("active", true)
     .maybeSingle();
+  assertReadSucceeded(productReadError);
   if (!product) {
     return null;
   }
-  const { data: formulation } = await admin
+  const { data: formulation, error: formulationReadError } = await admin
     .from("formulations")
     .select("*")
     .eq("product_id", product.id)
@@ -225,6 +242,7 @@ export async function getProductByGtin(gtin14: string): Promise<ProductPageModel
     .order("id", { ascending: false })
     .limit(1)
     .maybeSingle();
+  assertReadSucceeded(formulationReadError);
   return hydrate(mapProduct(product), formulation);
 }
 
@@ -270,9 +288,7 @@ export async function listApprovedProducts(filters?: {
     result_limit: 100,
     result_offset: Math.max(filters?.offset ?? 0, 0),
   });
-  if (error) {
-    return [];
-  }
+  assertReadSucceeded(error);
   return (data ?? []).map((row) => mapLiveSearchCard(row));
 }
 
@@ -318,7 +334,7 @@ export async function listApprovedDiscoveryProducts(filters?: {
     result_limit: Math.min(Math.max(filters?.limit ?? 100, 1), 500),
     result_offset: Math.max(filters?.offset ?? 0, 0),
   });
-  if (error) return [];
+  assertReadSucceeded(error);
   return (data ?? []).map((row) => mapLiveSearchCard(row));
 }
 
@@ -418,13 +434,14 @@ async function hydrate(
   };
   const admin = createAdminClient();
   if (admin) {
-    const { data: sources } = await admin
+    const { data: sources, error: sourcesReadError } = await admin
       .from("formulation_sources")
       .select("source_type,source_reference,source_url,observed_at")
       .eq("formulation_id", formulation.id)
       .in("source_type", ["MANUFACTURER", "PACKAGE_PHOTO"])
       .order("observed_at", { ascending: false })
       .limit(10);
+    assertReadSucceeded(sourcesReadError);
     const preferredType =
       formulation.verificationStatus === "PACKAGE_VERIFIED"
         ? "PACKAGE_PHOTO"

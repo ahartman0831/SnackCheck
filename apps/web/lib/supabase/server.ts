@@ -24,8 +24,13 @@ export async function createUserServerClient() {
             options?: Record<string, unknown>;
           }>,
         ) {
-          for (const cookie of cookiesToSet) {
-            store.set(cookie.name, cookie.value, cookie.options);
+          try {
+            for (const cookie of cookiesToSet) {
+              store.set(cookie.name, cookie.value, cookie.options);
+            }
+          } catch {
+            // Server Components have read-only cookies. proxy.ts refreshes the
+            // request and response cookies before these components render.
           }
         },
       },

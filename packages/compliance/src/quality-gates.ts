@@ -67,11 +67,16 @@ export function applyQualityGates(input: ComplianceInput): QualityFlag[] {
 
   if (formulation.lastVerifiedAt) {
     const age = daysBetween(formulation.lastVerifiedAt, input.evaluationDate);
-    if (age > ruleset.freshnessAgingDays) {
+    // Compare calendar dates: a verification later today is valid, tomorrow is not.
+    const verifiedDay = Date.parse(formulation.lastVerifiedAt.slice(0, 10));
+    const evaluationDay = Date.parse(input.evaluationDate.slice(0, 10));
+    if (age > ruleset.freshnessAgingDays || verifiedDay > evaluationDay) {
       flags.push("STALE_EVIDENCE");
     } else if (age > ruleset.freshnessCurrentDays) {
       flags.push("AGING_EVIDENCE");
     }
+  } else {
+    flags.push("STALE_EVIDENCE");
   }
 
   if (formulation.confidence !== null && formulation.confidence < 0.72) {

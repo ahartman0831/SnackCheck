@@ -115,7 +115,8 @@ export class OpenFoodFactsEvidenceAdapter implements EvidenceCollectionAdapter {
     const response = await this.fetcher(reference.url, {
       method: "GET",
       headers: { Accept: "application/json", "User-Agent": this.userAgent },
-      redirect: "follow",
+      // Require a reviewed canonical URL; reject redirects before fetching their target.
+      redirect: "error",
       signal: options.signal,
     });
     if (response.status === 404) return { requestCount: 1, evidence: null };

@@ -30,6 +30,7 @@ export class OpenFoodFactsProvider implements ProductDataProvider {
       const code = gtin14.replace(/^0+/, "") || gtin14;
       const url = `${env.OPEN_FOOD_FACTS_BASE_URL}/api/v3/product/${code}`;
       const response = await fetch(url, {
+        redirect: "error",
         headers: {
           "User-Agent": env.OPEN_FOOD_FACTS_USER_AGENT,
           Accept: "application/json",

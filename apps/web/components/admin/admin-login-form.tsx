@@ -22,32 +22,40 @@ export function AdminLoginForm({ next = "/admin/catalog" }: { next?: string }) {
     setBusy(true);
     setMessage(null);
 
-    const supabase = createBrowserSupabaseClient();
-    if (!supabase) {
-      setMessage("Staging sign-in is not configured yet.");
+    try {
+      const supabase = createBrowserSupabaseClient();
+      if (!supabase) {
+        setMessage("Reviewer sign-in is not configured yet.");
+        setBusy(false);
+        return;
+      }
+
+      const { error } = await supabase.auth.signInWithOtp({
+        email: email.trim(),
+        options: { shouldCreateUser: true },
+      });
+
+      if (error && isEmailRateLimitError(error)) {
+        setAwaitingCode(true);
+        setMessage(
+          "SnackCheck has temporarily paused new sign-in emails. Enter your most recent code, or wait up to an hour before requesting another.",
+        );
+      } else if (error) {
+        setMessage(
+          "The sign-in code could not be sent. Please wait a moment and try again.",
+        );
+      } else {
+        setAwaitingCode(true);
+        setMessage("Enter the one-time code from your SnackCheck email.");
+      }
       setBusy(false);
-      return;
-    }
-
-    const { error } = await supabase.auth.signInWithOtp({
-      email: email.trim(),
-      options: { shouldCreateUser: true },
-    });
-
-    if (error && isEmailRateLimitError(error)) {
-      setAwaitingCode(true);
+    } catch {
       setMessage(
-        "Staging has temporarily paused new sign-in emails. Enter your most recent code, or wait up to an hour before requesting another.",
+        "The sign-in code could not be sent. Check your connection and try again.",
       );
-    } else if (error) {
-      setMessage(
-        "The sign-in code could not be sent. Please wait a moment and try again.",
-      );
-    } else {
-      setAwaitingCode(true);
-      setMessage("Enter the one-time code from your SnackCheck email.");
+    } finally {
+      setBusy(false);
     }
-    setBusy(false);
   }
 
   async function verifyCode(event: React.FormEvent<HTMLFormElement>) {
@@ -55,29 +63,37 @@ export function AdminLoginForm({ next = "/admin/catalog" }: { next?: string }) {
     setBusy(true);
     setMessage(null);
 
-    const supabase = createBrowserSupabaseClient();
-    if (!supabase) {
-      setMessage("Staging sign-in is not configured yet.");
+    try {
+      const supabase = createBrowserSupabaseClient();
+      if (!supabase) {
+        setMessage("Reviewer sign-in is not configured yet.");
+        setBusy(false);
+        return;
+      }
+
+      const { error } = await supabase.auth.verifyOtp({
+        email: email.trim(),
+        token: code,
+        type: "email",
+      });
+
+      if (error) {
+        setMessage(
+          "That code is incorrect or expired. Request a new code and try again.",
+        );
+        setBusy(false);
+        return;
+      }
+
+      setMessage("Signed in. Opening the reviewer workspace…");
+      router.replace(next);
+      router.refresh();
       setBusy(false);
-      return;
-    }
-
-    const { error } = await supabase.auth.verifyOtp({
-      email: email.trim(),
-      token: code,
-      type: "email",
-    });
-
-    if (error) {
-      setMessage("That code is incorrect or expired. Request a new code and try again.");
+    } catch {
+      setMessage("Sign-in could not finish. Check your connection and try again.");
+    } finally {
       setBusy(false);
-      return;
     }
-
-    setMessage("Signed in. Opening the reviewer workspace…");
-    router.replace(next);
-    router.refresh();
-    setBusy(false);
   }
 
   if (awaitingCode) {

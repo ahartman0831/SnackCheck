@@ -18,7 +18,8 @@ export class OpenAiExtractionProvider implements ExtractionProvider {
     apiKey: string,
     client?: OpenAI,
   ) {
-    this.client = client ?? new OpenAI({ apiKey });
+    // The orchestrator owns retries and records every provider attempt.
+    this.client = client ?? new OpenAI({ apiKey, maxRetries: 0 });
   }
 
   async extract(
@@ -29,6 +30,7 @@ export class OpenAiExtractionProvider implements ExtractionProvider {
       {
         model: this.model,
         store: false,
+        max_output_tokens: 6000,
         input: [
           {
             role: "user",

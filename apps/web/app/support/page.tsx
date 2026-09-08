@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { pageMetadata } from "@/lib/seo";
+import { env } from "@/lib/env";
 
 export const metadata: Metadata = pageMetadata({
   title: "Support",
@@ -12,6 +13,19 @@ export default function SupportPage() {
   return (
     <article className="flex max-w-3xl flex-col gap-4">
       <h1 className="text-3xl font-semibold">Support</h1>
+      {env.SUPPORT_EMAIL ? (
+        <p>
+          Report a problem, incorrect result, or privacy request to{" "}
+          <a
+            className="font-semibold underline underline-offset-4"
+            href={`mailto:${env.SUPPORT_EMAIL}`}
+          >
+            {env.SUPPORT_EMAIL}
+          </a>
+          . Include the product link and a description of the issue. Do not send passwords
+          or sign-in codes.
+        </p>
+      ) : null}
       <p>
         If a package looks different from the stored formulation, paste the new ingredient
         list. Do not invent a product record.

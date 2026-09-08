@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { randomUUID } from "node:crypto";
 import { z } from "zod";
 import { fail, ok, requestId } from "@/lib/api/envelope";
-import { getRateLimiter } from "@/lib/rate-limit";
+import { enforceRateLimit } from "@/lib/rate-limit/request";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { env } from "@/lib/env";
 import {
@@ -12,10 +12,19 @@ import {
 import { isIngredientPhotoEnabled } from "@/lib/features";
 import { normalizeGtin } from "@/lib/gtin";
 
-const BodySchema = z.object({ gtin: z.string().optional() });
+const BodySchema = z.object({ gtin: z.string().max(32).nullish() });
 
 export async function POST(request: Request) {
   const id = requestId();
+  const body = BodySchema.safeParse(await request.json().catch(() => null));
+  const normalized =
+    body.success && body.data.gtin ? normalizeGtin(body.data.gtin) : null;
+  if (!body.success || (normalized && "error" in normalized)) {
+    return NextResponse.json(
+      fail("INVALID_BODY", "Provide a valid barcode or leave it empty.", { id }),
+      { status: 400 },
+    );
+  }
   if (!env.SUBMISSION_TOKEN_SECRET) {
     return NextResponse.json(
       fail("SUBMISSIONS_DISABLED", "Ingredient submissions are not configured.", { id }),
@@ -23,14 +32,14 @@ export async function POST(request: Request) {
     );
   }
 
-  const limiter = await getRateLimiter();
-  const limited = await limiter.limit("upload:public", 6, 60_000);
-  if (!limited.success) {
-    return NextResponse.json(
-      fail("RATE_LIMITED", "Upload limit reached.", { retryable: true, id }),
-      { status: 429 },
-    );
-  }
+  const rateLimit = await enforceRateLimit({
+    request,
+    scope: "upload",
+    max: 6,
+    windowMs: 60000,
+    requestId: id,
+  });
+  if (rateLimit) return rateLimit;
 
   const submissionId = randomUUID();
   const path = `${submissionId}/${randomUUID()}`;
@@ -50,9 +59,6 @@ export async function POST(request: Request) {
 
   let uploadUrl: string | null = null;
 
-  const body = BodySchema.safeParse(await request.json().catch(() => ({})));
-  const normalized =
-    body.success && body.data.gtin ? normalizeGtin(body.data.gtin) : null;
   const normalizedGtin = normalized && "gtin14" in normalized ? normalized.gtin14 : null;
   const product = normalizedGtin
     ? await admin.from("products").select("id").eq("gtin14", normalizedGtin).maybeSingle()

@@ -21,6 +21,13 @@ export async function lookupGtin(gtin14: string): Promise<{
     return { source: "cache", result: cached.value };
   }
   const external = await off.getByGtin(gtin14);
+  if (external.kind === "UNAVAILABLE") {
+    return { source: "open_food_facts", result: external };
+  }
+  for (const [key, entry] of cache) {
+    if (entry.expires <= Date.now()) cache.delete(key);
+  }
+  if (cache.size >= 1000) cache.delete(cache.keys().next().value!);
   cache.set(gtin14, { expires: Date.now() + 12 * 60 * 60 * 1000, value: external });
   return { source: "open_food_facts", result: external };
 }

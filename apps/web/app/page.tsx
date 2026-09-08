@@ -205,9 +205,7 @@ export default function HomePage() {
                     <span className="bg-accent-soft text-accent flex size-11 items-center justify-center rounded-[16px]">
                       <Icon className="size-5" aria-hidden />
                     </span>
-                    <span className="text-muted/60 text-3xl font-black">
-                      0{index + 1}
-                    </span>
+                    <span className="text-muted text-3xl font-black">0{index + 1}</span>
                   </div>
                   <h3 className="mt-5 text-lg font-bold">{step.title}</h3>
                   <p className="text-muted mt-2 text-sm leading-relaxed">{step.body}</p>

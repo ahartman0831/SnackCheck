@@ -29,6 +29,29 @@ const manifestValue = [
 ];
 
 describe("manufacturer evidence manifest", () => {
+  it("rejects redirects before an unreviewed target can be requested", async () => {
+    const manifest = parseManufacturerManifest(manifestValue, {
+      now: new Date("2026-09-07T00:00:00.000Z"),
+    });
+    const fetcher = vi.fn().mockResolvedValue(
+      new Response(null, {
+        status: 302,
+        headers: { location: "http://127.0.0.1/private" },
+      }),
+    );
+    const adapter = new ManufacturerEvidenceAdapter(manifest, {
+      userAgent: "SnackCheck/0.1 (owner@example.test)",
+      fetcher,
+    });
+    await expect(
+      adapter.retrieve(
+        { url: manifest[0].sourceUrl.replace("www.", ""), title: "test" },
+        { maxBytes: 1000, signal: new AbortController().signal },
+      ),
+    ).rejects.toThrow("HTTP 302");
+    expect(fetcher).toHaveBeenCalledOnce();
+    expect(fetcher.mock.calls[0][1].redirect).toBe("error");
+  });
   it("requires an exact candidate, barcode, reviewed host, and current terms review", () => {
     expect(
       parseManufacturerManifest(manifestValue, {
