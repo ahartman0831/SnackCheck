@@ -51,8 +51,19 @@ type EvidenceRow = Pick<
   | "evidence_text"
 >;
 
+type DossierRow = Pick<
+  Database["public"]["Tables"]["catalog_evidence_dossiers"]["Row"],
+  "id" | "candidate_id" | "created_at"
+>;
+
+type DossierItemRow = Pick<
+  Database["public"]["Tables"]["catalog_evidence_dossier_items"]["Row"],
+  "dossier_id" | "evidence_attempt_id" | "evidence_role" | "ordinal"
+>;
+
 export type PlannedCatalogAiComparison = {
   candidate: CandidateRow;
+  dossierId: string;
   evidence: EvidenceRow;
   input: EvidenceComparisonInput;
 };
@@ -85,17 +96,17 @@ function settingValue(rows: { key: string; value: Json }[], key: string): Json {
 
 function comparisonInput(
   candidate: CandidateRow,
-  evidence: EvidenceRow,
+  evidenceRows: EvidenceRow[],
 ): EvidenceComparisonInput {
   if (
-    evidence.source_kind !== "MANUFACTURER" ||
-    !evidence.source_url ||
-    !isPlausibleIngredientStatement(evidence.ingredient_text) ||
-    !evidence.evidence_text
+    !evidenceRows.some(
+      (evidence) =>
+        evidence.source_kind === "MANUFACTURER" &&
+        isPlausibleIngredientStatement(evidence.ingredient_text),
+    )
   ) {
     throw new Error(`Candidate ${candidate.id} lacks manufacturer ingredient evidence.`);
   }
-  const snapshot = SnapshotSchema.parse(JSON.parse(evidence.evidence_text));
   return EvidenceComparisonInputSchema.parse({
     candidate: {
       id: candidate.id,
@@ -106,18 +117,24 @@ function comparisonInput(
       size: candidate.size,
       ingredientText: candidate.raw_ingredient_text,
     },
-    evidence: [
-      {
-        sourceKind: "MANUFACTURER",
+    evidence: evidenceRows.map((evidence) => {
+      if (!evidence.source_url || !evidence.evidence_text) {
+        throw new Error(`Candidate ${candidate.id} has incomplete dossier evidence.`);
+      }
+      const snapshot = SnapshotSchema.parse(JSON.parse(evidence.evidence_text));
+      return {
+        sourceKind: evidence.source_kind,
         sourceUrl: evidence.source_url,
         observedAt: evidence.observed_at ?? evidence.retrieved_at,
         productName: snapshot.productName,
         brand: snapshot.brand,
         gtins: snapshot.gtins,
         quantity: snapshot.quantity,
-        ingredientText: evidence.ingredient_text,
-      },
-    ],
+        ingredientText: isPlausibleIngredientStatement(evidence.ingredient_text)
+          ? evidence.ingredient_text
+          : null,
+      };
+    }),
   });
 }
 
@@ -133,26 +150,43 @@ export async function planCatalogAiComparisons(
     throw new Error("Select between one and five unique catalog candidates.");
   }
 
+  const dossierResult = await admin
+    .from("catalog_evidence_dossiers")
+    .select("id,candidate_id,created_at")
+    .in("candidate_id", candidateIds)
+    .order("created_at", { ascending: false });
+  if (dossierResult.error) throw new Error(dossierResult.error.message);
+
+  const dossierByCandidate = new Map<string, DossierRow>();
+  for (const row of (dossierResult.data ?? []) as DossierRow[]) {
+    if (!dossierByCandidate.has(row.candidate_id)) {
+      dossierByCandidate.set(row.candidate_id, row);
+    }
+  }
+  if (dossierByCandidate.size !== candidateIds.length) {
+    throw new Error("Every selected candidate needs an evidence dossier.");
+  }
+
+  const dossierIds = [...dossierByCandidate.values()].map(({ id }) => id);
+  const itemResult = await admin
+    .from("catalog_evidence_dossier_items")
+    .select("dossier_id,evidence_attempt_id,evidence_role,ordinal")
+    .in("dossier_id", dossierIds)
+    .order("ordinal", { ascending: true });
+  if (itemResult.error) throw new Error(itemResult.error.message);
+  const items = (itemResult.data ?? []) as DossierItemRow[];
+  const evidenceIds = items.map(({ evidence_attempt_id }) => evidence_attempt_id);
   const evidenceResult = await admin
     .from("catalog_evidence_attempts")
     .select(
       "id,candidate_id,source_kind,source_url,observed_at,retrieved_at,ingredient_text,evidence_text",
     )
-    .in("candidate_id", candidateIds)
-    .eq("outcome", "EVIDENCE_FOUND")
-    .eq("source_kind", "MANUFACTURER")
-    .order("created_at", { ascending: false });
+    .in("id", evidenceIds)
+    .eq("outcome", "EVIDENCE_FOUND");
   if (evidenceResult.error) throw new Error(evidenceResult.error.message);
-
-  const evidenceByCandidate = new Map<string, EvidenceRow>();
-  for (const row of (evidenceResult.data ?? []) as EvidenceRow[]) {
-    if (!evidenceByCandidate.has(row.candidate_id)) {
-      evidenceByCandidate.set(row.candidate_id, row);
-    }
-  }
-  if (evidenceByCandidate.size !== candidateIds.length) {
-    throw new Error("Every selected candidate needs current manufacturer evidence.");
-  }
+  const evidenceById = new Map(
+    ((evidenceResult.data ?? []) as EvidenceRow[]).map((row) => [row.id, row]),
+  );
 
   const candidateResult = await admin
     .from("catalog_source_records")
@@ -175,9 +209,27 @@ export async function planCatalogAiComparisons(
 
   return candidateIds.map((candidateId) => {
     const candidate = candidates.get(candidateId);
-    const evidence = evidenceByCandidate.get(candidateId);
-    if (!candidate || !evidence) throw new Error("A selected candidate was not found.");
-    return { candidate, evidence, input: comparisonInput(candidate, evidence) };
+    const dossier = dossierByCandidate.get(candidateId);
+    if (!candidate || !dossier) throw new Error("A selected candidate was not found.");
+    const dossierItems = items.filter(({ dossier_id }) => dossier_id === dossier.id);
+    const evidenceRows = dossierItems.map(({ evidence_attempt_id }) => {
+      const row = evidenceById.get(evidence_attempt_id);
+      if (!row) throw new Error(`Evidence dossier ${dossier.id} is incomplete.`);
+      return row;
+    });
+    const primaryItem = dossierItems.find(
+      ({ evidence_role }) => evidence_role === "INGREDIENTS",
+    );
+    const evidence = primaryItem
+      ? evidenceById.get(primaryItem.evidence_attempt_id)
+      : undefined;
+    if (!evidence) throw new Error(`Evidence dossier ${dossier.id} lacks ingredients.`);
+    return {
+      candidate,
+      dossierId: dossier.id,
+      evidence,
+      input: comparisonInput(candidate, evidenceRows),
+    };
   });
 }
 
@@ -233,9 +285,10 @@ export async function executeCatalogAiComparisons(input: {
     runId,
     provider: "openai",
     model,
-    candidates: planned.map(({ candidate, evidence }) => ({
+    candidates: planned.map(({ candidate, evidence, dossierId }) => ({
       candidateId: candidate.id,
       evidenceAttemptId: evidence.id,
+      dossierId,
     })),
     confirmation: AI_COMPARISON_STAGING_CONFIRMATION,
   });

@@ -215,4 +215,34 @@ describe("manufacturer evidence adapter", () => {
       reasonCode: "MANUFACTURER_GTIN_MISMATCH",
     });
   });
+
+  it("preserves an exact GTIN encoded in an official product URL", async () => {
+    const urlManifest = parseManufacturerManifest(
+      [
+        {
+          ...manifestValue[0],
+          sourceUrl:
+            "https://fixturefoods.example/smartlabel/012345678905-product/index.html",
+        },
+      ],
+      { now: new Date("2026-09-07T00:00:00.000Z") },
+    );
+    const fetched = new Response("<title>Pretzel Bites</title>", {
+      status: 200,
+      headers: { "content-type": "text/html" },
+    });
+    Object.defineProperty(fetched, "url", { value: urlManifest[0].sourceUrl });
+    const result = await collectCatalogEvidence({
+      runId: "manufacturer-url-gtin",
+      candidates: [candidate],
+      adapter: new ManufacturerEvidenceAdapter(urlManifest, {
+        userAgent: "SnackCheck/0.1 (owner@example.test)",
+        fetcher: vi.fn().mockResolvedValue(fetched),
+      }),
+      limits: { maxRequestsPerCandidate: 1, maxRequestsPerRun: 1 },
+    });
+    expect(JSON.parse(result.attempts[0].evidence?.evidenceText ?? "{}")).toMatchObject({
+      gtins: ["012345678905"],
+    });
+  });
 });

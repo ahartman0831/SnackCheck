@@ -17,6 +17,7 @@ export interface AiComparisonRpcClient {
 export type AiComparisonRunCandidate = {
   candidateId: string;
   evidenceAttemptId: string;
+  dossierId?: string;
 };
 
 function rpcError(operation: string, error: { message: string } | null): void {
@@ -30,7 +31,8 @@ export function aiComparisonSelectionHash(
     .update(
       candidates
         .map(
-          ({ candidateId, evidenceAttemptId }) => `${candidateId}\t${evidenceAttemptId}`,
+          ({ candidateId, evidenceAttemptId, dossierId }) =>
+            `${candidateId}\t${dossierId ?? evidenceAttemptId}`,
         )
         .join("\n"),
     )
@@ -51,20 +53,37 @@ export function createAiComparisonRunStore(client: AiComparisonRpcClient) {
           `AI comparison apply requires ${AI_COMPARISON_STAGING_CONFIRMATION}.`,
         );
       }
-      const result = await client.rpc("begin_catalog_evidence_ai_run", {
-        p_run: {
-          runId: input.runId,
-          promptVersion: CATALOG_EVIDENCE_COMPARISON_PROMPT_VERSION,
-          provider: input.provider,
-          model: input.model,
-          selectionHash: aiComparisonSelectionHash(input.candidates),
+      const dossierMode = input.candidates.every(({ dossierId }) => Boolean(dossierId));
+      if (!dossierMode && input.candidates.some(({ dossierId }) => Boolean(dossierId))) {
+        throw new Error(
+          "AI comparison candidates cannot mix dossier and legacy evidence.",
+        );
+      }
+      const result = await client.rpc(
+        dossierMode
+          ? "begin_catalog_evidence_ai_dossier_run"
+          : "begin_catalog_evidence_ai_run",
+        {
+          p_run: {
+            runId: input.runId,
+            promptVersion: CATALOG_EVIDENCE_COMPARISON_PROMPT_VERSION,
+            provider: input.provider,
+            model: input.model,
+            selectionHash: aiComparisonSelectionHash(input.candidates),
+          },
+          p_candidate_ids: input.candidates.map(({ candidateId }) => candidateId),
+          ...(dossierMode
+            ? {
+                p_dossier_ids: input.candidates.map(({ dossierId }) => dossierId),
+              }
+            : {
+                p_evidence_attempt_ids: input.candidates.map(
+                  ({ evidenceAttemptId }) => evidenceAttemptId,
+                ),
+              }),
+          p_confirmation: input.confirmation,
         },
-        p_candidate_ids: input.candidates.map(({ candidateId }) => candidateId),
-        p_evidence_attempt_ids: input.candidates.map(
-          ({ evidenceAttemptId }) => evidenceAttemptId,
-        ),
-        p_confirmation: input.confirmation,
-      });
+      );
       rpcError("Beginning AI comparison run", result.error);
       return result.data;
     },

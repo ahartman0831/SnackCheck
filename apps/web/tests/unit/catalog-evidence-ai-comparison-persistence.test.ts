@@ -49,6 +49,32 @@ describe("AI comparison persistence", () => {
     );
   });
 
+  it("starts a dossier run without flattening multiple sources", async () => {
+    const rpcClient = client();
+    const store = createAiComparisonRunStore(rpcClient);
+    const dossierCandidates = [
+      {
+        ...candidates[0],
+        dossierId: "31124853-12d7-4810-bde3-b828a156ee54",
+      },
+    ];
+    await store.begin({
+      runId: "21124853-12d7-4810-bde3-b828a156ee54",
+      provider: "openai",
+      model: "configured-model",
+      candidates: dossierCandidates,
+      confirmation: AI_COMPARISON_STAGING_CONFIRMATION,
+    });
+    expect(rpcClient.rpc).toHaveBeenCalledWith(
+      "begin_catalog_evidence_ai_dossier_run",
+      expect.objectContaining({
+        p_candidate_ids: [dossierCandidates[0].candidateId],
+        p_dossier_ids: [dossierCandidates[0].dossierId],
+        p_confirmation: AI_COMPARISON_STAGING_CONFIRMATION,
+      }),
+    );
+  });
+
   it("claims, records detailed usage, and completes through guarded RPCs", async () => {
     const rpcClient = client(true);
     const store = createAiComparisonRunStore(rpcClient);

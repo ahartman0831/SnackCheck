@@ -5,6 +5,7 @@ import {
   listCatalogCandidates,
   parseCatalogCandidateFilters,
 } from "@/lib/admin/catalog-candidates";
+import { createAdminClient } from "@/lib/supabase/admin";
 
 export default async function AdminCatalogPage({
   searchParams,
@@ -23,6 +24,22 @@ export default async function AdminCatalogPage({
         <p className="text-muted mt-3">No catalog candidates were loaded.</p>
       </>
     );
+  const admin = createAdminClient();
+  const dossierIds =
+    auth.role === "SUPER_ADMIN" && filters.route === "AUTO_EVIDENCE" && admin
+      ? await admin
+          .from("catalog_evidence_dossiers")
+          .select("candidate_id")
+          .in(
+            "candidate_id",
+            candidates.map(({ id }) => id),
+          )
+      : null;
+  const dossierCandidateIds = new Set(
+    dossierIds?.error
+      ? []
+      : (dossierIds?.data ?? []).map(({ candidate_id }) => candidate_id),
+  );
   return (
     <div>
       <h1 className="text-2xl font-semibold">Catalog candidates</h1>
@@ -93,12 +110,14 @@ export default async function AdminCatalogPage({
       </form>
       {auth.role === "SUPER_ADMIN" && filters.route === "AUTO_EVIDENCE" ? (
         <CatalogAiRunner
-          candidates={candidates.map(({ id, brand, name, gtin14 }) => ({
-            id,
-            brand,
-            name,
-            gtin14,
-          }))}
+          candidates={candidates
+            .filter(({ id }) => dossierCandidateIds.has(id))
+            .map(({ id, brand, name, gtin14 }) => ({
+              id,
+              brand,
+              name,
+              gtin14,
+            }))}
         />
       ) : null}
       <div className="mt-6 flex flex-col gap-3">

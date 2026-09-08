@@ -167,6 +167,27 @@ failure also closes the kill switch immediately, and the runner stops after the 
 such rejection instead of repeating it across the batch. Reservation releases and circuit
 breaker actions are service-only, idempotent, and audited.
 
+## Multi-source evidence dossiers
+
+Migration `0036` removes the unsafe assumption that one manufacturer page must prove both
+product identity and ingredients. It adds immutable evidence dossiers containing one to
+four existing evidence attempts, each explicitly labeled `IDENTITY`, `INGREDIENTS`, or
+`SUPPORTING`. The source records are never merged or rewritten. A dossier can be created
+only through a service-only, staging-confirmed function, all items must belong to the same
+candidate, and at least one item must be clean manufacturer ingredient evidence.
+
+AI run manifests and attempts retain the exact dossier ID. The runner supplies every
+source independently, converts rejected boilerplate to missing evidence, and still
+requires deterministic ingredient agreement before it can recommend continuing. Legacy
+single-source runs remain readable. Dossier creation and AI comparison still cannot
+create, approve, promote, or publish a product.
+
+The companion assembly command consumes a bounded manifest of exact source URLs and roles,
+selects the latest immutable attempt for each URL, verifies manufacturer ingredient text
+again, and is dry-run by default. Apply mode retains the existing staging project-identity
+checks and requires the exact `ASSEMBLE_CATALOG_EVIDENCE_DOSSIER_IN_STAGING`
+confirmation. No staging dossier or new external request is created by this local slice.
+
 Applied staging persistence additionally requires all of the following:
 
 - `--apply`

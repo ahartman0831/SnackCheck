@@ -129,6 +129,15 @@ long text, handles real ingredient-section boundaries, and returns no ingredient
 for dynamic SmartLabel HTML that does not contain one. The runner also blocks reuse of the
 old noisy records. Clean multi-source recollection is the next Phase 11 task.
 
+The next local PR #20 slice introduces migration `0036` and an explicit multi-source
+evidence dossier. One to four immutable source attempts can be labeled as identity,
+ingredients, or supporting evidence without combining their claims. The guarded AI runner
+retains the dossier ID and passes each source separately; it requires at least one clean
+manufacturer ingredient record and keeps deterministic mismatch handling unchanged. A
+bounded, dry-run-first assembly command resolves only exact stored source URLs and retains
+the staging-only confirmation gate. This migration is not yet applied to staging, no clean
+manufacturer recollection has run, and no product was approved, promoted, or published.
+
 Milestone 1 hardening is committed and pushed on PR #19. The candidate operations now
 explicitly refuse known production Vercel and
 Supabase targets, page through the full source-record corpus in stable ID order, support

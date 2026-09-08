@@ -16,6 +16,20 @@ import { assessEvidenceSource } from "./source-policy";
 
 type FetchLike = typeof fetch;
 
+function matchingGtinFromOfficialUrl(
+  sourceUrl: string,
+  normalizedGtin14: string,
+): string | null {
+  const digitRuns = new URL(sourceUrl).pathname.match(/\d{8,14}/g) ?? [];
+  return (
+    digitRuns.find(
+      (value) =>
+        [8, 12, 13, 14].includes(value.length) &&
+        value.padStart(14, "0") === normalizedGtin14,
+    ) ?? null
+  );
+}
+
 export class ManufacturerEvidenceAdapter implements EvidenceCollectionAdapter {
   private readonly entries: Map<string, ManufacturerManifestEntry>;
   private readonly entriesByUrl: Map<string, ManufacturerManifestEntry>;
@@ -87,6 +101,8 @@ export class ManufacturerEvidenceAdapter implements EvidenceCollectionAdapter {
       new TextDecoder().decode(bytes),
       mediaType,
     );
+    const urlGtin = matchingGtinFromOfficialUrl(reference.url, entry.normalizedGtin14);
+    if (urlGtin && !snapshot.gtins.includes(urlGtin)) snapshot.gtins.push(urlGtin);
     if (!snapshot.productName && !snapshot.ingredientText && !snapshot.gtins.length) {
       return { requestCount: 1, evidence: null };
     }

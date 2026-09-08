@@ -352,6 +352,7 @@ export type Database = {
           created_at: string
           deterministic_conflict: boolean
           discrepancy_codes: Json
+          dossier_id: string | null
           estimated_input_cost_usd: number | null
           estimated_output_cost_usd: number | null
           estimated_total_cost_usd: number | null
@@ -385,6 +386,7 @@ export type Database = {
           created_at?: string
           deterministic_conflict: boolean
           discrepancy_codes?: Json
+          dossier_id?: string | null
           estimated_input_cost_usd?: number | null
           estimated_output_cost_usd?: number | null
           estimated_total_cost_usd?: number | null
@@ -418,6 +420,7 @@ export type Database = {
           created_at?: string
           deterministic_conflict?: boolean
           discrepancy_codes?: Json
+          dossier_id?: string | null
           estimated_input_cost_usd?: number | null
           estimated_output_cost_usd?: number | null
           estimated_total_cost_usd?: number | null
@@ -441,6 +444,13 @@ export type Database = {
           run_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "catalog_evidence_ai_attempts_dossier_id_fkey"
+            columns: ["dossier_id"]
+            isOneToOne: false
+            referencedRelation: "catalog_evidence_dossiers"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "catalog_evidence_ai_attempts_candidate_id_fkey"
             columns: ["candidate_id"]
@@ -497,6 +507,7 @@ export type Database = {
           candidate_id: string
           claimed_at: string | null
           created_at: string
+          dossier_id: string | null
           evidence_attempt_id: string
           ordinal: number
           reservation_release_reason: string | null
@@ -507,6 +518,7 @@ export type Database = {
           candidate_id: string
           claimed_at?: string | null
           created_at?: string
+          dossier_id?: string | null
           evidence_attempt_id: string
           ordinal: number
           reservation_release_reason?: string | null
@@ -517,6 +529,7 @@ export type Database = {
           candidate_id?: string
           claimed_at?: string | null
           created_at?: string
+          dossier_id?: string | null
           evidence_attempt_id?: string
           ordinal?: number
           reservation_release_reason?: string | null
@@ -524,6 +537,13 @@ export type Database = {
           run_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "catalog_evidence_ai_run_candidates_dossier_id_fkey"
+            columns: ["dossier_id"]
+            isOneToOne: false
+            referencedRelation: "catalog_evidence_dossiers"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "catalog_evidence_ai_run_candidates_candidate_id_fkey"
             columns: ["candidate_id"]
@@ -543,6 +563,74 @@ export type Database = {
             columns: ["run_id"]
             isOneToOne: false
             referencedRelation: "catalog_evidence_ai_runs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      catalog_evidence_dossier_items: {
+        Row: {
+          created_at: string
+          dossier_id: string
+          evidence_attempt_id: string
+          evidence_role: string
+          ordinal: number
+        }
+        Insert: {
+          created_at?: string
+          dossier_id: string
+          evidence_attempt_id: string
+          evidence_role: string
+          ordinal: number
+        }
+        Update: {
+          created_at?: string
+          dossier_id?: string
+          evidence_attempt_id?: string
+          evidence_role?: string
+          ordinal?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "catalog_evidence_dossier_items_dossier_id_fkey"
+            columns: ["dossier_id"]
+            isOneToOne: false
+            referencedRelation: "catalog_evidence_dossiers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "catalog_evidence_dossier_items_evidence_attempt_id_fkey"
+            columns: ["evidence_attempt_id"]
+            isOneToOne: false
+            referencedRelation: "catalog_evidence_attempts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      catalog_evidence_dossiers: {
+        Row: {
+          candidate_id: string
+          created_at: string
+          dossier_sha256: string
+          id: string
+        }
+        Insert: {
+          candidate_id: string
+          created_at?: string
+          dossier_sha256: string
+          id: string
+        }
+        Update: {
+          candidate_id?: string
+          created_at?: string
+          dossier_sha256?: string
+          id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "catalog_evidence_dossiers_candidate_id_fkey"
+            columns: ["candidate_id"]
+            isOneToOne: false
+            referencedRelation: "catalog_source_records"
             referencedColumns: ["id"]
           },
         ]
@@ -2541,6 +2629,15 @@ export type Database = {
         }
         Returns: Json
       }
+      begin_catalog_evidence_ai_dossier_run: {
+        Args: {
+          p_candidate_ids: string[]
+          p_confirmation: string
+          p_dossier_ids: string[]
+          p_run: Json
+        }
+        Returns: Json
+      }
       begin_catalog_evidence_run: {
         Args: { p_candidate_ids: string[]; p_confirmation: string; p_run: Json }
         Returns: Json
@@ -2570,6 +2667,15 @@ export type Database = {
       complete_catalog_import_batch: {
         Args: { p_batch_id: string; p_summary: Json }
         Returns: undefined
+      }
+      create_catalog_evidence_dossier: {
+        Args: {
+          p_confirmation: string
+          p_dossier: Json
+          p_evidence_attempt_ids: string[]
+          p_evidence_roles: string[]
+        }
+        Returns: Json
       }
       create_catalog_import_batch: { Args: { p_batch: Json }; Returns: string }
       current_published_arizona_ruleset: {

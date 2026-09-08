@@ -82,8 +82,11 @@ explicit approval. The OFF pilot produced five secondary dossiers with four exac
 ingredient matches and one conflict. The first manufacturer run persisted five official
 page snapshots, but the paid comparison exposed that all five visible-text ingredient
 fields were noisy or incomplete. The parser now rejects page boilerplate and the paid
-runner refuses implausible stored evidence. Clean first-party recollection remains before
-this milestone can complete.
+runner refuses implausible stored evidence. Migration `0036` is the local, unapplied
+multi-source foundation: it preserves separate identity, ingredient, and supporting
+records in an immutable dossier instead of flattening unlike sources into one claim.
+Clean first-party recollection and a staging dossier pilot remain before this milestone can
+complete.
 
 ### Work
 

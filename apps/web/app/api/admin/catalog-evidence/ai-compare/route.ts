@@ -101,6 +101,7 @@ export async function POST(request: Request) {
       message.includes("safety switch") ||
       message.includes("limit") ||
       message.includes("eligible") ||
+      message.includes("dossier") ||
       message.includes("manufacturer evidence") ||
       message.includes("Select between");
     return NextResponse.json(
