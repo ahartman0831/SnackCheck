@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { CatalogAiRunner } from "@/components/admin/catalog-ai-runner";
+import { requireAdmin } from "@/lib/auth/require-admin";
 import {
   listCatalogCandidates,
   parseCatalogCandidateFilters,
@@ -10,7 +12,10 @@ export default async function AdminCatalogPage({
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const filters = parseCatalogCandidateFilters(await searchParams);
-  const candidates = await listCatalogCandidates(filters);
+  const [candidates, auth] = await Promise.all([
+    listCatalogCandidates(filters),
+    requireAdmin(),
+  ]);
   if (!candidates)
     return (
       <>
@@ -86,6 +91,16 @@ export default async function AdminCatalogPage({
           </Link>
         </div>
       </form>
+      {auth.role === "SUPER_ADMIN" && filters.route === "AUTO_EVIDENCE" ? (
+        <CatalogAiRunner
+          candidates={candidates.map(({ id, brand, name, gtin14 }) => ({
+            id,
+            brand,
+            name,
+            gtin14,
+          }))}
+        />
+      ) : null}
       <div className="mt-6 flex flex-col gap-3">
         {candidates.map((candidate) => (
           <article key={candidate.id} className="border-border rounded-2xl border p-4">
