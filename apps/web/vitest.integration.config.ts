@@ -8,6 +8,9 @@ export default defineConfig({
     },
   },
   test: {
+    // Real storage tests make multiple network round trips and sanitize images.
+    // Keep assertions intact while allowing a realistic integration deadline.
+    testTimeout: 30_000,
     environment: "node",
     include: ["tests/integration/**/*.test.ts"],
     setupFiles: ["./vitest.setup.ts"],

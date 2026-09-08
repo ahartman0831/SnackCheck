@@ -1,3 +1,64 @@
+# Takeover status — September 8, 2026
+
+This section is the current implementation record. Historical phase reports below
+remain background, not evidence that production is ready. See
+[the takeover audit](SNACKCHECK_TAKEOVER_AUDIT.md),
+[definition of done](DEFINITION_OF_DONE.md), and
+[decision 0003](architecture-decisions/0003-takeover-stabilization.md).
+
+- **COMPLETE / VERIFIED — database foundation:** all 37 migrations applied to a
+  disposable local Supabase stack; 19 pgTAP files / 290 assertions pass. Generated
+  types match migration 0036 apart from a trailing newline; 0037 changes only the
+  existing freshness function, with no type signature change. Real storage
+  integration: 6 assertions across 3 files pass, including both private-storage
+  cases. Disposable backup/restore rehearsal passes. No hosted database changed.
+- **COMPLETE / VERIFIED — session refresh:** proxy refreshes incoming and outgoing
+  cookies; pages/routes/SQL still enforce active roles. A real temporary local
+  reviewer refreshed an expired session, entered the workspace and signed out in
+  Chrome. Account removed after testing. Production SMTP remains unverified.
+- **IN PROGRESS — security/reliability remediation:** repaired production rate
+  windows and per-visitor keys, Redis timeout behavior, evidence-date gates in
+  engine and SQL, safe analytics HMAC defaults, inactive barcode records, provider
+  cache recovery, extraction failure handling and lost usage for malformed model
+  output. Targeted regressions pass; final full checks follow final changes.
+- **IN PROGRESS — UX/browser checks:** actual local-database ingredient check,
+  retained draft, unauthorized submission/admin access and invalid pagination pass
+  in Chrome. Wider browser testing found insufficient contrast on homepage step
+  numbers; repaired and awaiting rerun. Production dev-gallery assertions now
+  verify that the gallery is inaccessible.
+- **COMPLETE / VERIFIED — architecture consolidation:** unreferenced `lib/vision`
+  removed; `lib/ai` remains the extractor. OpenAI adapters disable SDK retries so
+  the orchestrator/ledger owns attempts. Distinct operator comparison is retained.
+- **COMPLETE / VERIFIED — security audit baseline:** 902 historical text blobs
+  across 136 reachable commits scanned for private-key/provider-key/JWT/database
+  credential URL patterns; no candidates found. This is a bounded pattern scan,
+  not proof that no possible secret ever existed. Untracked owner files were not
+  modified. Registry audit: zero high/critical and two moderate entries for the
+  same Vitest/mocker advisory (GHSA-82fw-gwwq-j7x9). The vulnerable dev-server plugin
+  is not used by this jsdom/node test setup; no runtime production exposure found.
+  Major-version test-tool migration remains P2, with no advisory suppressed.
+- **BLOCKED — useful launch catalog and published rules:** seed intentionally has
+  no public products and no published ruleset. Signed regulatory review, permitted
+  current evidence, launch inventory and authorized publication are required.
+- **BLOCKED — production operations:** separate production project, final domain,
+  SMTP, real support contact, Redis, monitoring destinations, retention schedule,
+  production restore/rollback and legal review remain owner/service gates.
+- **NOT STARTED / DEFERRED — affiliate enablement:** no approved ASIN mappings,
+  tracking ID, active links or commercial disclosures. Preserve Amazon monetization
+  direction; do not invent destinations or turn on commissions before owner review.
+- **DEFERRED — optional features:** ordinary-user accounts/history, school-policy
+  administration, full PWA, native/nationwide expansion, unvalidated Gemini rollout.
+- **BLOCKED LOCALLY — default Turbopack and WebKit:** host denies Turbopack helper
+  port even under escalated execution; webpack production build passes. Playwright
+  1.62.1 does not support WebKit on this Mac's macOS 13 ARM runtime. Linux CI retains
+  default build and WebKit gates and now includes the real-database browser journey.
+
+Final verification results and owner gates will be recorded in RELEASE_AUDIT.md.
+No merge, hosted migration, provider purchase/run, production feature enablement
+or public launch has been performed during this takeover.
+
+---
+
 # Implementation status
 
 Last updated: 2026-09-08

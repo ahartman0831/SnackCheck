@@ -1,7 +1,15 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-container_name="supabase_db_lhnbxjvqllohlbtdncyg"
+container_name="${SNACKCHECK_DISPOSABLE_DB_CONTAINER:-supabase_db_lhnbxjvqllohlbtdncyg}"
+if [[ "${SNACKCHECK_DISPOSABLE_RESTORE_CONFIRM:-}" != "DISPOSABLE_LOCAL_ONLY" ]]; then
+  echo "Set SNACKCHECK_DISPOSABLE_RESTORE_CONFIRM=DISPOSABLE_LOCAL_ONLY only for a disposable local database."
+  exit 1
+fi
+if [[ "$container_name" != supabase_db_* ]] || [[ "$container_name" == *[!a-zA-Z0-9_-]* ]]; then
+  echo "Expected a local Supabase database container name."
+  exit 1
+fi
 marker_id="10101010-1010-4010-8010-101010101010"
 backup_file="$(mktemp -t snackcheck-backup.XXXXXX.sql)"
 trap 'rm -f "$backup_file"' EXIT
