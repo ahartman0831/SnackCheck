@@ -445,17 +445,24 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "catalog_evidence_ai_attempts_dossier_id_fkey"
-            columns: ["dossier_id"]
-            isOneToOne: false
-            referencedRelation: "catalog_evidence_dossiers"
-            referencedColumns: ["id"]
-          },
-          {
             foreignKeyName: "catalog_evidence_ai_attempts_candidate_id_fkey"
             columns: ["candidate_id"]
             isOneToOne: false
             referencedRelation: "catalog_source_records"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "catalog_evidence_ai_attempts_dossier_evidence_fkey"
+            columns: ["dossier_id", "evidence_attempt_id"]
+            isOneToOne: false
+            referencedRelation: "catalog_evidence_dossier_items"
+            referencedColumns: ["dossier_id", "evidence_attempt_id"]
+          },
+          {
+            foreignKeyName: "catalog_evidence_ai_attempts_dossier_id_fkey"
+            columns: ["dossier_id"]
+            isOneToOne: false
+            referencedRelation: "catalog_evidence_dossiers"
             referencedColumns: ["id"]
           },
           {
@@ -538,17 +545,24 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "catalog_evidence_ai_run_candidates_dossier_id_fkey"
-            columns: ["dossier_id"]
-            isOneToOne: false
-            referencedRelation: "catalog_evidence_dossiers"
-            referencedColumns: ["id"]
-          },
-          {
             foreignKeyName: "catalog_evidence_ai_run_candidates_candidate_id_fkey"
             columns: ["candidate_id"]
             isOneToOne: false
             referencedRelation: "catalog_source_records"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "catalog_evidence_ai_run_candidates_dossier_evidence_fkey"
+            columns: ["dossier_id", "evidence_attempt_id"]
+            isOneToOne: false
+            referencedRelation: "catalog_evidence_dossier_items"
+            referencedColumns: ["dossier_id", "evidence_attempt_id"]
+          },
+          {
+            foreignKeyName: "catalog_evidence_ai_run_candidates_dossier_id_fkey"
+            columns: ["dossier_id"]
+            isOneToOne: false
+            referencedRelation: "catalog_evidence_dossiers"
             referencedColumns: ["id"]
           },
           {
@@ -563,74 +577,6 @@ export type Database = {
             columns: ["run_id"]
             isOneToOne: false
             referencedRelation: "catalog_evidence_ai_runs"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      catalog_evidence_dossier_items: {
-        Row: {
-          created_at: string
-          dossier_id: string
-          evidence_attempt_id: string
-          evidence_role: string
-          ordinal: number
-        }
-        Insert: {
-          created_at?: string
-          dossier_id: string
-          evidence_attempt_id: string
-          evidence_role: string
-          ordinal: number
-        }
-        Update: {
-          created_at?: string
-          dossier_id?: string
-          evidence_attempt_id?: string
-          evidence_role?: string
-          ordinal?: number
-        }
-        Relationships: [
-          {
-            foreignKeyName: "catalog_evidence_dossier_items_dossier_id_fkey"
-            columns: ["dossier_id"]
-            isOneToOne: false
-            referencedRelation: "catalog_evidence_dossiers"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "catalog_evidence_dossier_items_evidence_attempt_id_fkey"
-            columns: ["evidence_attempt_id"]
-            isOneToOne: false
-            referencedRelation: "catalog_evidence_attempts"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      catalog_evidence_dossiers: {
-        Row: {
-          candidate_id: string
-          created_at: string
-          dossier_sha256: string
-          id: string
-        }
-        Insert: {
-          candidate_id: string
-          created_at?: string
-          dossier_sha256: string
-          id: string
-        }
-        Update: {
-          candidate_id?: string
-          created_at?: string
-          dossier_sha256?: string
-          id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "catalog_evidence_dossiers_candidate_id_fkey"
-            columns: ["candidate_id"]
-            isOneToOne: false
-            referencedRelation: "catalog_source_records"
             referencedColumns: ["id"]
           },
         ]
@@ -775,6 +721,74 @@ export type Database = {
             columns: ["run_id"]
             isOneToOne: false
             referencedRelation: "catalog_evidence_runs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      catalog_evidence_dossier_items: {
+        Row: {
+          created_at: string
+          dossier_id: string
+          evidence_attempt_id: string
+          evidence_role: string
+          ordinal: number
+        }
+        Insert: {
+          created_at?: string
+          dossier_id: string
+          evidence_attempt_id: string
+          evidence_role: string
+          ordinal: number
+        }
+        Update: {
+          created_at?: string
+          dossier_id?: string
+          evidence_attempt_id?: string
+          evidence_role?: string
+          ordinal?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "catalog_evidence_dossier_items_dossier_id_fkey"
+            columns: ["dossier_id"]
+            isOneToOne: false
+            referencedRelation: "catalog_evidence_dossiers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "catalog_evidence_dossier_items_evidence_attempt_id_fkey"
+            columns: ["evidence_attempt_id"]
+            isOneToOne: false
+            referencedRelation: "catalog_evidence_attempts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      catalog_evidence_dossiers: {
+        Row: {
+          candidate_id: string
+          created_at: string
+          dossier_sha256: string
+          id: string
+        }
+        Insert: {
+          candidate_id: string
+          created_at?: string
+          dossier_sha256: string
+          id: string
+        }
+        Update: {
+          candidate_id?: string
+          created_at?: string
+          dossier_sha256?: string
+          id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "catalog_evidence_dossiers_candidate_id_fkey"
+            columns: ["candidate_id"]
+            isOneToOne: false
+            referencedRelation: "catalog_source_records"
             referencedColumns: ["id"]
           },
         ]
@@ -2620,20 +2634,20 @@ export type Database = {
         Args: { p_assessments: Json; p_confirmation: string; p_run: Json }
         Returns: Json
       }
-      begin_catalog_evidence_ai_run: {
-        Args: {
-          p_candidate_ids: string[]
-          p_confirmation: string
-          p_evidence_attempt_ids: string[]
-          p_run: Json
-        }
-        Returns: Json
-      }
       begin_catalog_evidence_ai_dossier_run: {
         Args: {
           p_candidate_ids: string[]
           p_confirmation: string
           p_dossier_ids: string[]
+          p_run: Json
+        }
+        Returns: Json
+      }
+      begin_catalog_evidence_ai_run: {
+        Args: {
+          p_candidate_ids: string[]
+          p_confirmation: string
+          p_evidence_attempt_ids: string[]
           p_run: Json
         }
         Returns: Json
