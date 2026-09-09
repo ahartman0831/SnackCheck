@@ -6,15 +6,22 @@ public launch. Historical phase plans are not deployment evidence.
 
 ## Release and environment
 
-The sole merge path is PR #22 (`codex/catalog-category-v3`) directly into `main`.
+PR #22 (`codex/catalog-category-v3`) was merged into `main` with owner approval as
+`8b98d0fd1deedd091b6d51a7bd46a5a97786715e`. Its approved head was `72fbc92`, and all
+three [main CI jobs passed](https://github.com/ahartman0831/SnackCheck/actions/runs/34355142034).
 It includes #20/#21; those are superseded and must not be merged separately.
-Require all three CI jobs at the current head, then explicit owner merge permission.
-No public deployment or rules publication is implied by merge authorization.
+No public deployment or rules publication is authorized by the merge.
 
 Use Node 22.23.2, pnpm 10.33.0 and Supabase CLI 2.84.2. Engine version is 0.1.2.
-Production project/domain and live deployment are unverified. The existing Vercel
-project is an account lead, not evidence of a successful current production release.
-The staging project `lhnbxjvqllohlbtdncyg` must remain separate.
+The owner selected Vercel `snack-check-web` in `Hartman Dev` and temporary URL
+`https://snack-check-web.vercel.app`; a custom domain is deferred. Keep the saved
+**Only build pre-production** behavior: the merge's production build was canceled
+by that setting and the live site remains on the prior `ee1b1c5` release.
+The beta has not been deployed publicly. Supabase production project
+`lwkayhbmpirgpfytfryv` was created on the owner-approved Micro tier and all 39
+migrations verified; staging `lhnbxjvqllohlbtdncyg` remains separate. Bootstrap
+verification, the unpublished production rules hash, and remaining inputs are in the
+[production handoff](release-review/production-handoff.md).
 
 ## Verification before merge
 
@@ -30,8 +37,10 @@ CI must never link or mutate a hosted database. See [test matrix](TEST_MATRIX.md
 1. Complete [production-handoff.md](release-review/production-handoff.md) without
    putting secret values in files or messages. Use separate environment settings for
    preview and production. Next.js local env belongs in `apps/web/.env.local`.
-2. Create the new production database from reviewed migrations 0001–0039. Keep the
-   draft rules unpublished. Never blindly push to the linked staging project: its
+2. The new production database has reviewed migrations 0001–0039. Keep the draft
+   rules unpublished. For any future fresh bootstrap, apply 0001–0016 atomically
+   with a zero-published-rules commit check, because legacy 0015 temporarily marks
+   the seed published before 0016 removes that state. Never blindly push to the linked staging project: its
    migration ledger ends before manually applied, verified later migrations. Inspect
    and reconcile history before any future staging migration operation.
 3. Set domain/support/SMTP/Supabase and separate random HMAC secrets of 32+ characters.

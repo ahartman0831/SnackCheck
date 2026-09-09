@@ -21,11 +21,18 @@ if (
 const admin = createClient<Database>(url, serviceKey, {
   auth: { persistSession: false, autoRefreshToken: false },
 });
-const result = await cleanupExpiredSubmissionAssets({
-  admin,
-  apply,
-  batchSize: Number(process.env.RETENTION_CLEANUP_BATCH_SIZE ?? "50"),
-});
+async function main() {
+  const result = await cleanupExpiredSubmissionAssets({
+    admin,
+    apply,
+    batchSize: Number(process.env.RETENTION_CLEANUP_BATCH_SIZE ?? "50"),
+  });
 
-process.stdout.write(`${JSON.stringify({ event: "retention_cleanup", ...result })}\n`);
-if (result.failed > 0) process.exitCode = 1;
+  process.stdout.write(`${JSON.stringify({ event: "retention_cleanup", ...result })}\n`);
+  if (result.failed > 0) process.exitCode = 1;
+}
+
+void main().catch(() => {
+  process.stderr.write("Retention cleanup failed; sensitive diagnostics withheld.\n");
+  process.exitCode = 1;
+});
