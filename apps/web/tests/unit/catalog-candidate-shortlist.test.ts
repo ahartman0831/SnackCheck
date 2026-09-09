@@ -30,6 +30,90 @@ function candidate(
 }
 
 describe("catalog candidate shortlist", () => {
+  it("requires a product-format match for broad source categories", () => {
+    expect(classifyShortlistCategory("Biscuits/Cookies", "Cheddar crackers")).toBe(
+      "SNACKS",
+    );
+    expect(classifyShortlistCategory("Biscuits/Cookies", "Oat cookies")).toBe("TREATS");
+    expect(classifyShortlistCategory("Snacks", "White cheddar popcorn")).toBe("SNACKS");
+    expect(
+      classifyShortlistCategory(
+        "Processed Cereal Products",
+        "Soft Baked Apple Streusel Bars",
+      ),
+    ).toBe("SNACKS");
+    expect(
+      classifyShortlistCategory("Processed Cereal Products", "Whole grain rice"),
+    ).toBeNull();
+    expect(classifyShortlistCategory("Snacks", "Unspecified product")).toBeNull();
+    expect(
+      classifyShortlistCategory("Fruit - Prepared/Processed", "Applesauce cups"),
+    ).toBe("LUNCHBOX");
+    expect(
+      classifyShortlistCategory("Fruit - Prepared/Processed", "Applesauce 6/10"),
+    ).toBeNull();
+  });
+
+  it.each([
+    ["Snacks", "Microwave popcorn mini bags", "1.5 ONZ"],
+    ["Snacks", "White cheddar popcorn seasoning", "2.6 ONZ"],
+    ["Snacks", "Unpopped popcorn kernels", "12 ONZ"],
+    ["Biscuits/Cookies", "Cracker baking flour", "8 ONZ"],
+    ["Biscuits/Cookies", "Crackers 4oz 50ct", "12.5 LBR"],
+    ["Processed Cereal Products", "Cereal bars 96ct", "148.8 ONZ"],
+  ])(
+    "excludes preparation products and bulk cases: %s / %s",
+    (category, productName, size) => {
+      expect(
+        assessClassroomRelevance(candidate(1, category, { productName, size })),
+      ).toMatchObject({ tier: "EXCLUDED", route: "DEPRIORITIZED" });
+    },
+  );
+
+  it("queues a broad-category ready-to-eat pack but preserves source categories", () => {
+    const snack = candidate(1, "Snacks", {
+      productName: "Kettle corn snack packs",
+      size: "6.7 ONZ",
+    });
+    const rows = selectCatalogShortlist([snack], 10);
+    expect(rows).toHaveLength(1);
+    expect(rows[0]).toMatchObject({
+      category: "Snacks",
+      group: "SNACKS",
+      relevance: { version: "classroom-use-v3", route: "AUTO_EVIDENCE" },
+    });
+  });
+
+  it("does not use the brand or ingredient-search match as product-format evidence", () => {
+    expect(
+      assessClassroomRelevance(
+        candidate(1, "Processed Cereal Products", {
+          brand: "Snack Bar Company",
+          productName: "Baking mix",
+        }),
+      ),
+    ).toMatchObject({ route: "DEPRIORITIZED" });
+    expect(
+      assessClassroomRelevance(
+        candidate(2, "Meat/Poultry/Other Animals - Prepared/Processed", {
+          productName: "Beef patties made with applesauce",
+        }),
+      ),
+    ).toMatchObject({ route: "DEPRIORITIZED" });
+  });
+
+  it("keeps uncertain broad-category ingredients out of automatic evidence", () => {
+    expect(
+      assessClassroomRelevance(
+        candidate(1, "Snacks", {
+          productName: "White cheddar popcorn",
+          screenStatus: "VERIFY",
+          qualityFlags: ["PARSER_WARNING"],
+        }),
+      ),
+    ).toMatchObject({ route: "HUMAN_EXCEPTION" });
+  });
+
   it("maps only useful school-food categories", () => {
     expect(classifyShortlistCategory("Chips, Pretzels & Snacks")).toBe("SNACKS");
     expect(classifyShortlistCategory("Cereal")).toBe("BREAKFAST");

@@ -1,4 +1,4 @@
-export const CATALOG_RELEVANCE_VERSION = "classroom-use-v2";
+export const CATALOG_RELEVANCE_VERSION = "classroom-use-v3";
 export const CATALOG_SHORTLIST_VERSION = CATALOG_RELEVANCE_VERSION;
 export const DEFAULT_SHORTLIST_TARGET = 190;
 export const MAX_SHORTLIST_TARGET = 200;
@@ -110,7 +110,7 @@ const GROUP_BASE_SCORE: Record<ShortlistGroup, number> = {
 };
 
 const PORTABLE_PRODUCT =
-  /\b(snack|bar|bites?|chips?|crisps?|crackers?|cookies?|wafers?|pretzels?|popcorn|trail mix|fruit snacks?|pouches?|cups?|juice|drink|water|soda|mini|string cheese|cheese sticks?)\b/i;
+  /\b(snack|bars?|bites?|chips?|crisps?|crackers?|cookies?|wafers?|pretzels?|popcorn|trail mix|fruit snacks?|pouches?|cups?|juice|drink|water|soda|mini|string cheese|cheese sticks?)\b/i;
 const PACKAGE_SIGNAL =
   /\b(individual|single[ -]?serve|multipacks?|multi[ -]?packs?|pouches?|cups?|boxes|box|packs?|pack of|snack size)\b/i;
 const BULK_OR_FOODSERVICE =
@@ -130,17 +130,63 @@ function normalizedCategory(value: string | null): string {
 
 export function classifyShortlistCategory(
   category: string | null,
+  productName = "",
 ): ShortlistGroup | null {
   const value = normalizedCategory(category).toLowerCase();
+  // Broad GS1 categories are only useful when the product name confirms the format.
+  // Ingredient search hits and brand names must not provide that confirmation.
+  if (value === "biscuits/cookies") {
+    if (/\bcrackers?\b/i.test(productName)) return "SNACKS";
+    if (/\b(cookies?|biscuits?|wafers?|biscotti)\b/i.test(productName)) return "TREATS";
+    return null;
+  }
+  if (value === "snacks") {
+    return /\b(popcorn|kettle corn|pretzels?|chips?|crisps?|trail mix|fruit snacks?)\b/i.test(
+      productName,
+    )
+      ? "SNACKS"
+      : null;
+  }
+  if (value === "processed cereal products") {
+    return /\b(?:(?:cereal|granola|protein|snack|streusel) bars?|soft baked .*?bars?|rice krispies treats)\b/i.test(
+      productName,
+    )
+      ? "SNACKS"
+      : null;
+  }
+  if (value === "fruit - prepared/processed") {
+    return /\bapplesauce\b/i.test(productName) &&
+      /\b(cups?|pouches?)\b/i.test(productName)
+      ? "LUNCHBOX"
+      : null;
+  }
   return SHORTLIST_GROUPS.find((group) => CATEGORY_GROUPS[group].has(value)) ?? null;
+}
+
+const BROAD_SOURCE_CATEGORIES = new Set([
+  "biscuits/cookies",
+  "snacks",
+  "processed cereal products",
+  "fruit - prepared/processed",
+]);
+
+function isBulkPackage(size: string | null): boolean {
+  const pounds = size?.match(/^\s*(\d+(?:\.\d+)?)\s*(?:LBR|lbs?|pounds?)\b/i);
+  const ounces = size?.match(/^\s*(\d+(?:\.\d+)?)\s*(?:ONZ|oz|ounces?)\b/i);
+  return Boolean(
+    (pounds && Number(pounds[1]) >= 3) || (ounces && Number(ounces[1]) >= 48),
+  );
 }
 
 export function assessClassroomRelevance(
   candidate: ShortlistCandidate,
 ): ClassroomRelevanceAssessment {
-  const group = classifyShortlistCategory(candidate.category);
+  const group = classifyShortlistCategory(candidate.category, candidate.productName);
   const text = combinedText(candidate);
   const reasons: string[] = [];
+  const broadSourceCategory = BROAD_SOURCE_CATEGORIES.has(
+    normalizedCategory(candidate.category).toLowerCase(),
+  );
   if (candidate.discontinued) {
     return {
       version: CATALOG_RELEVANCE_VERSION,
@@ -161,7 +207,10 @@ export function assessClassroomRelevance(
       reasons: ["CATEGORY_NOT_CLASSROOM_FOCUSED"],
     };
   }
-  if (BULK_OR_FOODSERVICE.test(text)) {
+  if (
+    BULK_OR_FOODSERVICE.test(text) ||
+    (broadSourceCategory && isBulkPackage(candidate.size))
+  ) {
     return {
       version: CATALOG_RELEVANCE_VERSION,
       group,
@@ -172,7 +221,23 @@ export function assessClassroomRelevance(
     };
   }
 
+  if (
+    broadSourceCategory &&
+    (GENERIC_OR_PREPARATION.test(candidate.productName) ||
+      /\b(microwave|unpopped|kernels?|popcorn maker)\b/i.test(candidate.productName))
+  ) {
+    return {
+      version: CATALOG_RELEVANCE_VERSION,
+      group,
+      score: 0,
+      tier: "EXCLUDED",
+      route: "DEPRIORITIZED",
+      reasons: ["PREPARATION_REQUIRED_OR_INGREDIENT_PRODUCT"],
+    };
+  }
+
   let score = GROUP_BASE_SCORE[group];
+  if (broadSourceCategory) reasons.push("SOURCE_CATEGORY_PRODUCT_FORMAT_CONFIRMED");
   reasons.push(`CLASSROOM_CATEGORY_${group}`);
   if (PORTABLE_PRODUCT.test(text)) {
     score += 15;
@@ -322,7 +387,7 @@ export function selectCatalogShortlist(
   for (const group of SHORTLIST_GROUPS) pools.set(group, []);
   for (const candidate of candidates) {
     if (!eligible(candidate)) continue;
-    const group = classifyShortlistCategory(candidate.category);
+    const group = classifyShortlistCategory(candidate.category, candidate.productName);
     if (group) pools.get(group)?.push(candidate);
   }
 

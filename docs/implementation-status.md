@@ -1,3 +1,13 @@
+# Catalog follow-up — September 8, 2026
+
+The next catalog policy is implemented and locally tested. It identifies a bounded
+60-candidate shortlist from staging while preserving the existing evidence queue.
+Migration 0038 and hosted reassessment/queuing await schema-administration access;
+no hosted changes are claimed. See [catalog category v3](catalog-category-v3.md)
+for exact dry-run hashes, migration details and verification.
+
+---
+
 # Takeover status — September 8, 2026
 
 This section is the current implementation record. Historical phase reports below
