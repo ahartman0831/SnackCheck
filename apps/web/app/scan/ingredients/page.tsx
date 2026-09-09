@@ -32,7 +32,7 @@ export default function IngredientScanPage() {
         </p>
         <p className="text-muted mt-3 text-sm">
           This beta flags listed restrictions. A no-match list stays VERIFY because pasted
-          text alone does not verify the package or your school's acceptance.
+          text alone does not verify the package or your school&apos;s acceptance.
         </p>
       </header>
       {photo ? (
