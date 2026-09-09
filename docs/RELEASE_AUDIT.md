@@ -1,10 +1,11 @@
 # Release audit — September 8, 2026
 
-**Decision: NOT READY FOR PUBLIC LAUNCH.** Local stabilization is verified. Launch
+**Decision: NOT READY FOR PUBLIC LAUNCH.** Local stabilization is verified; the
+owner approved GitHub upload and safe staging population on September 8. Launch
 still depends on real evidence, regulatory approval and production operations.
 Work is on `codex/takeover-stabilization`; the inherited branch remains intact.
 
-## READY — locally implemented and verified
+## READY — implemented and verified
 
 ### Product and engineering
 
@@ -30,9 +31,8 @@ the unreferenced `lib/vision` implementation. Engine version is now **0.1.1**.
 - Workspace lint and TypeScript: pass.
 - Formatting: pass; owner-supplied `Claude outputs/` is excluded from application
   formatting and left unchanged. All tracked application source remains checked.
-- Full unit run: **319 passing tests** (42 compliance, 5 contracts, 272 web).
-  Follow-up provider/redirect/input regressions: **26 passing**, including one new
-  redirect assertion added after that full run. No failed regression remains.
+- Full CI unit run: **320 passing tests** (42 compliance, 5 contracts, 273 web).
+  Follow-up provider/redirect/input regressions also pass.
 - Database runner-policy tests: **2 pass**; type-generation policy: **1 pass**.
   A zero-test pgTAP run now fails verification instead of silently succeeding.
 - Production webpack build: pass, **40 generated pages**, including the new proxy.
@@ -41,8 +41,8 @@ the unreferenced `lib/vision` implementation. Engine version is now **0.1.1**.
   generator's normal trailing-newline normalization.
   The local CLI's container runner discovered zero files, so each SQL file was
   executed directly with PostgreSQL plus pgTAP and its assertion/plan output checked.
-  This does not count as a passing run of the normal CLI harness; Linux CI must
-  still verify that harness, and the new wrapper rejects zero-test results.
+  Ubuntu CI subsequently passed the normal CLI harness and generated-type parity.
+  The wrapper rejects zero-test results.
 - Real storage/API integration: **6 tests pass, zero skipped**. Covers private
   sanitized images, raw deletion and eligible expired-asset cleanup. A reset-related
   local storage restart was needed. A later test under host contention exceeded
@@ -56,13 +56,25 @@ the unreferenced `lib/vision` implementation. Engine version is now **0.1.1**.
   on tested pages after the contrast repair; widths 320–1440, dark mode, reduced
   motion and zoom pass.
 - Dedicated real-database browser suite: **4 pass, zero skipped** in desktop Chrome,
-  including real session expiry/refresh/logout. Linux CI now includes this suite for
-  desktop Chromium and mobile WebKit, but has not run on this branch yet.
+  including real session expiry/refresh/logout. Ubuntu CI additionally runs
+  desktop Chromium and mobile WebKit over disposable local HTTPS. Its initial
+  failures led to the test-harness corrections recorded below. Final commit checks
+  are linked from PR #21.
 
 All live database and storage activity above used the disposable local
 `snackcheck-takeover` stack. Hosted staging/production data and settings were not
 changed. Browser screenshots were inspected and kept in temporary test output;
 tracked historical screenshots were restored, not overwritten as new evidence.
+
+### Approved staging population
+
+The September 8 follow-up added 100 source-attributed USDA candidates through the
+guarded importer, bringing staging to 589. Independent read-back verified all
+100 identities and ingredient hashes, private access, and unchanged publication.
+All new source categories remain outside automatic evidence work under the current
+allowlist. See [the population report](catalog-population-2026-09-08.md) for exact
+source hashes, batch IDs, query limits and the taxonomy limitation. This is private
+candidate inventory, not 100 verified launch products.
 
 ### Security and AI
 
@@ -101,14 +113,20 @@ into a production forecast. Manual ingredient checks make no LLM call.
 
 ## REQUIRES OWNER ACTION / EXTERNAL VERIFICATION
 
-1. **GitHub CI upload approval.** Local changes are committed, but automatic approval
-   review rejected `git push -u origin codex/takeover-stabilization`: exporting private
-   code to `github.com/ahartman0831/SnackCheck` needs explicit owner authorization.
-   Nothing was pushed and no PR was created. Once authorized, push the branch, open
-   a draft PR and run all required Linux CI gates. Do not claim these are green yet.
-2. **Default build and WebKit.** This Mac denies Turbopack's helper port even under
-   escalated execution. Installed Playwright does not support WebKit on macOS 13 ARM.
-   The webpack build and Chrome evidence do not replace these required CI gates.
+1. **GitHub CI release gate.** Upload was explicitly approved and succeeded.
+   [Draft PR #21](https://github.com/ahartman0831/SnackCheck/pull/21) is stacked on
+   PR #20. Initial CI run 34300899968 passed verify, default Turbopack builds, public
+   WebKit, camera WebKit, SQL tests, generated types and storage. The new database
+   WebKit journey exposed HTTP Secure-cookie behavior and a test navigation race.
+   Commit 6355676 adds disposable local HTTPS, retains production Secure cookies,
+   waits for logout navigation, and asserts the actual confirmation response.
+   Commit c779402 then checks the actual signed-out access-required page and
+   absence of operational data instead of expecting an unimplemented redirect.
+   All three jobs must pass on the current PR revision before merge; consult
+   [PR #21 checks](https://github.com/ahartman0831/SnackCheck/pull/21/checks) for the
+   final revision result. A partial run never counts as complete.
+2. **Local platform limits.** This Mac still cannot run the default Turbopack build
+   or current WebKit locally; Ubuntu CI has now exercised both successfully.
 3. **Regulatory review.** A qualified reviewer must sign the exact sourced Arizona
    ruleset hash. A separately authorized administrator must publish it through the
    protected lifecycle. This cannot be replaced with a fixture or agent assertion.
@@ -143,7 +161,9 @@ promotion and unvalidated Gemini production use. Dormant schema was preserved.
 
 ## Next concrete action
 
-Authorize the specific GitHub branch upload for CI. In parallel, provide the
-production environment/support contact and arrange the ruleset review. After those
-inputs, continue the existing evidence, publication and launch gates; do not restart
-from an old phase checklist or treat this local repair pass as public-release approval.
+Use the current PR revision's complete CI result as the engineering merge gate.
+The safe staging population is recorded in
+[catalog population 2026-09-08](catalog-population-2026-09-08.md). Provide the
+production environment/support contact and arrange the ruleset review. Continue
+current independent evidence, publication and launch acceptance work after those
+inputs. Database population approval is not regulatory sign-off or public launch.

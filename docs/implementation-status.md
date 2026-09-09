@@ -11,7 +11,8 @@ remain background, not evidence that production is ready. See
   types match the final schema after migration 0037 using the generator's normal
   newline normalization. The new migration changes no type signature. Real storage
   integration: 6 assertions across 3 files pass, including both private-storage
-  cases. Disposable backup/restore rehearsal passes. No hosted database changed.
+  cases. Disposable backup/restore rehearsal passes. Those schema/storage checks made no hosted changes; the separately approved
+  staging population is recorded below.
 - **COMPLETE / VERIFIED — session refresh:** proxy refreshes incoming and outgoing
   cookies; pages/routes/SQL still enforce active roles. A real temporary local
   reviewer refreshed an expired session, entered the workspace and signed out in
@@ -53,7 +54,14 @@ remain background, not evidence that production is ready. See
   1.62.1 does not support WebKit on this Mac's macOS 13 ARM runtime. Linux CI retains
   default build and WebKit gates and now includes the real-database browser journey.
 
-Final verification results and owner gates are recorded in [RELEASE_AUDIT.md](RELEASE_AUDIT.md). Automatic approval review blocked pushing the private branch to GitHub; explicit upload approval is required before CI can run.
+Final verification results and owner gates are recorded in [RELEASE_AUDIT.md](RELEASE_AUDIT.md). The owner explicitly approved upload and safe database population.
+[Draft PR #21](https://github.com/ahartman0831/SnackCheck/pull/21) is open. Initial
+CI passed verify, production builds, public/camera WebKit, SQL, types and storage;
+the database-browser suite uses the HTTPS test-harness fix and asserts the actual
+signed-out access-required page. Current revision results are on the PR checks page.
+Staging now has **589 private candidates**, including 100 source-attributed candidate imports
+recorded in [the population report](catalog-population-2026-09-08.md). No public
+products, formulations or published rules were created.
 No merge, hosted migration, provider purchase/run, production feature enablement
 or public launch has been performed during this takeover.
 

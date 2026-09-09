@@ -31,8 +31,11 @@ Use a disposable local Supabase and export its URL, anon/publishable key and ser
 role key into the shell; never echo the service key. Configure random local test
 `SUBMISSION_TOKEN_SECRET` and `ANONYMOUS_KEY_HMAC_SECRET`, set
 `VERCEL_ENV=preview`, `ALLOW_PREVIEW_MEMORY_RATE_LIMIT=true`,
-`OPEN_FOOD_FACTS_ENABLED=false`, and `PLAYWRIGHT_BASE_URL=http://127.0.0.1:3100`.
-Keep AI/photo/camera flags off. Build with the same public environment and run:
+`OPEN_FOOD_FACTS_ENABLED=false`, and `PLAYWRIGHT_BASE_URL=https://127.0.0.1:3100`.
+Set `NEXT_PUBLIC_APP_URL` to the same HTTPS URL. The test server generates a
+one-day certificate and proxies to the local app on port 3101; it requires OpenSSL.
+Only the test browser ignores that disposable certificate. Production Secure cookie
+flags remain enabled. Keep AI/photo/camera flags off. Build with the same public environment and run:
 
 ```bash
 pnpm build
