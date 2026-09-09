@@ -191,10 +191,23 @@ are primary-source starting points for that review, not completed approval.
 
 Manufacturer/package research for Nutri-Grain and Goldfish is recorded in
 [catalog-package-checks.md](catalog-package-checks.md), including exact target
-barcodes, source disagreements, collection-permission limitations and a concrete
-photo checklist. Neither product yet has a complete approved evidence dossier.
+barcodes, source disagreements, collection-permission limitations and an acquisition
+plan that does not require owner-supplied photos. Neither product yet has a complete approved evidence dossier.
 No manufacturer collection permission was invented and no paid AI calls were made.
 
 The pipeline implementation at `92853da43a4d0b37477d1179af636164efcc3392` passed
 all CI jobs in [run 34342671521](https://github.com/ahartman0831/SnackCheck/actions/runs/34342671521).
 This follow-up changes operational documentation only; formatting and diff checks pass.
+
+## Sourced color-name proposals and rescreen preview — September 9
+
+Migration 0039 saves 28 disabled, pending-review proposals in staging. A separate
+counterfactual preview screens all 589 candidates and all 60 OFF records without
+changing candidate decisions or the active draft. It identifies 34 additional
+candidate ingredient lists with proposed color matches and 11 OFF records with
+new matches. One OFF record has malformed nesting and remains unresolved.
+
+The [review packet](catalog-color-alias-review.md) records the FDA source, exact
+matching scope, engine fixes, verification results and reproducible command.
+The [acquisition plan](catalog-package-checks.md) replaces the prior owner-photo
+request with licensed evidence and permitted manufacturer-source work.

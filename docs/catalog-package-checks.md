@@ -1,8 +1,13 @@
-# First package checks — September 9, 2026
+# Catalog evidence acquisition — September 9, 2026
 
-These two checks are the smallest useful next step toward complete product review.
-They are evidence requests, not approvals. Keep the products private until identity,
-current ingredients, conflicts and the normal review gates are resolved.
+The catalog must be buildable without the owner supplying product photos. Use
+licensed datasets, reusable label evidence and permitted manufacturer sources.
+Package photos are an optional contribution route. Missing evidence leaves a
+candidate pending; it does not become a photo assignment for the owner.
+
+The two researched products below have unresolved identity/formulation gaps. They
+are useful examples, but catalog growth should continue with other candidates
+while these gaps remain. Neither is approved.
 
 ## Nutri-Grain Cherry, 1.3 oz individual bar
 
@@ -17,10 +22,10 @@ current ingredients, conflicts and the normal review gates are resolved.
 - The saved OFF entry was modified in January 2022 and lists Red 40. An old
   community record cannot establish what is in a current package; absence of the
   ingredient on a later page does not establish every package's formulation either.
-- Needed: photos connecting the current individual wrapper's barcode with its full
-  ingredient panel, or a manufacturer confirmation for that exact barcode and lot.
-  If ingredients appear only on the outer box, photograph both packaging levels
-  and their barcodes so the relationship can be reviewed rather than assumed.
+- Acquisition target: a permitted manufacturer feed or licensed dated label record
+  connecting this exact individual barcode to its complete ingredients. A later
+  community-record edit alone does not date the underlying label. Keep this
+  candidate pending until the conflict is resolved; no owner photos are required.
 
 The 10.4 oz multipack is a separate candidate with barcode `038000367007`.
 It must not automatically inherit the individual bar's evidence or approval.
@@ -36,22 +41,39 @@ It must not automatically inherit the individual bar's evidence or approval.
   not prove the target package's identity. The OFF ingredient record flattens
   nested ingredients and removes label prose, creating a text mismatch that has
   not been accepted as equivalent.
-- Needed: current photos showing the target barcode, package size and complete
-  ingredient panel on the same package. If the barcode is on an outer multipack,
-  include the outer packaging and individual pouch together.
+- Acquisition target: licensed label evidence or an allowed manufacturer record
+  explicitly connecting the target barcode, size and ingredients. A case barcode
+  must not be substituted for the individual package's barcode.
 
-## Photos to provide
+## Next candidates from existing licensed records
 
-For each product, attach clear images of:
+The September 9 color-alias preview leaves 41 of the 60 shortlisted candidates in
+source comparison, without a proposed color match. Start with records that have
+recent updates and tractable differences, preserving their exact package identity:
 
-1. The package front, showing flavor and net weight.
-2. The full barcode and its printed digits.
-3. The complete ingredient panel, including sub-ingredients and allergen statements.
-4. Any lot/best-before markings, plus the date the photos were taken.
+- **Goldfish Whole Grain Cheddar, 27.3 oz**, GTIN `00014100054726`: OFF updated
+  August 30, 2026; USDA modified July 30. The OFF text flattens nested ingredients
+  and reorders some items. Review the original licensed label evidence before
+  treating the two texts as equivalent.
+- **Angie's BOOMCHICKAPOP Cheddar, 4.5 oz**, GTIN `00818780014397`: OFF updated
+  August 30; USDA modified July 5. The USDA text includes turmeric extract; the
+  saved OFF list does not and uses different dairy ingredient wording. Resolve
+  this substantive difference using dated evidence for the exact barcode.
+- **Nutri-Grain Raspberry, 1.3 oz**, GTIN `00038000358210`: OFF updated August 28;
+  USDA modified July 27. Oils, fortification and filling ingredients differ.
+  Retain both versions and establish which formulation the evidence supports.
 
-Use photos you took or have permission to share. Avoid including people, receipts,
-addresses or other personal details. A different barcode can be evaluated as a new
-identity, but must not be relabeled as one of the target candidates.
+These dates are database-record updates, not proof of when a label was photographed
+or when a formulation changed. Recent records prioritize research; they do not
+clear freshness or conflict checks. OFF remains a secondary source in the current
+collector. Its record alone cannot satisfy the manufacturer-ingredient requirement
+in the current dossier builder.
+
+Use the saved licensed records first. Seek reusable, dated, exact-barcode evidence
+through permitted sources; leave unresolved entries pending and continue with the
+next candidate. Any extension allowing licensed package-label evidence into a
+dossier needs explicit provenance, license, date and identity checks. Do not relabel
+an OFF record as a manufacturer source to satisfy the existing builder.
 
 ## Collection status and limits
 
@@ -66,5 +88,6 @@ terms text through the available read methods; direct retrieval returned HTTP 40
 Permission remains unverified, not granted by absence of text. Written permission
 or a licensed feed is another route; no manufacturer was contacted.
 
-A current package photo would resolve evidence gaps for review. It would not itself
-publish a product, clear every school policy, or replace ruleset approval.
+An optional package photo can contribute evidence if it connects identity,
+ingredients and date. It does not automatically resolve conflicts or publish a
+product. No owner photo collection is a dependency of this acquisition plan.

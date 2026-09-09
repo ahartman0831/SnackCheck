@@ -10,7 +10,9 @@
 - [ ] ADE May 2026 administrator resource and FAQ
 - [ ] Effective date for the 2026–27 school year
 - [ ] Eleven statutory substance names
-- [ ] Enabled aliases are only mechanical normalizer variants
+- [ ] Enabled aliases are only mechanical normalizer variants or individually
+      sourced, named-reviewer-approved synonyms. The 28 disabled color-label
+      proposals and impact results are in [the review packet](catalog-color-alias-review.md).
 - [ ] Public explanation copy
 - [ ] Launch-data sample (Phase 8)
 

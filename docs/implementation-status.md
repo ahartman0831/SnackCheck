@@ -1,3 +1,21 @@
+# Color-name screening follow-up — September 9, 2026
+
+**COMPLETE / VERIFIED IN STAGING:** 28 FDA-sourced label-name proposals are saved
+as disabled, pending-review aliases. Engine `0.1.2` fixes trailing-number punctuation
+and preserves precautionary wording in exact matches. Review-only rescreening of
+589 candidates finds 34 additional ingredient lists that would match a restricted
+color if the proposals are approved. Of 60 shortlisted OFF records, 11 gain matches
+and one malformed record still needs review. The actual draft, all candidate rows
+and public visibility are unchanged; no approval or reviewer signature was recorded.
+
+The owner does not need to provide photos. The [acquisition plan](catalog-package-checks.md)
+now uses licensed records/permitted sources and prioritizes concrete source conflicts.
+See the [color-name review packet](catalog-color-alias-review.md) for reproducible
+results, source references, hashes and validation. Local unit, type and database
+checks pass; CI for this implementation is recorded below when complete.
+
+---
+
 # Catalog follow-up — September 9, 2026
 
 **COMPLETE / VERIFIED IN STAGING:** migration 0038 is applied, all 589 private
@@ -13,7 +31,7 @@ OFF lookup coverage is complete for all 60 newly shortlisted candidates. The fin
 44 lookups saved 41 records, with three not found and no request failures. Review
 triage flags 12 records for common color-name aliases missing from the unpublished
 draft. Manufacturer/package checks remain unresolved; no dossier or product was
-approved. See the catalog report and [package checklist](catalog-package-checks.md).
+approved. See the catalog report and [evidence acquisition plan](catalog-package-checks.md).
 The explicit-manifest collector and newest-snapshot dossier fixes passed full CI.
 
 ---

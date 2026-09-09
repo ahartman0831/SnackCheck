@@ -13,8 +13,9 @@ verification at the release revision, not implementation presence.
       eligibility. No mocked product is presented as real.
 - [ ] Ruleset reviewer verifies sourced label aliases (including common forms such as
       `Red 40`), signs the exact hash, and an authorized admin publishes that version.
-      The current draft omits common color-name variants; zero draft matches are not
-      sufficient for product clearance. See the September 9 catalog coverage report.
+      The current draft has 28 disabled proposals for common color-name variants; zero
+      draft matches are not sufficient for product clearance. See the
+      [color-name review packet](catalog-color-alias-review.md).
 - [ ] Admin OTP, refresh, logout, expired session and role boundaries pass; ordinary
       users cannot read submissions, private storage, staging evidence or admin data.
 - [ ] Missing/invalid inputs, duplicates, no data, unavailable database, provider
