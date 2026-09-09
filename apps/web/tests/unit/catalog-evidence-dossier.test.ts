@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 import {
   createEvidenceDossier,
+  newestEvidenceByUrl,
   EVIDENCE_DOSSIER_STAGING_CONFIRMATION,
   EvidenceDossierManifestSchema,
   evidenceDossierHash,
@@ -91,5 +92,43 @@ describe("evidence dossiers", () => {
         p_confirmation: EVIDENCE_DOSSIER_STAGING_CONFIRMATION,
       }),
     );
+  });
+});
+
+describe("dossier snapshot selection", () => {
+  it("keeps a newer corrected ingredient snapshot when older evidence follows it", () => {
+    const old = {
+      id: "old",
+      source_url: "https://manufacturer.example/snack",
+      created_at: "2026-09-01T00:00:00Z",
+      ingredient_text: "navigation without ingredients",
+    };
+    const fresh = {
+      ...old,
+      id: "fresh",
+      created_at: "2026-09-09T00:00:00Z",
+      ingredient_text: "corn, salt",
+    };
+    for (const rows of [
+      [fresh, old],
+      [old, fresh],
+    ]) {
+      expect(newestEvidenceByUrl(rows).get(old.source_url)).toEqual(fresh);
+    }
+  });
+
+  it("keeps distinct sources and ignores attempts without a source URL", () => {
+    const row = {
+      id: "one",
+      source_url: "https://manufacturer.example/one",
+      created_at: "2026-09-09T00:00:00Z",
+    };
+    expect(
+      newestEvidenceByUrl([
+        row,
+        { ...row, id: "two", source_url: "https://manufacturer.example/two" },
+        { ...row, source_url: null },
+      ]).size,
+    ).toBe(2);
   });
 });

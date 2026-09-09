@@ -107,3 +107,22 @@ export async function createEvidenceDossier(
     .passthrough()
     .parse(result.data);
 }
+
+// A source can have immutable snapshots from multiple collection runs.
+export function newestEvidenceByUrl<
+  T extends { id: string; source_url: string | null; created_at: string },
+>(rows: T[]): Map<string, T> {
+  const result = new Map<string, T>();
+  for (const row of rows) {
+    if (!row.source_url) continue;
+    const existing = result.get(row.source_url);
+    if (
+      !existing ||
+      Date.parse(row.created_at) > Date.parse(existing.created_at) ||
+      (row.created_at === existing.created_at && row.id > existing.id)
+    ) {
+      result.set(row.source_url, row);
+    }
+  }
+  return result;
+}

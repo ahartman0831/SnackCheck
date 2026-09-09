@@ -1,4 +1,5 @@
 import { createHash, randomUUID } from "node:crypto";
+import { readFile } from "node:fs/promises";
 import { createClient } from "@supabase/supabase-js";
 import type { Database } from "@snackcheck/db-types";
 import {
@@ -14,8 +15,10 @@ import {
 } from "../lib/catalog-evidence/persistence";
 import { assertStagingApplySafety } from "../lib/catalog-candidates/operation-safety";
 
-const DEFAULT_TARGET = 5;
-const MAX_TARGET = 15;
+import {
+  OpenFoodFactsManifestSchema,
+  selectManifestCandidates,
+} from "../lib/catalog-evidence/open-food-facts-manifest";
 const MAX_RESPONSE_BYTES = 250_000;
 
 type CandidateRow = Pick<
@@ -33,14 +36,6 @@ type CandidateRow = Pick<
 function option(argv: string[], name: string): string | undefined {
   const index = argv.indexOf(name);
   return index >= 0 ? argv[index + 1] : undefined;
-}
-
-function target(argv: string[]): number {
-  const value = Number(option(argv, "--target-count") ?? DEFAULT_TARGET);
-  if (!Number.isInteger(value) || value < 1 || value > MAX_TARGET) {
-    throw new Error(`--target-count must be between 1 and ${MAX_TARGET}.`);
-  }
-  return value;
 }
 
 function evidenceCandidate(row: CandidateRow): EvidenceCandidate {
@@ -62,7 +57,19 @@ function evidenceCandidate(row: CandidateRow): EvidenceCandidate {
 async function main(): Promise<void> {
   const argv = process.argv.slice(2);
   const apply = argv.includes("--apply");
-  const candidateLimit = target(argv);
+  if (apply && argv.includes("--plan"))
+    throw new Error("--plan cannot be combined with --apply.");
+  const manifestPath = option(argv, "--manifest");
+  if (!manifestPath)
+    throw new Error("--manifest is required; choose explicit candidate IDs.");
+  if (argv.includes("--target-count")) {
+    throw new Error(
+      "Use the manifest to set the batch size (1–15); --target-count is no longer supported.",
+    );
+  }
+  const bytes = await readFile(manifestPath);
+  if (bytes.byteLength > 16_000) throw new Error("OFF manifest exceeded the byte limit.");
+  const manifest = OpenFoodFactsManifestSchema.parse(JSON.parse(bytes.toString("utf8")));
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
   const userAgent = process.env.OPEN_FOOD_FACTS_USER_AGENT;
@@ -82,14 +89,14 @@ async function main(): Promise<void> {
     .select(
       "id,provider,brand,product_name,variant,size,normalized_gtin14,normalized_ingredient_text",
     )
+    .in("id", manifest.candidateIds)
     .eq("candidate_state", "REVIEW_QUEUED")
     .eq("screen_status", "PASS")
     .eq("catalog_automation_route", "AUTO_EVIDENCE")
-    .eq("discontinued", false)
-    .order("id", { ascending: true })
-    .limit(candidateLimit);
+    .eq("discontinued", false);
   if (selected.error) throw new Error(selected.error.message);
-  const candidates = (selected.data ?? []).map(evidenceCandidate);
+  const selectedRows = selectManifestCandidates(manifest, selected.data ?? []);
+  const candidates = selectedRows.map(evidenceCandidate);
   if (!candidates.length)
     throw new Error("No eligible automatic-evidence candidates were found.");
 
@@ -112,6 +119,22 @@ async function main(): Promise<void> {
     maxResponseBytes: MAX_RESPONSE_BYTES,
     timeoutMs: 15_000,
   } as const;
+  if (argv.includes("--plan")) {
+    console.log(
+      JSON.stringify(
+        {
+          mode: "PLAN",
+          selectionHash,
+          candidateIds: candidates.map(({ id }) => id),
+          candidates,
+          limits,
+        },
+        null,
+        2,
+      ),
+    );
+    return;
+  }
   const store = createEvidenceRunStore(admin as unknown as EvidenceRpcClient);
   if (apply) {
     await store.begin({
@@ -139,6 +162,7 @@ async function main(): Promise<void> {
           mode: apply ? "APPLY" : "DRY_RUN",
           runId,
           selectionHash,
+          candidateIds: candidates.map(({ id }) => id),
           source: "OPEN_FOOD_FACTS_SECONDARY",
           candidatesAttempted: summary.candidatesAttempted,
           requestsMade: summary.requestsMade,

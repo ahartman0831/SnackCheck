@@ -46,8 +46,11 @@ References:
 
 ## Command behavior
 
-The owner submitted the API usage form on 2026-09-07. `pnpm collect:evidence:off` is
-dry-run by default but does make controlled OFF read requests. It outputs counts,
+The owner submitted the API usage form on 2026-09-07. As of September 9,
+`pnpm collect:evidence:off` requires `--manifest <file.json>` with
+`{"candidateIds":["<uuid>"]}` (1–15 unique IDs); `--target-count` is rejected.
+Use `--plan` to check the exact eligible selection without OFF requests or writes.
+Without `--plan` or `--apply`, it is a dry run but does make controlled OFF read requests. It outputs counts,
 candidate outcome codes, product identity fields, and an exact/different/missing ingredient
 comparison verdict. It does not print ingredient text.
 

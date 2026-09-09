@@ -4,6 +4,7 @@ import { createClient } from "@supabase/supabase-js";
 import type { Database } from "@snackcheck/db-types";
 import {
   createEvidenceDossier,
+  newestEvidenceByUrl,
   EVIDENCE_DOSSIER_STAGING_CONFIRMATION,
   EvidenceDossierManifestSchema,
   type EvidenceDossierManifest,
@@ -59,9 +60,7 @@ async function main(): Promise<void> {
       )
       .order("created_at", { ascending: false });
     if (evidenceResult.error) throw new Error(evidenceResult.error.message);
-    const latestByUrl = new Map(
-      (evidenceResult.data ?? []).map((row) => [row.source_url, row]),
-    );
+    const latestByUrl = newestEvidenceByUrl(evidenceResult.data ?? []);
     const items = entry.items.map(({ sourceUrl, role }) => {
       const evidence = latestByUrl.get(sourceUrl);
       if (!evidence) throw new Error(`No stored evidence matched ${sourceUrl}.`);

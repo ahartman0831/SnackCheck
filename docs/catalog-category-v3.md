@@ -107,9 +107,52 @@ A text match alone does not establish current package identity or independent pr
 Database readback confirmed all five attempt IDs, the completed run, 154 still queued,
 and zero products, formulations or published rules. No paid AI call was made.
 The original queue operation did not create evidence; this subsequent pilot did.
-Further collection should select an explicit manifest or skip completed attempts,
-because rerunning the current collector selects the same first candidates.
+The collector now requires an explicit `--manifest` containing 1–15 unique candidate
+IDs. `--plan` validates current eligibility and reports IDs/hash without OFF requests
+or database writes. The old `--target-count` option is rejected, so it cannot silently
+repeat the first candidates. A manifest containing an ineligible candidate fails as
+a whole before collection. Reusing a manifest deliberately can still recollect it;
+this is not a concurrent-run deduplication mechanism.
 
 For any future staging schema work, continue using only the owner-designated project
 and exact reviewed SQL. Older individually applied migrations have incomplete remote
 history, so a general `supabase db push` requires separate reconciliation first.
+
+## Bounded OFF batch 002 — September 9, 2026
+
+Selected 15 candidates from the newly queued 60, excluding every candidate with any
+prior evidence attempt. The exact plan and applied selection hashes matched:
+`ad5d5f4779d63a51de283f9fa0f16685fb4b000a280d5e00f22a1146c54725ac`.
+Run `73fd2c8f-49cc-4264-ada9-e10e0ddc56b3` completed with 15 requests and 15
+persisted evidence records; no retrieval was missing, blocked or failed. Readback
+verified every candidate ID and completed run, 154 still queued, and zero products,
+formulations or published rules. No paid model calls were made.
+
+All 15 normalized ingredient comparisons differ. This is a text comparison, not a
+finding that all 15 formulations changed or contain restricted ingredients. For
+example, the Goldfish entry flattens nested ingredients and omits label prose. The
+Nutri-Grain Cherry 1.3 oz OFF record, modified in January 2022, includes Red 40,
+while the newer USDA text does not. The
+[current manufacturer page](https://www.nutrigrain.com/en_US/products/baked-bars/nutri-grain-baked-bars-cherry.html)
+provides a matching product/size lead and ingredient section, but needs preserved
+permitted evidence and exact package identity before it can resolve the conflict.
+The [Goldfish manufacturer page](https://www.pepperidgefarm.com/product/cheddar-crackers-7/)
+is another research lead, not a persisted approval source.
+
+The private `off-batch-002-review.json` contains all 15 candidate IDs, both ingredient
+statements, source dates and evidence attempt IDs, marked for manufacturer/package
+identity review. These are local triage labels; the database candidates remain
+`REVIEW_QUEUED`. No dossier or candidate was approved. The remaining 44 never-attempted
+candidates from the 60-item shortlist are saved in three bounded `off-next-*-manifest.json`
+files (15/15/14) for subsequent collection and must be revalidated before use.
+
+Dossier assembly also now selects the newest immutable snapshot per source URL.
+Previously, constructing a map from descending database results let an older snapshot
+overwrite the newest. Regression tests cover corrected ingredient snapshots arriving
+in either order and distinct/missing source URLs.
+
+Validation for this follow-up: 20 targeted evidence tests pass (including five new
+manifest/dossier regression cases), web typecheck and targeted lint pass, formatting
+and diff checks pass. The preceding disclaimer revision `183346e` passed all CI jobs
+in [run 34341906677](https://github.com/ahartman0831/SnackCheck/actions/runs/34341906677).
+Latest-revision CI is recorded separately on the PR.
