@@ -69,7 +69,10 @@ photos, invented manufacturer evidence, rule signatures or publication were used
 
 ## REQUIRES OWNER ACTION
 
-1. **Confirm the beta's monitored public support inbox.** The owner approved the
+1. **Confirm support routing during launch preparation, deferred for now.** The
+   owner prefers assistant triage and unsent reply drafts; no monitoring or
+   forwarding should be set up while the beta is not live. This does not block
+   independent engineering preparation. The owner approved the
    approximately $10/month additional Micro compute, and the separate production
    project `lwkayhbmpirgpfytfryv` now has all 39 migrations, verified application
    types/access controls, empty user/content storage, and zero published rules.

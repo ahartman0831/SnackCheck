@@ -14,7 +14,10 @@ Micro compute cost on September 9; further paid services or add-ons need approva
 - Temporary beta URL: **owner confirmed** `https://snack-check-web.vercel.app`.
   Custom public domain is deferred. This records the intended `NEXT_PUBLIC_APP_URL`;
   no production environment variable has been changed.
-- Real monitored `SUPPORT_EMAIL`: **pending owner**
+- Real monitored `SUPPORT_EMAIL`: **deferred until launch preparation**. The owner
+  prefers assistant triage of support messages and accepts personal Gmail only as
+  a fallback. Do not treat that conditional answer as unconditional approval to
+  publish the personal address.
 - SMTP provider and verified sending domain: **pending owner**
 - Production Upstash project/account: **pending owner**
 - Alert recipient and operational contact: **pending owner**
@@ -48,8 +51,20 @@ East US (North Virginia), no GitHub connection and no extra branches. The passwo
 is newly generated and stored in a private, ignored operator directory; it is not
 in source control, chat, or the application's environment settings.
 
-**Next owner input:** confirm the monitored public support inbox for the beta.
-The OFF contact has not been reused as the support address without approval.
+**Remember for launch preparation:** the owner explicitly deferred support inbox
+and assistant triage setup while the beta is not live. Revisit this with the owner
+when ready to launch; it is not the next account action or a blocker to independent
+engineering preparation. The preferred workflow is assistant review of SnackCheck
+support messages, unsent reply drafts, and decisions brought back to the owner.
+Hourly checks were proposed but have not been approved or scheduled. Do not start
+monitoring, configure forwarding, publish an address, or send replies now.
+
+Gmail profile access confirms the connected account is
+`hartman.alex.88@gmail.com`; no mailbox contents were read during this capability
+check. Codex can read relevant mail and prepare unsent drafts through the existing
+connector. Mail still needs an owner-controlled mailbox; there is no separate
+assistant-owned support address. No monitor, email forwarding, or automatic replies
+have been enabled. Public address selection remains pending.
 
 ## Prepared database setup
 
