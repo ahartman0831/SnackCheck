@@ -1,55 +1,61 @@
-# Launch runbook
+# Launch runbook — ingredient-screening beta
 
-Current release authority: `SNACKCHECK_TAKEOVER_AUDIT.md`, `DEFINITION_OF_DONE.md`, and `RELEASE_AUDIT.md`. Historical deployment notes below are not fresh production verification.
+[Release audit](RELEASE_AUDIT.md) is the current status authority.
+[Definition of done](DEFINITION_OF_DONE.md) separates engineering completion from
+public launch. Historical phase plans are not deployment evidence.
 
-## Runtime
+## Release and environment
 
-- Node.js 22+ is required (`package.json` `engines.node` and CI `setup-node` 22). `.nvmrc` pins Node 22.23.2 for local work.
-- P0-5 is fixed on the Phase 6 branch with signed, expiring ownership tokens and stored token hashes. Phase 6 CI is green, but do not enable ingredient-photo submissions until Phase 7 is complete and rollout is separately approved.
-- Phase 5 is barcode camera only. It must not change submission tokens or the image pipeline.
+The sole merge path is PR #22 (`codex/catalog-category-v3`) directly into `main`.
+It includes #20/#21; those are superseded and must not be merged separately.
+Require all three CI jobs at the current head, then explicit owner merge permission.
+No public deployment or rules publication is implied by merge authorization.
 
-## CI
+Use Node 22.23.2, pnpm 10.33.0 and Supabase CLI 2.84.2. Engine version is 0.1.2.
+Production project/domain and live deployment are unverified. The existing Vercel
+project is an account lead, not evidence of a successful current production release.
+The staging project `lhnbxjvqllohlbtdncyg` must remain separate.
 
-GitHub Actions on `ubuntu-latest` is the authorized non-production environment for database and WebKit gates. It must never run `supabase link`, `supabase db push`, or `supabase gen types --linked`.
+## Verification before merge
 
-- `verify`: format, lint, typecheck, all unit tests including the P0-5 regression, integration tests, and production build.
-- `database`: local `supabase start`, reset through the latest migration, pgTAP, local type generation plus a short-lived generated-types artifact, a second reset, and pgTAP again.
-- `e2e-webkit`: Playwright `mobile-webkit` on a runner that supports WebKit.
+CI has three required jobs: verify, Local Supabase reset and pgTAP, Playwright WebKit.
+It builds the default production app, checks code/security/dependencies, runs public
+and camera browser cases, and tests the real local homepage/ingredient/review journey
+in Chromium and WebKit over disposable HTTPS. Database gates apply all 39 migrations,
+check generated types/private storage, rehearse backup/restore, reset and rerun SQL.
+CI must never link or mutate a hosted database. See [test matrix](TEST_MATRIX.md).
 
-## Not yet deployed
+## Production preparation after owner handoff
 
-- Production Supabase project: pending
-- Vercel project: `snack-check-web` exists; protected Phase 5 preview is ready, while the initial camera-off production build failed before publishing
-- Domain: pending (`NEXT_PUBLIC_APP_URL`; historical working domain was CanIBringThis.com)
-- Published ruleset hash: pending
-- Engine version: `0.1.1`
-- Vision model: pending
-- Regulatory review date: pending
+1. Complete [production-handoff.md](release-review/production-handoff.md) without
+   putting secret values in files or messages. Use separate environment settings for
+   preview and production. Next.js local env belongs in `apps/web/.env.local`.
+2. Create the new production database from reviewed migrations 0001–0039. Keep the
+   draft rules unpublished. Never blindly push to the linked staging project: its
+   migration ledger ends before manually applied, verified later migrations. Inspect
+   and reconcile history before any future staging migration operation.
+3. Set domain/support/SMTP/Supabase and separate random HMAC secrets of 32+ characters.
+   Production requires Upstash. Memory fallback is forbidden there. Per-visitor
+   identity currently trusts Vercel's platform header; another host needs an approved
+   proxy adapter or uses conservative shared buckets.
+4. Deploy the release commit to an access-controlled preview and verify admin OTP,
+   session refresh/logout, ownership, private storage, support and ingredient checks.
+   Use the protected lifecycle for actual reviewed rules and a separate publisher.
+5. Configure and exercise synthetic health/alerts, agreed retention, restore into a
+   separate project and deployment rollback. Record exact project/commit/URL, rules
+   hash, operator, timestamps, outcomes and limitations. The existing procedures are
+   in [operations monitoring and recovery](operations-monitoring-and-recovery.md).
+6. Present those concrete results for final public launch authorization. The owner
+   already selected ingredient screening; 50 products are not this beta's gate.
+
+Keep camera/photo/paid AI/affiliates off. Existing kill switches and feature flags
+must be checked in the actual environment. Manual ingredient screening calls no LLM.
+Do not enable deferred features merely to make an empty setting appear complete.
 
 ## Rollback
 
-1. Revert the Vercel deployment to the previous successful build.
-2. Do not rewrite applied production migrations; add a forward fix.
-3. Keep the previous published ruleset effective until a reviewed replacement is published.
-
-The tested non-production procedures and remaining human assignments are documented in [`operations-monitoring-and-recovery.md`](operations-monitoring-and-recovery.md). CI rehearses a disposable PostgreSQL data backup/restore; production restore and Vercel promotion/rollback remain launch gates.
-
-## Takeover migration and environment checklist
-
-Apply migration `0037` before releasing the corresponding engine. It changes only
-freshness evaluation (future dates fail closed; function is stable), not stored
-data or signatures. Re-run database assertions and verify the reviewed ruleset and
-launch products after any migration. No hosted migration was applied in takeover.
-
-Next.js reads `apps/web/.env.local` locally; deployment secrets belong in Vercel's
-environment for the correct project. A root `.env.local` alone does not configure
-the web app. Set `SUPPORT_EMAIL` before building a release. Both HMAC secrets need
-at least 32 characters. Production uses Upstash; preview-memory fallback is forbidden
-on production even if its flag is set. Per-visitor limits trust only Vercel's
-platform-provided IP header; self-hosted deployments require a reviewed equivalent
-proxy adapter, otherwise they deliberately share a conservative bucket.
-
-Production still requires owner-controlled SMTP, legal/privacy review, monitoring
-configuration, retention scheduling, recovery rehearsal and explicit public launch
-approval. Optional camera/photo/AI and affiliate features stay disabled until their
-independent acceptance criteria pass.
+Use the last verified immutable Vercel deployment. Stop optional providers first,
+verify public/protected health and the manual ingredient journey, and record the
+rollback. Do not reverse production migrations or edit published rules in place;
+use a reviewed forward migration or cloned ruleset version. Real production restore
+and rollback remain unperformed until the owner-controlled environment is available.

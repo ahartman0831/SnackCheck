@@ -149,10 +149,15 @@ jobs:
           cache: pnpm
       - name: Install
         run: pnpm install --frozen-lockfile
-      - name: Install WebKit
-        run: pnpm --filter web exec playwright install --with-deps webkit
+      - name: Install public-journey browsers
+        run: pnpm --filter web exec playwright install --with-deps chromium webkit
       - name: Build production app for WebKit
         run: pnpm build
+      - name: Run desktop Chromium and accessibility checks
+        run: pnpm --filter web exec playwright test --project=desktop-chromium
+        env:
+          CI: true
+          DEV_CATALOG_ENABLED: "true"
       - name: Run mobile WebKit
         run: pnpm test:e2e:webkit
         env:

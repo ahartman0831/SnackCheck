@@ -164,10 +164,19 @@ export function IngredientCheckForm() {
         {busy ? "Checking…" : "Check this list"}
       </Button>
       {result ? (
-        <StatusCard
-          status={result.ingredientStatus}
-          summary={result.explanation.summary}
-        />
+        <div className="flex flex-col gap-3">
+          <StatusCard
+            status={result.ingredientStatus}
+            summary={result.explanation.summary}
+          />
+          <p className="text-muted text-sm">
+            {result.qualityFlags?.includes("RULESET_UNAVAILABLE")
+              ? "Reviewed Arizona rules are not available yet, so this list could not be screened for restrictions. Check the package and contact your school before bringing it."
+              : result.ingredientStatus === "VERIFY"
+                ? "VERIFY is not clearance. Check that you included the complete current ingredient panel and ask your school about its requirements."
+                : "Compare the listed ingredient with your current package and ask your school about a suitable alternative."}
+          </p>
+        </div>
       ) : null}
       {notice ? (
         <p role="status" className="text-muted text-sm">

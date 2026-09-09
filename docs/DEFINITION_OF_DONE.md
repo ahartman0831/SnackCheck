@@ -1,67 +1,62 @@
-# Definition of done — initial Arizona release
+# Definition of done — ingredient-screening beta
 
-Use `implementation-status.md` for dated evidence. A checked item requires actual
-verification at the release revision, not implementation presence.
+The owner selected option A on September 9, 2026: paste/confirm ingredient screening
+first, with the verified catalog following later. This replaces the earlier
+50-product prerequisite for the beta only. Preserve search/barcode/review tooling.
+Do not weaken rules or evidence controls to create public inventory.
 
-- [ ] Supported Node install, formatting, lint, types, unit/integration tests and
-      default production build pass; no material unaddressed dependency vulnerability.
-- [ ] Repeated disposable migration reset, pgTAP, generated-type parity, private
-      storage ownership/isolation and restore rehearsal pass.
-- [ ] New visitor completes search/barcode and confirmed ingredient workflows on
-      desktop/mobile; useful results require signed rules and sourced real data.
-- [ ] At least 50 independently evidenced current products satisfy strict public
-      eligibility. No mocked product is presented as real.
-- [ ] Ruleset reviewer verifies sourced label aliases (including common forms such as
-      `Red 40`), signs the exact hash, and an authorized admin publishes that version.
-      The current draft has 28 disabled proposals for common color-name variants; zero
-      draft matches are not sufficient for product clearance. See the
-      [color-name review packet](catalog-color-alias-review.md).
-- [ ] Admin OTP, refresh, logout, expired session and role boundaries pass; ordinary
-      users cannot read submissions, private storage, staging evidence or admin data.
-- [ ] Missing/invalid inputs, duplicates, no data, unavailable database, provider
-      failure, rate limit and storage denial produce useful recoverable states.
-- [ ] Required accessibility checks, responsive layouts and enabled camera/photo
-      workflows pass on actual supported phones; optional flags stay off otherwise.
-- [ ] AI is optional, schema-validated, bounded by timeout/call/token/spend budgets,
-      records accurate usage, and never determines compliance; fallback is tested.
-- [ ] No active obsolete implementation; one documented owner for each concern.
-- [ ] Redacted working-tree/history secret scan reviewed; exposed credentials rotated
-      by account owner if found. Client bundles contain no privileged keys.
-- [ ] Production abuse protection uses intended per-operation limits, trustworthy
-      anonymous identity and fail-closed costly operations. Logs avoid sensitive data.
-- [ ] Actual support contact, privacy/terms/retention and any affiliate disclosures
-      are reviewed and match enabled behavior.
-- [ ] Production environment is separate, migrations/configuration documented,
-      SMTP/monitoring/retention/backup/restore/rollback verified, synthetic alerts tested.
-- [ ] Production smoke tests complete and owner explicitly approves public launch.
+## Engineering release candidate
 
-## What review means
+A candidate is technically merge-ready when the current head of PR #22 passes all
+three required CI jobs and the final adversarial review has no unresolved technical
+P0/P1. [RELEASE_AUDIT.md](RELEASE_AUDIT.md) records the result and known limits.
 
-Ruleset approval is the application's recorded check of the exact restrictions,
-aliases, applicability and source version. Product evidence review checks identity,
-current ingredients and conflicts. AI may assist transcription/comparison; it does
-not replace either approval. These checks do not require a lawyer to review each
-individual snack.
+- Production build, formatting, lint, types, unit/API/integration tests and high/
+  critical dependency and secret gates pass; no skipped failures count as success.
+- Migrations 0001–0039 create a new database; repeated resets, actual pgTAP discovery,
+  generated-type parity, private-storage and disposable recovery checks pass.
+- Home → ingredient text → confirmation → result works on desktop/mobile. Declared
+  restrictions with published rules produce FAIL; unverified no-match lists remain
+  VERIFY. Missing rules cannot produce invented matches or passing results.
+- Input/network/provider/storage failures retain edits and give recovery actions.
+  Empty catalog, disabled optional features and unavailable rules are explicit.
+- Admin refresh/logout, active-role checks, signed submission ownership, stale-write
+  rejection, RLS and privacy boundaries pass. Review/publication/promotion are audited
+  and rehearsed with controlled local fixtures; real signatures are never simulated.
+- Production rate limits fail closed; privileged credentials remain server-only;
+  logs avoid private inputs. Optional AI is bounded, confirmed and off for the beta.
+- Primary layouts and accessibility pass automated checks. Physical camera/photo
+  acceptance is needed only before enabling those deferred features.
+- One understandable architecture, one current status record, exact review packets,
+  and one explicit PR merge path are available to the next engineer.
 
-A focused legal review of product claims, disclaimers, terms and privacy is a
-recommended launch risk-control step, not a government licensing requirement
-established by this project. The certification mechanism in
-[A.R.S. § 15-242.01](https://www.azleg.gov/ars/15/00242-01.htm) concerns schools.
-No legal review or approval has been completed for SnackCheck. The owner still
-controls publication and public launch.
+## Public launch
 
-The result card, footer and terms explain that ingredient screening is not a
-nutrition rating, allergy assessment, food-safety guarantee or school acceptance.
-Disclosures must match the actual experience: the
-[FTC guidance](https://www.ftc.gov/business-guidance/resources/health-products-compliance-guidance)
-explains that a disclaimer cannot cure a contradictory claim. Draft site copy is
-not a legal opinion or assurance of reduced liability.
+Public release additionally requires owner-controlled inputs and approvals:
 
-Affiliate enablement is a separate acceptance gate: real approved product mapping,
-configured Associates tag, centralized safe URLs, visible approved disclosure,
-neutral ranking, privacy-safe click metrics and destination delivery independent
-of analytics failure. Accounts/payments/legal acceptance remain owner controlled.
+- Recorded review of all enabled restrictions/aliases, source interpretation,
+  applicability, effective dates and exact final ruleset hash; separate authorized
+  publication. The 28 color-name proposals remain disabled pending real review.
+- Separate production projects/domain and real support/SMTP/Upstash configuration;
+  production sign-in, primary workflow, role isolation and abuse-limit smoke tests.
+- Actual alert delivery, retention schedule, backup/restore and deployment rollback
+  evidence from the configured environment.
+- Owner acceptance of privacy/terms/support/retention copy matching enabled behavior.
+- Explicit final public launch authorization after those results are available.
 
-Deferred scope: consumer accounts, persisted personal history, school management,
-native applications, nationwide expansion, full offline PWA and unvalidated AI.
-Deferral must not conceal required launch defects.
+These external actions do not invalidate a technically complete, merge-ready build.
+A disclaimer is not regulatory sign-off or proof of reduced legal liability. The
+site describes ingredient screening rather than nutrition, allergy, food-safety or
+school-acceptance certification. No lawyer-per-snack requirement is imposed here.
+
+## Follow-on catalog and optional releases
+
+The catalog release retains the target of 50 current independently evidenced real
+products and a reviewed accuracy sample. Ingredient records alone are not approved
+packages. Resolve identity, text differences, freshness and source permission before
+promotion; do not invent manufacturer evidence or relabel secondary sources.
+
+Affiliate activation needs actual account/mappings, safe centralized destinations,
+visible disclosures, neutral ranking and tracking-independent navigation. Consumer
+accounts/history, school administration, national/native/offline expansion and
+photo/camera/AI activation remain deferred with their own acceptance gates.

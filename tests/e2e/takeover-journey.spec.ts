@@ -5,7 +5,9 @@ import { seedCatalogReviewFixture } from "./catalog-review-fixture";
 test("a new visitor can check ingredients without an invented passing result", async ({
   page,
 }) => {
-  await page.goto("/scan/ingredients");
+  await page.goto("/");
+  await page.getByRole("link", { name: "Check an ingredient list", exact: true }).click();
+  await expect(page).toHaveURL(/\/scan\/ingredients/);
   await page.getByLabel("Ingredient list").fill("oats, sugar, salt");
   const confirmation = page.waitForResponse((response) =>
     response.url().includes("/confirm"),

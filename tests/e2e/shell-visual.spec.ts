@@ -18,7 +18,7 @@ test.describe("Phase 3 shell and gallery", () => {
       await page.goto("/");
       await expect(
         page.getByRole("heading", {
-          name: "Scan it. Search it. Know before you bring it.",
+          name: "Start with the ingredients.",
         }),
       ).toBeVisible();
       const overflow = await page.evaluate(() => {

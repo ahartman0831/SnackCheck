@@ -28,7 +28,11 @@ export default function IngredientScanPage() {
         <p className="text-muted mt-3 text-lg">
           {photo
             ? "Photograph the ingredient panel, then confirm the text before SnackCheck evaluates it."
-            : "Paste or type the ingredient list from the package. No photo is processed on this page."}
+            : "Paste or type the complete ingredient list from the package, then check the text before submitting."}
+        </p>
+        <p className="text-muted mt-3 text-sm">
+          This beta flags listed restrictions. A no-match list stays VERIFY because pasted
+          text alone does not verify the package or your school's acceptance.
         </p>
       </header>
       {photo ? (

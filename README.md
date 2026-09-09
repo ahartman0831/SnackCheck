@@ -1,13 +1,14 @@
 # SnackCheck
 
 SnackCheck helps Arizona parents and school staff inspect packaged-food ingredients
-before bringing food to school. Search a product, enter a barcode, paste an ingredient
-list, or browse reviewed alternatives. **AI extracts. Rules decide. Sources prove.
-Database remembers.**
+before bringing food to school. The first release is an ingredient-screening beta:
+paste the full label, confirm it, and see listed restrictions or a VERIFY result.
+Search and barcode lookup remain available as the reviewed catalog grows.
 
-The application is being stabilized for an Arizona beta. A production release still
-requires a signed published ruleset, sourced launch catalog and configured operations.
-Development examples are never production product data.
+The engineering release candidate is prepared in PR #22 directly against main.
+Public launch still requires reviewed published rules, configured production
+operations and owner approval. The owner deferred the 50-product catalog until
+after this beta; development examples never become production product data.
 
 ## Start here
 

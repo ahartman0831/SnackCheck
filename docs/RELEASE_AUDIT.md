@@ -1,169 +1,108 @@
-# Release audit — September 8, 2026
+# SnackCheck release candidate — September 9, 2026
 
-**Decision: NOT READY FOR PUBLIC LAUNCH.** Local stabilization is verified; the
-owner approved GitHub upload and safe staging population on September 8. Launch
-still depends on real evidence, regulatory approval and production operations.
-Work is on `codex/takeover-stabilization`; the inherited branch remains intact.
+## READY NOW
 
-## READY — implemented and verified
+**Engineering release candidate for the owner-approved ingredient-screening beta.**
+Build completion and public launch approval are separate decisions. The owner chose
+option A on September 9: lead with paste/confirm ingredient screening; grow the
+verified catalog after the beta. The former 50-product requirement applies to the
+catalog release, not this beta. No new evidence architecture is part of closeout.
 
-### Product and engineering
+**One merge path:** [PR #22 → main](https://github.com/ahartman0831/SnackCheck/pull/22).
+It contains all commits from #20 and #21 without rebasing shared history. Those PRs
+are superseded; do not merge them separately. No merge or public deployment has
+been performed. The current release gate is all three jobs green at the actual
+head shown on [PR #22 checks](https://github.com/ahartman0831/SnackCheck/pull/22/checks).
+A previous green revision cannot substitute for the current head.
 
-The real local submission journey creates a private submission, processes pasted
-text, confirms it, returns a truthful result and retains the user's draft. Unknown
-rules produce VERIFY. Users cannot read someone else's submission. A temporary
-reviewer with an expired access token refreshed the session, accessed the permitted
-workspace and signed out through the production browser app.
+**Product:** the homepage leads to the real paste/confirm journey. It creates an
+owned private submission, processes text without an LLM, saves the confirmed result
+and preserves the tab-local draft. With reviewed published rules, declared matches
+return FAIL; an unverified no-match list remains VERIFY. Missing rules also return
+VERIFY and explain that restrictions could not be screened. Search and barcode
+fallback remain available with honest limited-catalog/empty states. Ordinary users
+need no account. Results explain ingredient-only scope, package uncertainty and
+school-policy limits; they do not offer nutrition, allergy or safety guarantees.
 
-Fixed endpoint-specific rate windows, per-visitor identity on Vercel, fail-closed
-Redis timeouts, reviewer session refresh, future/missing evidence dates, stale
-stored PASS cards, inactive barcode records, malformed pagination/intake, denied
-browser storage, ignored extraction failures and misleading successful analytics.
-Database failures in catalog reads now produce recoverable errors instead of false
-empty results. Homepage step-number contrast was repaired following an axe failure.
+**Engineering/security:** one deterministic engine (0.1.2), shared contracts,
+server-enforced ownership and active admin roles, expiring sessions, audited review
+transactions, strict public projections, bounded providers, rate limits and
+fail-closed costly work. No known unresolved engineering P0/P1 was found in the
+final adversarial review. [Review findings and evidence](release-review/README.md)
+record the customer, returning-user, adversary, QA, owner and maintainer checks.
 
-Preserved the deterministic engine, shared contracts, three Supabase trust
-boundaries, restricted public projections and transactional evidence review. Removed
-the unreferenced `lib/vision` implementation. Engine version is now **0.1.1**.
+**Verification:** the full release CI runs formatting, lint, types, 388 unit tests
+(75 compliance, 5 contracts, 308 web), integration checks, production builds,
+dependency/secret gates, public/camera WebKit, and real database desktop/mobile
+journeys. Database checks cover migrations 0001–0039, 22 SQL files / 317 assertions
+on two resets, generated-type parity, private storage and disposable backup/restore.
+The added rollback-only rehearsal exercises separate reviewer/publisher identities,
+audited publication, candidate promotion, public eligibility and immediate withdrawal
+on an evidence conflict. Controlled test signatures/products never enter staging.
+The route test runs the actual engine with clearly labeled fixture rules; it is not
+real regulatory approval. Browser coverage starts at the beta homepage CTA.
 
-### Verification evidence
+Baseline application head 757504e passed [CI 34348671912](https://github.com/ahartman0831/SnackCheck/actions/runs/34348671912).
+The current head's checks above include the closeout changes and are the release
+authority. Existing optional browser skips do not establish physical-device acceptance;
+the dedicated database journey has zero skips. Linux CI verifies the default build
+and WebKit that this Mac cannot reliably exercise. Local SQL and targeted release
+checks additionally pass. No paid provider call is required by or used for this beta.
 
-- Workspace lint and TypeScript: pass.
-- Formatting: pass; owner-supplied `Claude outputs/` is excluded from application
-  formatting and left unchanged. All tracked application source remains checked.
-- Full CI unit run: **320 passing tests** (42 compliance, 5 contracts, 273 web).
-  Follow-up provider/redirect/input regressions also pass.
-- Database runner-policy tests: **2 pass**; type-generation policy: **1 pass**.
-  A zero-test pgTAP run now fails verification instead of silently succeeding.
-- Production webpack build: pass, **40 generated pages**, including the new proxy.
-- Database: migrations **0001–0037**, two schema resets, **19 SQL test files / 290
-  assertions passing twice**; generated types match the committed file after the
-  generator's normal trailing-newline normalization.
-  The local CLI's container runner discovered zero files, so each SQL file was
-  executed directly with PostgreSQL plus pgTAP and its assertion/plan output checked.
-  Ubuntu CI subsequently passed the normal CLI harness and generated-type parity.
-  The wrapper rejects zero-test results.
-- Real storage/API integration: **6 tests pass, zero skipped**. Covers private
-  sanitized images, raw deletion and eligible expired-asset cleanup. A reset-related
-  local storage restart was needed. A later test under host contention exceeded
-  Vitest's five-second default; integration tests now allow 30 seconds without
-  changing assertions, and the final rerun completed in roughly three seconds.
-- Disposable analytics backup/restore: pass. The rehearsal now requires explicit
-  disposable-local confirmation and accepts an isolated local container name.
-- Production desktop/mobile Chrome public suite: **46 pass**, with **42 existing
-  project/feature-conditional skips**. These skips are not counted as verified
-  camera/photo coverage. Accessibility checks report no serious/critical violations
-  on tested pages after the contrast repair; widths 320–1440, dark mode, reduced
-  motion and zoom pass.
-- Dedicated real-database browser suite: **4 pass, zero skipped** in desktop Chrome,
-  including real session expiry/refresh/logout. Ubuntu CI additionally runs
-  desktop Chromium and mobile WebKit over disposable local HTTPS. Its initial
-  failures led to the test-harness corrections recorded below. Final commit checks
-  are linked from PR #21.
+The prior redacted history scan covered 902 text blobs / 136 reachable commits with
+no credential candidates. CI scans the final tracked tree; scan coverage is bounded.
+Dependency audit remains enforced at high/critical severity. The existing moderate
+Vitest/mocker advisory affects an unused mocker dev-server mode; a major test-tool
+upgrade is deferred, with no advisory suppressed. Optional photo extraction retains
+validated output, confirmation, timeout/retry/token/spend limits and kill switches;
+its paid production availability and device accuracy are not beta acceptance claims.
 
-All live database and storage activity above used the disposable local
-`snackcheck-takeover` stack. Hosted staging/production data and settings were not
-changed. Browser screenshots were inspected and kept in temporary test output;
-tracked historical screenshots were restored, not overwritten as new evidence.
+**Catalog preparation:** staging readback confirms 589 private candidates, 154 queued,
+and zero products, formulations, published rules or dossiers. All 60 recent shortlist
+records have OFF attempts; 53 contain ingredient evidence. The exact review packets
+classify 48 ingredient differences, five text repairs and seven missing-evidence
+cases. The recommended promotion manifest is deliberately empty because none meets
+the current evidence policy. The 28 sourced color-name proposals remain disabled and
+unsigned. [Frozen review materials](release-review/README.md) contain exact rules,
+source references, deterministic IDs/hashes and recommended decisions. No owner
+photos, invented manufacturer evidence, rule signatures or publication were used.
 
-### Approved staging population
+## REQUIRES OWNER ACTION
 
-The September 8 follow-up added 100 source-attributed USDA candidates through the
-guarded importer, bringing staging to 589. Independent read-back verified all
-100 identities and ingredient hashes, private access, and unchanged publication.
-All new source categories remain outside automatic evidence work under the current
-allowlist. See [the population report](catalog-population-2026-09-08.md) for exact
-source hashes, batch IDs, query limits and the taxonomy limitation. This is private
-candidate inventory, not 100 verified launch products.
+1. **Authorize merging PR #22 into main.** This is the single engineering merge
+   decision. Its current head must have all three CI jobs green. Rules review and
+   account preparation can proceed before merge; merge does not authorize launch.
+2. **Assign a rules reviewer and a different publishing administrator to the
+   [exact review packet](release-review/README.md).** They must approve or amend the
+   sourced aliases, verify the final canonical hash, and record review evidence
+   through the protected lifecycle. This is an existing product control, not a
+   claimed requirement to obtain legal approval for each snack. Engineering can be
+   merged and the private app exercised while the rules remain unpublished.
+3. **Complete the [production handoff](release-review/production-handoff.md).**
+   Supply the owner-controlled projects/domain and service/contact assignments.
+   Accounts, credentials and paid commitments remain with the owner. Once access is
+   available, engineering can configure and verify SMTP, limits, monitoring,
+   retention, backup/restore and rollback; these tests are not being delegated to
+   the owner. Local/CI verification and private review proceed without this input.
+4. **Approve the deployed privacy, terms, support and retention wording for the
+   selected beta.** Draft copy is implemented; business/legal acceptance is not
+   inferred from it. Technical preview and rules review can proceed while pending.
+5. **Approve public launch after the configured production smoke/recovery checks
+   are recorded.** No production smoke result is claimed today. Merge, private
+   preview, rules review and catalog preparation can all proceed before go-live.
 
-### Security and AI
+## DEFERRED
 
-A redacted pattern scan inspected **902 historical text blobs across 136 reachable
-commits** for private keys, common provider tokens, JWTs and credential-bearing
-connection URLs. No candidates were found. This limited pattern scan is not a
-complete guarantee against every possible credential format or removed history.
-Privileged keys stay in server-only clients. No operational secret values were
-added to source or documentation.
+The 50-product verified catalog and its accuracy sample follow the ingredient beta,
+as explicitly selected by the owner. Current source conflicts and manufacturer
+permission gaps remain recorded, not resolved by relabeling OFF evidence. A future
+alternative evidence policy, automatic rescreening/promotion and unattended catalog
+expansion need a separate bounded change; none blocks this release candidate.
 
-Dependency registry audit found **zero high/critical advisories**, and two moderate
-entries for the same Vitest/mocker advisory,
-[GHSA-82fw-gwwq-j7x9](https://github.com/advisories/GHSA-82fw-gwwq-j7x9). The affected
-unauthenticated mocker dev-server plugin is not used by the current node/jsdom test
-setup. Updating the test framework across a major version remains P2; no advisory
-was suppressed and the dependency audit remains in CI.
-
-Evidence retrieval now rejects redirects before requesting an unreviewed target.
-Production analytics requires its own HMAC secret; events are aggregate counts,
-not a verified unique-user measure. Costly operations stop on rate-limit failures.
-Non-Vercel deployments deliberately share a conservative bucket until a trusted
-proxy identity adapter is supplied.
-
-Photo extraction uses configured OpenAI/Gemini adapters; defaults remain
-`gpt-5.6-luna`, `gemini-3.5-flash-lite`, and `gemini-3.7-flash`. Their current paid
-availability/accuracy was not revalidated and none was called during takeover.
-OpenAI extraction has a 6,000 output-token cap; catalog comparison retains its
-800-token cap. SDK retries are disabled so application attempts own the call budget.
-Malformed-output token usage now survives validation failure in the ledger.
-Structured output, timeouts, confirmation, escalation and deterministic fallback
-remain in place. Photo/AI activation still requires its existing acceptance gates.
-
-No paid provider request was made. Operating cost depends on configured pricing,
-input images and enabled traffic; do not extrapolate the old five-comparison pilot
-into a production forecast. Manual ingredient checks make no LLM call.
-
-## REQUIRES OWNER ACTION / EXTERNAL VERIFICATION
-
-1. **GitHub CI release gate.** Upload was explicitly approved and succeeded.
-   [Draft PR #21](https://github.com/ahartman0831/SnackCheck/pull/21) is stacked on
-   PR #20. Initial CI run 34300899968 passed verify, default Turbopack builds, public
-   WebKit, camera WebKit, SQL tests, generated types and storage. The new database
-   WebKit journey exposed HTTP Secure-cookie behavior and a test navigation race.
-   Commit 6355676 adds disposable local HTTPS, retains production Secure cookies,
-   waits for logout navigation, and asserts the actual confirmation response.
-   Commit c779402 then checks the actual signed-out access-required page and
-   absence of operational data instead of expecting an unimplemented redirect.
-   All three jobs must pass on the current PR revision before merge; consult
-   [PR #21 checks](https://github.com/ahartman0831/SnackCheck/pull/21/checks) for the
-   final revision result. A partial run never counts as complete.
-2. **Local platform limits.** This Mac still cannot run the default Turbopack build
-   or current WebKit locally; Ubuntu CI has now exercised both successfully.
-3. **Regulatory review.** A qualified reviewer must sign the exact sourced Arizona
-   ruleset hash. A separately authorized administrator must publish it through the
-   protected lifecycle. This cannot be replaced with a fixture or agent assertion.
-4. **Launch catalog.** At least 50 current independently evidenced real products,
-   reviewed identity/formulation/source dates, and an accuracy sample. Existing
-   staged candidates and old pilot counts are not public approved inventory. Respect
-   recorded source-permission blocks; use permitted feeds or current package evidence.
-5. **Production environment.** Confirm separate Supabase/Vercel projects and final
-   domain. Apply reviewed migrations, including 0037, through the approved release
-   process. Set required keys, strong separate HMAC secrets and Upstash. Verify
-   production environment isolation and admin roles.
-6. **Support, legal and operations.** Supply real `SUPPORT_EMAIL`, configure and test
-   SMTP, approve privacy/terms/retention and any provider disclosures, configure and
-   exercise alert destinations, schedule retention, and rehearse production restore
-   and Vercel rollback. Existing legal pages are not owner legal approval.
-7. **Actual deployment smoke tests and final go-live approval.** No production
-   deployment, smoke test or public launch was performed. Keep optional features off
-   until device and provider acceptance is complete.
-
-## DEFERRED UNTIL AFTER LAUNCH OR INDEPENDENT APPROVAL
-
-Amazon Associates remains the intended commercial option, but there are no active
-links, approved ASIN mappings, tracking ID, click redirects or affiliate revenues.
-Use one central link builder with allowlisted destinations and visible approved
-Amazon disclosure when the account/mappings are available. Click tracking must not
-prevent navigation or influence compliance/ranking. No fake affiliate links were
-added and monetization has not silently been declared complete.
-
-Also deferred: consumer accounts/personal history, school-policy administration,
-full offline/PWA behavior, native apps, nationwide expansion, large-scale automatic
-promotion and unvalidated Gemini production use. Dormant schema was preserved.
-
-## Next concrete action
-
-Use the current PR revision's complete CI result as the engineering merge gate.
-The safe staging population is recorded in
-[catalog population 2026-09-08](catalog-population-2026-09-08.md). Provide the
-production environment/support contact and arrange the ruleset review. Continue
-current independent evidence, publication and launch acceptance work after those
-inputs. Database population approval is not regulatory sign-off or public launch.
+Amazon Associates remains intended but inactive: no tag, real ASIN mapping, affiliate
+link builder/redirect or click revenue is claimed. Enablement needs the actual
+account/mappings, disclosed safe links and tracking that cannot block navigation or
+influence ranking. Camera/photo and paid AI stay off pending separate provider and
+physical-device acceptance. Consumer accounts/history, school administration,
+nationwide expansion, native apps, full offline/PWA and speculative new features
+remain outside the beta. Existing schema and useful implementation are preserved.

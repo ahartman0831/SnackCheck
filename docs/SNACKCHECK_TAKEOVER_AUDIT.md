@@ -1,9 +1,10 @@
-# SnackCheck takeover audit
+# SnackCheck takeover audit — historical baseline
 
 Recorded September 8, 2026. Starting revision: `790c9ce`, branch
-`codex/phase-11-evidence-collection`. This document supersedes historical phase
-lists for prioritization; preserve those lists as evidence of past decisions.
-Current verification and outstanding gates are in `implementation-status.md`.
+`codex/phase-11-evidence-collection`. This is the original forensic record, not current status. Findings below describe
+the inherited baseline and have since been repaired or explicitly deferred.
+Current verification, owner-approved beta scope and outstanding gates are in
+[RELEASE_AUDIT.md](RELEASE_AUDIT.md); do not restart the old remediation list.
 
 ## Product reconstructed from code
 

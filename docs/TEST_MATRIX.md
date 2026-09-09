@@ -5,7 +5,8 @@ local disposable database; none prove real catalog accuracy or legal sign-off.
 
 - New visitor: homepage, search, barcode fallback, ingredient form, approved page,
   rules, legal/support and not-found routes. Playwright public routes + axe.
-- First check: create actual private submission, process pasted text, confirm,
+- First check: follow the homepage ingredient action, create actual private submission,
+  process pasted text, confirm,
   receive truthful VERIFY with unpublished rules. `takeover-journey.spec.ts` uses
   the real local API and database, not intercepted responses.
 - Returning visitor: tab-local draft survives reload; link navigation remains usable.
@@ -22,6 +23,10 @@ local disposable database; none prove real catalog accuracy or legal sign-off.
   provider-cache outage recovery and Redis failure. Unit tests; no paid provider call.
 - Layout: desktop/mobile Chrome, widths 320–1440px, dark mode, reduced motion, zoom and
   serious/critical accessibility violations. WebKit on supported Linux CI.
+- Release approval rehearsal: separate fixture reviewer/publisher, real publication
+  and candidate promotion transactions, anonymous eligibility and conflict withdrawal;
+  all ten assertions roll back. Actual route/engine tests also prove published-rule
+  FAIL and unverified VERIFY; neither fixture constitutes real approval.
 - Operations: repeated clean migrations, local generated types, real private image
   processing, retention cleanup and guarded disposable backup/restore.
 
