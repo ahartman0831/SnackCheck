@@ -11,21 +11,126 @@ Micro compute cost on September 9; further paid services or add-ons need approva
   to the public website.
 - Production Vercel project and account: **owner confirmed** `snack-check-web` in
   `Hartman Dev`. Keep **Only build pre-production** enabled.
-- Temporary beta URL: **owner confirmed** `https://snack-check-web.vercel.app`.
-  Custom public domain is deferred. This records the intended `NEXT_PUBLIC_APP_URL`;
-  no production environment variable has been changed.
+- Temporary website address: **owner confirmed for temporary private beta testing
+  only** `https://snack-check-web.vercel.app`. This is not an SMTP or support-email
+  domain, and is not a selected custom public domain. Actual private acceptance
+  testing uses the access-protected Vercel Preview deployment; the existing public
+  alias has not been repointed and Production settings remain unchanged.
 - Real monitored `SUPPORT_EMAIL`: **deferred until launch preparation**. The owner
   prefers assistant triage of support messages and accepts personal Gmail only as
   a fallback. Do not treat that conditional answer as unconditional approval to
   publish the personal address.
-- SMTP provider and verified sending domain: **pending owner**
-- Production Upstash project/account: **pending owner**
+- SMTP provider and verified sending domain: **deferred until launch preparation**.
+  No custom SnackCheck domain is selected. Do not use `vercel.app` for SMTP or
+  support email, and do not purchase or configure a domain now.
+- Upstash: **owner approved and verified for protected Preview only**.
+  `snackcheck-rate-limit`, database `7b21ca38-15ee-4123-a6af-a2df5307f6a9`, Free
+  ($0/month), AWS us-east-1, no added read regions, eviction or paid add-ons.
+  Production Redis configuration remains untouched.
 - Alert recipient and operational contact: **pending owner**
 - Backup plan/account and restore operator: **pending owner**
 - Rules reviewer and different publishing administrator: **pending owner**
 
 The registered OFF contact is already configured for staging and need not be
 provided again. It is not automatically the site's support address.
+
+## Domain decision — deferred by owner
+
+Continue private-preview work that does not require a custom domain. Do not treat
+SMTP or the public support address as the next blocking owner input while doing
+that work. When a custom domain becomes necessary for launch preparation, present
+up to three options with availability checked at that time, current annual prices
+(including renewal pricing when different), and the exact intended use for the
+website, login-email sender and support mailbox. Ask for purchase approval only
+after that concrete comparison; no purchase, DNS setup or domain configuration is
+authorized now. Availability and prices are not to be assumed from an old search.
+
+## Protected Preview verification — September 9, 2026
+
+The private acceptance checks below ran on the original three handoff commits at
+`ce6dc3983381e098c42b33ce6f7d693b56c5f268`. PR #23 also includes the retention-runner
+fix and these updated handoff notes. Its description records CI for the exact
+current head separately from that earlier hosted acceptance evidence. A code
+merge, public deployment and rules publication each remain separately gated.
+
+- Current protected Preview:
+  `https://snack-check-or5f7y5v6-hartman-dev.vercel.app`.
+- New Supabase credentials, application secrets and Redis connection settings are
+  scoped exclusively to Preview branch `codex/production-handoff`. Server values
+  are Secret variables. `ALLOW_PREVIEW_MEMORY_RATE_LIMIT=false`.
+- Redis-backed testing passed 41 functional checks and 10 shared-rate checks:
+  database, one-time-code verification without sending mail, session refresh,
+  authorization, ingredient confirmation, failure handling, shared HTTP 429 limits
+  across two separate deployments, and recovery after natural counter expiry.
+- Temporary auth users, memberships and submissions were removed. Storage remains
+  empty. Camera, photo processing, paid AI and affiliates remain off; rules remain
+  unsigned and unpublished, so ingredient results correctly remain VERIFY.
+- Vercel Production variables, deployment protection, paused-build behavior and
+  the public alias were verified unchanged. SMTP delivery, external alert delivery
+  and a hosted backup/restore rehearsal are not claimed by these tests.
+
+## Domain-independent operations checks — September 9, 2026
+
+- The documented retention command initially failed before connecting because its
+  top-level await was incompatible with the runner's CommonJS output. The
+  entry-point fix preserves the dry-run default and explicit apply confirmation,
+  and suppresses unexpected sensitive error details. It changes command execution,
+  not the cleanup policy, and does not enable automatic deletion or scheduling.
+- Ran the actual retention worker against `SnackCheck Production` with apply
+  explicitly false: zero candidates, zero purged, zero failures. Missing credentials
+  and apply mode without its exact confirmation were both refused in separate
+  local checks. No deletion or retention schedule was enabled. An empty dry run
+  does not establish that a real purge/restore cycle has been rehearsed.
+- Read-only Supabase inspection shows scheduled daily backups and one physical
+  backup at `2026-09-09 13:24:00 UTC`. No restore was started and no restore project,
+  paid recovery feature or add-on was created. The contents and recovery of that
+  backup have not been verified. Supabase explicitly excludes Storage API objects
+  from database backups; object recovery remains a separate future requirement
+  if photos are enabled.
+
+## Proposed operational ownership — not implemented
+
+Recommend Alex Hartman as the primary recipient of private operational alerts,
+using his existing owner-controlled Gmail mailbox. This is an internal operations
+destination, not a public support address or approval to publish it. Use the
+existing provider/GitHub notification channels where suitable; a custom SnackCheck
+sending domain is not a prerequisite for those provider-generated alerts. Prioritize
+actionable availability failures, database/Redis failures, unexpected server errors,
+and approaching provider quotas. Keep repeated unchanged events quiet.
+
+The assistant can help triage and prepare actions during authorized sessions; it
+is not a substitute for a reachable human recipient. Any automatic monitoring,
+mailbox access, forwarding, alert delivery configuration or backup recipient must
+be approved separately. Nothing is configured or scheduled by this recommendation.
+
+## Proposed rules review and publication ownership — not implemented
+
+Recommend Alex Hartman as the eventual publishing administrator and a different
+named human, selected by Alex, as the rules reviewer. Choose someone able to assess
+the cited Arizona school-food sources, ingredient aliases, applicability contexts,
+and result wording. No reviewer has been assigned or hired and no fee is authorized.
+
+To satisfy the application's existing controls when separately approved:
+
+1. Use two distinct real people's authenticated accounts in `SnackCheck Production`.
+   Both review recording and publication currently require an active
+   `REGULATORY_ADMIN` (or `SUPER_ADMIN`) account. Prefer `REGULATORY_ADMIN`; the
+   catalog `REVIEWER` role cannot sign the rules review. Do not use two accounts
+   controlled by one person, an AI identity, or temporary test identities.
+2. The reviewer independently approves or amends the frozen production review
+   packet and records the final canonical rules hash, an HTTPS review-document URL,
+   its SHA-256, and the review timestamp through the protected review operation.
+   Use the production payload, not a copied staging signature. The currently
+   unsigned production hash is recorded below; any edits require a fresh review.
+3. After separate owner publication approval, Alex checks that the same hash and
+   review timestamp are still current and completes the explicit publication
+   confirmation under his own account. The database rejects the same person acting
+   as reviewer and publisher for that ruleset and rejects stale review state.
+
+AI-assisted preparation may support this process but does not replace either human
+decision or signed account identity. This recommendation assigns no roles, creates
+no users, records no signatures and publishes no rules. It is separate from the
+decision to merge PR #23.
 
 ## Account inspection — September 9, 2026
 
