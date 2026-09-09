@@ -80,7 +80,10 @@ in Chromium/WebKit. Neither kind of test certifies real ingredient accuracy.
 - **New customer:** the old homepage sent the main action to an empty catalog and
   described an inactive AI step. Repaired for the selected beta: prominent ingredient
   action, paste/confirm steps, limited catalog explanation and truthful result next
-  steps. Full database browser journey now starts from that action.
+  steps. Full database browser journey now starts from that action. The final visual
+  check found inherited dark text on a dark search-field background; form controls
+  now pair foreground/placeholder colors with their theme surface. The existing
+  dark-mode browser check fills the field and checks accessibility as well as layout.
 - **Returning customer:** tab-local draft survives reload; denied storage keeps an
   in-memory draft; edits clear old results. No personal-history/account promise.
 - **Malicious user:** server-side submission ownership, active roles, stale versions,

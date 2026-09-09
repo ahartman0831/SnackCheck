@@ -38,6 +38,13 @@ test.describe("Phase 3 shell and gallery", () => {
     await page.emulateMedia({ colorScheme: "dark", reducedMotion: "reduce" });
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/");
+    await page.getByRole("combobox", { name: "Search a food or brand" }).fill("Oat bars");
+    const dark = await new AxeBuilder({ page }).analyze();
+    expect(
+      dark.violations.filter(
+        (item) => item.impact === "critical" || item.impact === "serious",
+      ),
+    ).toEqual([]);
     const overflow = await page.evaluate(() => {
       return (
         document.documentElement.scrollWidth > document.documentElement.clientWidth + 1
