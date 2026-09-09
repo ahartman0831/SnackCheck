@@ -153,10 +153,10 @@ export default async function ProductPage({
               : "Other products to consider"}
           </h2>
           <p className="text-muted mt-1">
-            No listed restriction was found in these products' available ingredient text.
-            Verify with your school or governing authority before deciding. They are
-            ordered by category, evidence eligibility, brand, and name—not by affiliate
-            payment.
+            No listed restriction was found in the available ingredient text for these
+            products. Verify with your school or governing authority before deciding. They
+            are ordered by category, evidence eligibility, brand, and name—not by
+            affiliate payment.
           </p>
           {alternatives.length > 0 ? (
             <ul className="mt-4 grid gap-3">

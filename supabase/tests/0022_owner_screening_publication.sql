@@ -11,7 +11,7 @@ insert into public.admin_members(user_id,role,active) values
  ('82000000-0000-4000-8000-000000000002','REVIEWER',true),
  ('82000000-0000-4000-8000-000000000003','REGULATORY_ADMIN',false);
 create temporary table owner_rules_values as
-select id, ruleset_hash as hash, null::uuid as draft_id from public.rulesets
+select id, ruleset_hash as hash, null::uuid as draft_id, null::text as draft_hash from public.rulesets
 where id='33333333-3333-3333-3333-333333333333';
 grant select on owner_rules_values to authenticated;
 
@@ -51,12 +51,13 @@ select throws_ok($$select public.admin_publish_ruleset((select id from owner_rul
 reset role;
 -- Reuse the audited clone path for rollback: copy the chosen earlier version into a new version.
 update owner_rules_values set draft_id=public.admin_clone_ruleset_to_draft(id,hash,'owner-rollback-clone');
+update owner_rules_values set draft_hash=(select ruleset_hash from public.rulesets where id=owner_rules_values.draft_id);
 select is((select version from public.rulesets where id=(select draft_id from owner_rules_values)),2,'rollback clone gets a new version');
 select ok((select not is_published and reviewed_by is null and published_at is null from public.rulesets where id=(select draft_id from owner_rules_values)), 'rollback clone requires a fresh approval and has no inherited signature');
 set local role authenticated;
-select lives_ok($$select public.admin_publish_ruleset((select draft_id from owner_rules_values),(select ruleset_hash from public.rulesets where id=(select draft_id from owner_rules_values)),null,'owner-rollback-publish')$$,'owner can approve the cloned prior content as a new immutable release');
+select lives_ok($$select public.admin_publish_ruleset((select draft_id from owner_rules_values),(select draft_hash from owner_rules_values),null,'owner-rollback-publish')$$,'owner can approve the cloned prior content as a new immutable release');
 reset role;
-select is((select version from public.current_published_arizona_ruleset()),2,'latest published rollback version is selected');
+select is((select id from public.current_published_arizona_ruleset()),(select draft_id from owner_rules_values),'latest published rollback version is selected');
 select ok((select is_published and ruleset_hash=(select hash from owner_rules_values) from public.rulesets where id=(select id from owner_rules_values)), 'original published version and hash remain in history');
 select is((select count(*)::int from public.admin_audit_log where request_id in ('owner-rollback-clone','owner-rollback-publish')),2,'rollback clone and publication are both audited');
 select * from finish();
