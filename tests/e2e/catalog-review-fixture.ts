@@ -14,8 +14,9 @@ export async function seedCatalogReviewFixture(request: APIRequestContext) {
       headers: { apikey: key, Authorization: `Bearer ${key}` },
       data,
     });
-    expect(response.ok(), `${name}: ${await response.text()}`).toBe(true);
-    return response.json();
+    const body = await response.text();
+    expect(response.ok(), `${name}: ${body}`).toBe(true);
+    return body.trim() ? JSON.parse(body) : null;
   }
   const csv = `fdc_id,gtin_upc,brand_name,description,ingredients,market_country,modified_date\n${randomUUID()},012345678905,Test Fixture,Fixture grain crackers,"oats, sugar, salt",United States,2026-09-01\n`;
   async function* chunks() {
