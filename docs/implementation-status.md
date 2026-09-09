@@ -9,10 +9,11 @@ lists remain VERIFY. Engine 0.1.2, private USDA/OFF ingestion and review, authen
 ownership, abuse controls and migration/recovery verification are complete.
 
 [RELEASE_AUDIT.md](RELEASE_AUDIT.md) is the single current release record, including
-verification, limitations and the final adversarial review. The only merge path is
-[PR #22 → main](https://github.com/ahartman0831/SnackCheck/pull/22); #20/#21 are superseded.
-All three checks must pass on its current head. Earlier phase histories remain in
-git and their explicitly historical documents, not duplicated as current status.
+verification, limitations and the final adversarial review.
+[PR #22](https://github.com/ahartman0831/SnackCheck/pull/22) is merged as `8b98d0f`;
+all three main CI jobs passed. #20/#21 are superseded. Vercel production builds
+remain paused, and the beta has not been deployed publicly. Earlier phase histories
+remain in git and their explicitly historical documents.
 
 Staging: 589 private candidates, 154 queued, zero products/formulations/published
 rules/dossiers. Sixty exact review packets and the unsigned rules packet are ready
@@ -21,7 +22,7 @@ in [release-review](release-review/README.md). Preparation does not equal approv
 ## REQUIRES OWNER ACTION
 
 The five exact actions and what can proceed without each are in
-[the release record](RELEASE_AUDIT.md#requires-owner-action): merge authorization,
+[the release record](RELEASE_AUDIT.md#requires-owner-action): new database cost approval,
 reviewer/publisher assignment, production handoff, public policy acceptance and
 final launch authorization. Public deployment and real production service tests
 remain unperformed. These external gates do not make completed engineering unfinished.

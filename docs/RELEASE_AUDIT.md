@@ -8,12 +8,13 @@ option A on September 9: lead with paste/confirm ingredient screening; grow the
 verified catalog after the beta. The former 50-product requirement applies to the
 catalog release, not this beta. No new evidence architecture is part of closeout.
 
-**One merge path:** [PR #22 → main](https://github.com/ahartman0831/SnackCheck/pull/22).
+**Merged:** [PR #22 → main](https://github.com/ahartman0831/SnackCheck/pull/22), with
+owner approval for head `72fbc92`, produced `8b98d0f`. All three
+[main CI jobs passed](https://github.com/ahartman0831/SnackCheck/actions/runs/34355142034).
 It contains all commits from #20 and #21 without rebasing shared history. Those PRs
-are superseded; do not merge them separately. No merge or public deployment has
-been performed. The current release gate is all three jobs green at the actual
-head shown on [PR #22 checks](https://github.com/ahartman0831/SnackCheck/pull/22/checks).
-A previous green revision cannot substitute for the current head.
+are superseded; do not merge them separately. Vercel's owner-approved **Only build
+pre-production** setting canceled the merge's production build. The existing public
+site remains on `ee1b1c5`; the beta has not been deployed or launched publicly.
 
 **Product:** the homepage leads to the real paste/confirm journey. It creates an
 owned private submission, processes text without an LLM, saves the confirmed result
@@ -42,9 +43,8 @@ on an evidence conflict. Controlled test signatures/products never enter staging
 The route test runs the actual engine with clearly labeled fixture rules; it is not
 real regulatory approval. Browser coverage starts at the beta homepage CTA.
 
-Baseline application head 757504e passed [CI 34348671912](https://github.com/ahartman0831/SnackCheck/actions/runs/34348671912).
-The current head's checks above include the closeout changes and are the release
-authority. Existing optional browser skips do not establish physical-device acceptance;
+The merged release's main checks above include the closeout changes and are the
+release authority. Existing optional browser skips do not establish physical-device acceptance;
 the dedicated database journey has zero skips. Linux CI verifies the default build
 and WebKit that this Mac cannot reliably exercise. Local SQL and targeted release
 checks additionally pass. No paid provider call is required by or used for this beta.
@@ -69,9 +69,11 @@ photos, invented manufacturer evidence, rule signatures or publication were used
 
 ## REQUIRES OWNER ACTION
 
-1. **Authorize merging PR #22 into main.** This is the single engineering merge
-   decision. Its current head must have all three CI jobs green. Rules review and
-   account preparation can proceed before merge; merge does not authorize launch.
+1. **Approve the new production database's account cost.** The owner requires a
+   separate Supabase project. Both active Free slots are occupied; the existing
+   Pro organization quotes about $10/month additional Micro compute. Creation and
+   charges are pending explicit approval. Vercel and the temporary beta URL are
+   confirmed in the [production handoff](release-review/production-handoff.md).
 2. **Assign a rules reviewer and a different publishing administrator to the
    [exact review packet](release-review/README.md).** They must approve or amend the
    sourced aliases, verify the final canonical hash, and record review evidence
@@ -79,7 +81,7 @@ photos, invented manufacturer evidence, rule signatures or publication were used
    claimed requirement to obtain legal approval for each snack. Engineering can be
    merged and the private app exercised while the rules remain unpublished.
 3. **Complete the [production handoff](release-review/production-handoff.md).**
-   Supply the owner-controlled projects/domain and service/contact assignments.
+   Supply the remaining service/contact assignments after the new database exists.
    Accounts, credentials and paid commitments remain with the owner. Once access is
    available, engineering can configure and verify SMTP, limits, monitoring,
    retention, backup/restore and rollback; these tests are not being delegated to
