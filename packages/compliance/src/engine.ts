@@ -81,13 +81,13 @@ export function evaluateCompliance(input: ComplianceInput): ComplianceResult {
 
   const summary =
     ingredientStatus === "FAIL"
-      ? `This package lists ${declaredMatches
+      ? `The available ingredient text lists ${declaredMatches
           .map((match) => match.canonicalName)
           .filter((name, index, all) => all.indexOf(name) === index)
           .join(", ")}.`
       : ingredientStatus === "PASS"
-        ? "No enabled Arizona prohibited ingredient matched this formulation, and the evidence meets the current quality gates."
-        : "A trustworthy current determination is not possible from the available evidence.";
+        ? "No listed restriction was found in the available ingredient text under this ruleset. This does not establish safety, school eligibility, or legal compliance."
+        : "The available rules or ingredient evidence are insufficient for a current screening result. Verify the package and ask your school or governing authority.";
 
   return {
     ingredientStatus,

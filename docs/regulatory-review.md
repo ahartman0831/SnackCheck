@@ -1,13 +1,13 @@
 # Regulatory review
 
-**Status:** Not signed. Migration `0016` keeps the seeded AZ-HSA ruleset unpublished. Do not mark a ruleset production-published until this record is complete.
+**Status:** Rules remain unpublished. Independent human or expert review is optional for the informational beta. One authorized owner/admin may approve and publish a sourced version through the protected lifecycle; see [the current model](informational-screening.md). This checklist supports that approval or an optional review, not certification.
 
 The frozen draft, all aliases/contexts, exact canonical hash and recommended
 decisions are in [the release review packet](release-review/README.md). The owner
 selected ingredient screening first; the launch catalog sample is required before
 the later catalog release.
 
-## Required review
+## Source checks for owner approval or optional review
 
 - [ ] A.R.S. § 15-242.01 text and URL
 - [ ] Arizona Laws 2025, Chapter 52 / HB 2164

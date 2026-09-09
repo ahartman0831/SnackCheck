@@ -37,7 +37,7 @@ export function barcodeNavLabel(env?: FeatureEnv): string {
 export { APP_TAGLINE } from "./brand";
 export const APP_SUPPORTING =
   "Check packaged-food ingredients against Arizona’s school distribution rules.";
-export const APPROVED_HEADING = "Products that pass the Arizona ingredient check";
+export const APPROVED_HEADING = "Products with no listed restriction found";
 export const APPROVED_FORBIDDEN = [
   "school-safe",
   "allergy-safe",

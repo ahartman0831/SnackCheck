@@ -10,7 +10,7 @@ select is(
 select is(
   (select count(*)::int from public.current_published_arizona_ruleset()),
   0,
-  'no published Arizona ruleset exists until signed review'
+  'no published Arizona ruleset exists until explicit owner/admin publication'
 );
 
 select is(

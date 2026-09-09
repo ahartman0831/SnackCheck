@@ -32,7 +32,7 @@ describe("feature-flag public wording", () => {
   });
 
   it("keeps approved-list language honest", () => {
-    expect(APPROVED_HEADING).toBe("Products that pass the Arizona ingredient check");
+    expect(APPROVED_HEADING).toBe("Products with no listed restriction found");
     for (const phrase of APPROVED_FORBIDDEN) {
       expect(APPROVED_HEADING.toLowerCase()).not.toContain(phrase);
     }

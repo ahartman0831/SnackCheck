@@ -27,13 +27,14 @@ limits and the deterministic 589-record impact: 34 additional ingredient lists
 would gain a failing screen. Those are text matches, not package adjudications.
 This recommendation does not substitute for regulatory or legal acceptance.
 
-Record alias decisions with the real reviewer's identity/evidence first, regenerate
-the exact canonical snapshot/hash, then record the full review through
-`/admin/rulesets`. The reviewer uploads or supplies an HTTPS review document and its
-SHA-256 and confirms the current hash. A different active regulatory administrator
-must use the protected publication action with that hash, reviewed timestamp and
-typed PUBLISH confirmation. If anything changed, stop and rereview the new hash.
-The agent has not enabled aliases, signed the review or published any ruleset.
+For the informational beta, one authorized owner/admin may approve the sourced
+snapshot and publish it through `/admin/rules` with its current hash, optional review
+timestamp (or null), acknowledgement and typed PUBLISH confirmation. Independent
+review is optional, not a launch blocker. The same admin may record an optional
+HTTPS review document/SHA-256 and publish. Refresh changed content before approval.
+The [current model](../informational-screening.md) supersedes the former two-person
+requirement. This frozen packet remains historical source evidence; no aliases,
+review identities or publication state are changed by the proposed implementation.
 
 ## Exact catalog packet and recommendation
 
@@ -61,7 +62,7 @@ in the owner's ignored local data directory and authenticated staging workspace.
 
 `supabase/tests/0021_release_publication_rehearsal.sql` uses only controlled fixture
 identities and a fictional product inside BEGIN/ROLLBACK on disposable PostgreSQL.
-It records a fixture review, rejects self-publication, lets a different fixture
+It records an optional fixture review, rejects stale approval, lets a different fixture
 administrator publish, checks audit entries, queues/promotes a candidate through
 the real transaction, checks anonymous eligibility, then verifies an evidence
 conflict withdraws approval. It also proves publication does not enable pending
@@ -75,7 +76,11 @@ ownership cookie, unowned submission → no read/write. The browser suite indepe
 proves real local persistence, homepage entry, reviewer sessions and private review
 in Chromium/WebKit. Neither kind of test certifies real ingredient accuracy.
 
-## Final adversarial review
+`0022_owner_screening_publication.sql` additionally tests owner-only approval with no
+review, authorization, source checks, stale/duplicate rejection, immutable history
+and timestamps, and audited rollback through a newly cloned published version.
+
+## Historical final adversarial review (before the informational-model PR)
 
 - **New customer:** the old homepage sent the main action to an empty catalog and
   described an inactive AI step. Repaired for the selected beta: prominent ingredient
@@ -87,7 +92,7 @@ in Chromium/WebKit. Neither kind of test certifies real ingredient accuracy.
 - **Returning customer:** tab-local draft survives reload; denied storage keeps an
   in-memory draft; edits clear old results. No personal-history/account promise.
 - **Malicious user:** server-side submission ownership, active roles, stale versions,
-  RLS and private storage; expired reviewer session refresh and sign-out; self-publish
+  RLS and private storage; expired reviewer session refresh and sign-out; stale-publication
   rejection, unowned confirmation rejection, and fail-closed production rate limits.
 - **QA:** unavailable rules cannot match/clear products; user text cannot become
   verified PASS; failed persistence cannot consume ownership; provider errors,

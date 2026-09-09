@@ -100,8 +100,8 @@ export function ApprovedFilters({
       <div className="md:hidden">
         <Dialog
           trigger={<Button variant="secondary">Filters</Button>}
-          title="Filter passing products"
-          description="These filters only use fields from the published approved projection."
+          title="Filter screened products"
+          description="Filter the available catalog information; these results are not school approval."
         >
           <form className="flex flex-col gap-3" action="/approved" method="get">
             {fields}

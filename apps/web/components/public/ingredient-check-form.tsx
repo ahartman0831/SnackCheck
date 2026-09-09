@@ -171,10 +171,12 @@ export function IngredientCheckForm() {
           />
           <p className="text-muted text-sm">
             {result.qualityFlags?.includes("RULESET_UNAVAILABLE")
-              ? "Reviewed Arizona rules are not available yet, so this list could not be screened for restrictions. Check the package and contact your school before bringing it."
+              ? "Published Arizona screening rules are not available yet, so this list could not be screened for restrictions. Check the package and contact your school before bringing it."
               : result.ingredientStatus === "VERIFY"
-                ? "VERIFY is not clearance. Check that you included the complete current ingredient panel and ask your school about its requirements."
-                : "Compare the listed ingredient with your current package and ask your school about a suitable alternative."}
+                ? "This result needs verification. Check that you included the complete current ingredient panel and ask your school about its requirements."
+                : result.ingredientStatus === "FAIL"
+                  ? "Compare the potential match with your current package and verify with your school or governing authority."
+                  : "No listed restriction was found. Verify the current package and school requirements before deciding what to bring."}
           </p>
         </div>
       ) : null}

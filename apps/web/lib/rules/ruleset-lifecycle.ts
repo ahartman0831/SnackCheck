@@ -43,11 +43,22 @@ export function publicationBlockers(input: RulesetPublicationInput): string[] {
   if (!input.rulesetHash) {
     blockers.push("canonical ruleset hash must be populated");
   }
-  if (!input.reviewedBy || !input.reviewedAt) {
-    blockers.push("signed reviewer and reviewed_at are required");
-  }
-  if (!input.reviewDocumentUrl || !input.reviewDocumentHash) {
-    blockers.push("review document URL and hash are required");
+  const hasReview = [
+    input.reviewedBy,
+    input.reviewedAt,
+    input.reviewDocumentUrl,
+    input.reviewDocumentHash,
+  ].some((value) => value !== null);
+  if (
+    hasReview &&
+    (!input.reviewedBy ||
+      !input.reviewedAt ||
+      !/^https:\/\/[^\s]+$/.test(input.reviewDocumentUrl ?? "") ||
+      !/^[0-9a-f]{64}$/.test(input.reviewDocumentHash ?? ""))
+  ) {
+    blockers.push(
+      "optional review must include reviewer, timestamp, HTTPS document and SHA-256",
+    );
   }
   if (input.isPublished && !input.publishedBy) {
     blockers.push("publisher is required");

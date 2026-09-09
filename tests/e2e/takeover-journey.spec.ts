@@ -15,7 +15,9 @@ test("a new visitor can check ingredients without an invented passing result", a
   await page.getByRole("button", { name: "Check this list" }).click();
   expect((await confirmation).ok()).toBe(true);
   await expect(page.getByRole("button", { name: "Check this list" })).toBeEnabled();
-  await expect(page.getByText("VERIFY", { exact: true })).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: "Needs verification", exact: true }),
+  ).toBeVisible();
   await expect(page.getByLabel("Ingredient list")).toHaveValue("oats, sugar, salt");
   await page.reload();
   await expect(page.getByLabel("Ingredient list")).toHaveValue("oats, sugar, salt");

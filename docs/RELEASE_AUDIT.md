@@ -1,5 +1,9 @@
 # SnackCheck release candidate — September 9, 2026
 
+Current course correction: [informational-screening model](informational-screening.md).
+Its PR permits single-admin approval/publication and changes public result wording;
+independent review is optional. Hosted changes and public launch remain unauthorized.
+
 ## READY NOW
 
 **Engineering release candidate for the owner-approved ingredient-screening beta.**
@@ -37,7 +41,7 @@ record the customer, returning-user, adversary, QA, owner and maintainer checks.
 dependency/secret gates, public/camera WebKit, and real database desktop/mobile
 journeys. Database checks cover migrations 0001–0039, 22 SQL files / 317 assertions
 on two resets, generated-type parity, private storage and disposable backup/restore.
-The added rollback-only rehearsal exercises separate reviewer/publisher identities,
+The historical rollback-only rehearsal exercised separate reviewer/publisher identities,
 audited publication, candidate promotion, public eligibility and immediate withdrawal
 on an evidence conflict. Controlled test signatures/products never enter staging.
 The route test runs the actual engine with clearly labeled fixture rules; it is not
@@ -78,12 +82,11 @@ photos, invented manufacturer evidence, rule signatures or publication were used
    types/access controls, empty user/content storage, and zero published rules.
    Vercel and the temporary beta URL are confirmed; production builds stay paused.
    The [production handoff](release-review/production-handoff.md) records details.
-2. **Assign a rules reviewer and a different publishing administrator to the
-   [exact review packet](release-review/README.md).** They must approve or amend the
-   sourced aliases, verify the final canonical hash, and record review evidence
-   through the protected lifecycle. This is an existing product control, not a
-   claimed requirement to obtain legal approval for each snack. Engineering can be
-   merged and the private app exercised while the rules remain unpublished.
+2. **Have an authorized owner/admin approve the sourced ruleset for informational
+   screening.** A separate human or expert review is optional and not a launch
+   blocker. [The current model](informational-screening.md) preserves source/hash,
+   immutable-version and audit controls. Actual rules publication remains a separate
+   authorized action; this PR publishes nothing.
 3. **Complete the [production handoff](release-review/production-handoff.md).**
    Supply the remaining service/contact assignments after the new database exists.
    Accounts, credentials and paid commitments remain with the owner. Once access is

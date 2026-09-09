@@ -16,13 +16,14 @@ import {
   isUsablePublishedRuleset,
   loadPublishedArizonaRuleset,
 } from "@/lib/rules/arizona";
+import { INGREDIENT_CHECK_SCOPE } from "@/lib/copy";
 import { pageMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = pageMetadata({
-  title: "What can I bring?",
+  title: "Screened products",
   path: "/approved",
   description:
-    "Browse current products that pass the Arizona 11-ingredient screen. This is not an allergy or school-policy list.",
+    "Browse current products with no listed restriction found in their ingredient text. This is not an allergy or school-policy list.",
 });
 
 const PAGE_SIZE = 24;
@@ -67,11 +68,12 @@ export default async function ApprovedPage({
         />
         <p className="eyebrow relative">Current, reviewed package evidence</p>
         <h1 className="relative mt-4 text-4xl font-extrabold tracking-tight sm:text-5xl">
-          What can I bring?
+          Screened products
         </h1>
         <p className="text-muted relative mt-3 max-w-3xl text-lg leading-relaxed">
-          Browse products that pass the current Arizona 11-ingredient screen. Always
-          compare the package in your hand: recipes and school policies can change.
+          Browse products with no listed restriction found in the available ingredient
+          text. Always compare the package in your hand: recipes and school policies can
+          change.
         </p>
         <div className="relative mt-6 flex flex-wrap gap-3">
           <Button asChild>
@@ -83,11 +85,12 @@ export default async function ApprovedPage({
         </div>
       </header>
 
+      <p className="bg-surface-strong rounded-2xl p-5">{INGREDIENT_CHECK_SCOPE}</p>
       {!isUsablePublishedRuleset(ruleset) ? (
         <UnavailableRulesetState />
       ) : products.length === 0 ? (
         <PageState
-          title="No current passing products yet"
+          title="No current screened products yet"
           description="The rules are available, but no reviewed product currently satisfies every public catalog gate. Nothing has been invented to fill the list."
           action={
             <div className="flex flex-wrap gap-3">
@@ -109,7 +112,8 @@ export default async function ApprovedPage({
                   Browse by category
                 </h2>
                 <p className="text-muted mt-1">
-                  Categories appear only when at least one current passing product exists.
+                  Categories appear only when at least one current screened product
+                  exists.
                 </p>
               </div>
               {hasFilters ? (
@@ -148,8 +152,8 @@ export default async function ApprovedPage({
             <div>
               <h2 id="passing-products-heading" className="text-2xl font-semibold">
                 {filters.category
-                  ? `${categoryLabel(filters.category)} that pass`
-                  : "Current products that pass"}
+                  ? `${categoryLabel(filters.category)} with no listed restriction found`
+                  : "Products with no listed restriction found"}
               </h2>
               <p className="text-muted mt-1 text-sm">
                 {filtered.length} product{filtered.length === 1 ? "" : "s"} · neutral
@@ -169,7 +173,7 @@ export default async function ApprovedPage({
             {visible.length === 0 ? (
               <PageState
                 title="No products match those filters"
-                description="Clear the filters to see every current passing product."
+                description="Clear the filters to see every current screened product."
                 action={
                   <Button asChild variant="ghost">
                     <Link href="/approved">Clear all</Link>
@@ -211,7 +215,7 @@ export default async function ApprovedPage({
           <aside className="bg-surface-strong rounded-[20px] p-5">
             <h2 className="text-lg font-semibold">Package changed or product missing?</h2>
             <p className="text-muted mt-1">
-              Check the current ingredient panel. A report never keeps an old passing
+              Check the current ingredient panel. A report never keeps an old screening
               result current automatically.
             </p>
             <div className="mt-4 flex flex-wrap gap-3">

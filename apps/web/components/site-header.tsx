@@ -11,7 +11,7 @@ export function SiteHeader() {
   const pathname = usePathname();
   const links = [
     { href: "/search", label: "Search" },
-    { href: "/approved", label: "What I can bring" },
+    { href: "/approved", label: "Browse products" },
     { href: "/scan/barcode", label: barcodeNavLabel() },
     { href: "/rules/arizona", label: "Arizona rules" },
   ];

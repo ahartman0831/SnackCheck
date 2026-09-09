@@ -29,7 +29,7 @@ Micro compute cost on September 9; further paid services or add-ons need approva
   Production Redis configuration remains untouched.
 - Alert recipient and operational contact: **pending owner**
 - Backup plan/account and restore operator: **pending owner**
-- Rules reviewer and different publishing administrator: **pending owner**
+- Owner/admin rules approval: **pending owner**; independent expert review is optional
 
 The registered OFF contact is already configured for staging and need not be
 provided again. It is not automatically the site's support address.
@@ -103,34 +103,20 @@ is not a substitute for a reachable human recipient. Any automatic monitoring,
 mailbox access, forwarding, alert delivery configuration or backup recipient must
 be approved separately. Nothing is configured or scheduled by this recommendation.
 
-## Proposed rules review and publication ownership — not implemented
+## Rules approval and publication ownership — informational beta
 
-Recommend Alex Hartman as the eventual publishing administrator and a different
-named human, selected by Alex, as the rules reviewer. Choose someone able to assess
-the cited Arizona school-food sources, ingredient aliases, applicability contexts,
-and result wording. No reviewer has been assigned or hired and no fee is authorized.
+The owner superseded the two-person requirement. Recommend Alex as the authorized
+publishing admin; he may approve and publish a sourced version himself. Independent
+human or expert review is optional and is not a launch blocker. See the
+[informational-screening model](../informational-screening.md) for the protected
+workflow, retained source/hash/audit controls and clone-based rollback.
 
-To satisfy the application's existing controls when separately approved:
-
-1. Use two distinct real people's authenticated accounts in `SnackCheck Production`.
-   Both review recording and publication currently require an active
-   `REGULATORY_ADMIN` (or `SUPER_ADMIN`) account. Prefer `REGULATORY_ADMIN`; the
-   catalog `REVIEWER` role cannot sign the rules review. Do not use two accounts
-   controlled by one person, an AI identity, or temporary test identities.
-2. The reviewer independently approves or amends the frozen production review
-   packet and records the final canonical rules hash, an HTTPS review-document URL,
-   its SHA-256, and the review timestamp through the protected review operation.
-   Use the production payload, not a copied staging signature. The currently
-   unsigned production hash is recorded below; any edits require a fresh review.
-3. After separate owner publication approval, Alex checks that the same hash and
-   review timestamp are still current and completes the explicit publication
-   confirmation under his own account. The database rejects the same person acting
-   as reviewer and publisher for that ruleset and rejects stale review state.
-
-AI-assisted preparation may support this process but does not replace either human
-decision or signed account identity. This recommendation assigns no roles, creates
-no users, records no signatures and publishes no rules. It is separate from the
-decision to merge PR #23.
+Migration 0040 implements this policy without publishing or altering a ruleset.
+It is proposed code only until separately applied to a hosted project. The current
+production database still has migrations through 0039 and its existing controls.
+No account/role is assigned, optional reviewer hired, fee authorized, review signed,
+or rule published by this recommendation. Actual publication still needs explicit
+owner authorization for the exact production version and hash.
 
 ## Account inspection — September 9, 2026
 

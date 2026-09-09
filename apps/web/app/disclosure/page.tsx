@@ -16,8 +16,8 @@ export default function DisclosurePage() {
         display buy buttons, prices, or paid placements.
       </p>
       <p>
-        If those features ship later, they will not change PASS, FAIL, or VERIFY, search
-        ranking, or approved-list inclusion. This page does not imply tax deductibility.
+        If those features ship later, they will not change ingredient-screening results,
+        search ranking, or catalog inclusion. This page does not imply tax deductibility.
       </p>
     </article>
   );

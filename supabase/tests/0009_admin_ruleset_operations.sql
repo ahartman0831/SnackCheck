@@ -54,9 +54,9 @@ update ruleset_test_values
 set reviewed_at = (select reviewed_at from public.rulesets where id = '33333333-3333-3333-3333-333333333333');
 
 set local role authenticated;
-select throws_ok(
+select lives_ok(
   $$select public.admin_publish_ruleset('33333333-3333-3333-3333-333333333333', (select expected_hash from ruleset_test_values), (select reviewed_at from ruleset_test_values), 'request-same-person')$$,
-  '23514', 'publisher must be different from the signed reviewer', 'the reviewer cannot publish their own review'
+  'an authorized admin can publish their own optional review'
 );
 
 select * from finish();

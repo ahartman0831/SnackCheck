@@ -15,9 +15,11 @@ export default function TermsPage() {
       <h2 className="text-xl font-semibold">What the ingredient check means</h2>
       <p>{INGREDIENT_CHECK_SCOPE}</p>
       <p>
-        A passing result means the ingredient text checked did not match an ingredient
-        restricted by the selected ruleset. It does not certify overall legal compliance,
-        nutritional quality, or suitability for a particular child.
+        “No listed restriction found” means no listed match was found in the checked text
+        under the selected ruleset. “Potential listed restriction found” flags a text
+        match to verify. “Needs verification” indicates missing or uncertain information.
+        It does not certify overall legal compliance, nutritional quality, or suitability
+        for a particular child.
       </p>
       <h2 className="text-xl font-semibold">Labels and source information</h2>
       <p>

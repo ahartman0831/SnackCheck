@@ -38,13 +38,13 @@ const steps = [
   },
   {
     icon: ShieldCheck,
-    title: "Reviewed rules check the ingredients",
-    body: "SnackCheck compares your text with the published Arizona restrictions. If reviewed rules are unavailable, the result is VERIFY.",
+    title: "Sourced rules screen the ingredients",
+    body: "SnackCheck compares your text with the published Arizona restrictions. If published rules are unavailable, the result needs verification.",
   },
   {
     icon: CheckCircle2,
     title: "Understand the result",
-    body: "Listed restrictions are flagged. A list without matches stays VERIFY until its package evidence is independently reviewed. Always check your school's policies.",
+    body: "Potential listed restrictions are flagged. Unverified pasted text still needs verification even when no match is found. Verify the package and your school's requirements.",
   },
 ];
 

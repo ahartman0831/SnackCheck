@@ -128,4 +128,36 @@ describe("Phase 8 ruleset operation routes", () => {
       error: { code: "EDIT_CONFLICT" },
     });
   });
+  it("allows explicit owner approval without an optional review", async () => {
+    const response = await publish(
+      request("/api/admin/rulesets/publish", {
+        rulesetId,
+        expectedHash: hash,
+        expectedReviewedAt: null,
+        confirmation: "PUBLISH",
+      }),
+    );
+    expect(response.status).toBe(200);
+    expect(mocks.publishRuleset).toHaveBeenCalledWith(
+      expect.objectContaining({
+        rulesetId,
+        expectedHash: hash,
+        expectedReviewedAt: null,
+      }),
+    );
+  });
+
+  it("still denies publication to an unauthorized account", async () => {
+    mocks.requireAdmin.mockResolvedValue({ allowed: false, user: { id: "reviewer" } });
+    const response = await publish(
+      request("/api/admin/rulesets/publish", {
+        rulesetId,
+        expectedHash: hash,
+        expectedReviewedAt: null,
+        confirmation: "PUBLISH",
+      }),
+    );
+    expect(response.status).toBe(403);
+    expect(mocks.publishRuleset).not.toHaveBeenCalled();
+  });
 });

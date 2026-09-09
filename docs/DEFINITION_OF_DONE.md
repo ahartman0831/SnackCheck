@@ -7,17 +7,17 @@ Do not weaken rules or evidence controls to create public inventory.
 
 ## Engineering release candidate
 
-A candidate is technically merge-ready when the current head of PR #22 passes all
+A candidate is technically merge-ready when the current proposed commit passes all
 three required CI jobs and the final adversarial review has no unresolved technical
 P0/P1. [RELEASE_AUDIT.md](RELEASE_AUDIT.md) records the result and known limits.
 
 - Production build, formatting, lint, types, unit/API/integration tests and high/
   critical dependency and secret gates pass; no skipped failures count as success.
-- Migrations 0001–0039 create a new database; repeated resets, actual pgTAP discovery,
+- Migrations 0001–0040 create a new database; repeated resets, actual pgTAP discovery,
   generated-type parity, private-storage and disposable recovery checks pass.
 - Home → ingredient text → confirmation → result works on desktop/mobile. Declared
-  restrictions with published rules produce FAIL; unverified no-match lists remain
-  VERIFY. Missing rules cannot produce invented matches or passing results.
+  restrictions with published rules show “Potential listed restriction found”; unverified
+  no-match lists show “Needs verification.” Missing rules cannot produce invented matches or passing results.
 - Input/network/provider/storage failures retain edits and give recovery actions.
   Empty catalog, disabled optional features and unavailable rules are explicit.
 - Admin refresh/logout, active-role checks, signed submission ownership, stale-write
@@ -34,9 +34,9 @@ P0/P1. [RELEASE_AUDIT.md](RELEASE_AUDIT.md) records the result and known limits.
 
 Public release additionally requires owner-controlled inputs and approvals:
 
-- Recorded review of all enabled restrictions/aliases, source interpretation,
-  applicability, effective dates and exact final ruleset hash; separate authorized
-  publication. The 28 color-name proposals remain disabled pending real review.
+- Explicit owner/admin approval of all enabled restrictions/aliases, source interpretation,
+  applicability, effective dates and exact final ruleset hash, followed by authorized
+  publication by that admin. Independent human/expert review is optional. The 28 color-name proposals remain disabled pending real review.
 - Separate production projects/domain and real support/SMTP/Upstash configuration;
   production sign-in, primary workflow, role isolation and abuse-limit smoke tests.
 - Actual alert delivery, retention schedule, backup/restore and deployment rollback
@@ -45,7 +45,8 @@ Public release additionally requires owner-controlled inputs and approvals:
 - Explicit final public launch authorization after those results are available.
 
 These external actions do not invalidate a technically complete, merge-ready build.
-A disclaimer is not regulatory sign-off or proof of reduced legal liability. The
+The [informational-screening model](informational-screening.md) supersedes earlier
+mandatory separate-reviewer gates. A disclaimer is not certification or proof of reduced legal liability. The
 site describes ingredient screening rather than nutrition, allergy, food-safety or
 school-acceptance certification. No lawyer-per-snack requirement is imposed here.
 

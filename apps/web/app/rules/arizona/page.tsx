@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { BookOpen, Scale, ShieldCheck } from "lucide-react";
 import { UnavailableRulesetState } from "@/components/public/page-states";
 import { Card } from "@/components/ui/card";
-import { LOCAL_RULES_DISCLAIMER } from "@/lib/copy";
+import { INGREDIENT_CHECK_SCOPE, LOCAL_RULES_DISCLAIMER } from "@/lib/copy";
 import {
   isUsablePublishedRuleset,
   loadArizonaSources,
@@ -49,6 +49,9 @@ export default async function ArizonaRulesPage() {
           </p>
         ) : null}
       </header>
+      <p className="bg-surface-strong rounded-2xl p-5 text-base">
+        {INGREDIENT_CHECK_SCOPE}
+      </p>
       {!usable ? <UnavailableRulesetState /> : null}
 
       <section className="glass-panel rounded-[28px] p-5 sm:p-7">
@@ -99,20 +102,27 @@ export default async function ArizonaRulesPage() {
           </ol>
         ) : (
           <p className="text-muted">
-            The 11 statutory names will appear here after a signed published ruleset is
-            available. They are not shown from a development fixture.
+            The 11 statutory names will appear here after an owner/admin-published
+            screening ruleset is available. They are not shown from a development fixture.
           </p>
         )}
       </section>
 
       <section className="grid gap-5 md:grid-cols-2">
         <div className="glass-panel rounded-[28px] p-5 sm:p-7">
-          <h2 className="text-2xl font-bold">What PASS, FAIL, and VERIFY mean</h2>
+          <h2 className="text-2xl font-bold">What the screening results mean</h2>
           <ul className="text-muted mt-3 list-disc space-y-2 pl-5">
-            <li>PASS: the current formulation did not match a prohibited ingredient.</li>
-            <li>FAIL: a prohibited ingredient was matched on the package text.</li>
             <li>
-              VERIFY: the evidence is incomplete, stale, conflicted, or unconfirmed.
+              No listed restriction found: no listed ingredient matched the available
+              text. This is not approval.
+            </li>
+            <li>
+              Potential listed restriction found: a listed ingredient matched the
+              available text. Verify the match and applicable rules.
+            </li>
+            <li>
+              Needs verification: rules or evidence are unavailable, incomplete, stale,
+              conflicted, or unconfirmed.
             </li>
           </ul>
         </div>
@@ -121,8 +131,9 @@ export default async function ArizonaRulesPage() {
           <h2 className="text-2xl font-bold">What SnackCheck does not decide</h2>
           <p className="text-muted mt-2">
             SnackCheck does not decide allergy safety, nutrition, school participation, or
-            whether a specific campus will accept a food. AI never returns PASS, FAIL, or
-            VERIFY.
+            whether a specific campus will accept a food. Matching rules generate
+            screening results; AI does not decide them. Independent expert review of a
+            ruleset is optional, and publication is not official certification.
           </p>
         </div>
       </section>

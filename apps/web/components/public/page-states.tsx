@@ -52,7 +52,7 @@ export function SearchEmptyState({ query }: { query?: string }) {
 export function UnavailableRulesetState() {
   return (
     <PageState
-      title="Arizona ruleset is under review"
+      title="Arizona screening rules are not yet published"
       description="SnackCheck will not treat a development fixture as current law. Primary sources remain available while the published ruleset is unsigned."
       action={
         <Button asChild variant="secondary">
@@ -67,7 +67,7 @@ export function OfflineState() {
   return (
     <PageState
       title="You are offline"
-      description="A cached PASS is not shown as current. Reconnect to check a package against the published ruleset."
+      description="A cached screening result is not shown as current. Reconnect to check a package against the published ruleset."
       action={
         <Button asChild variant="secondary">
           <Link href="/">Back to home</Link>

@@ -43,8 +43,8 @@ update release_rehearsal_values set reviewed_at=(select reviewed_at from public.
 set local role authenticated;
 select throws_ok(
  $$select public.admin_publish_ruleset('33333333-3333-3333-3333-333333333333',
- (select ruleset_hash from release_rehearsal_values),(select reviewed_at from release_rehearsal_values),'release-rehearsal-self')$$,
- '23514','publisher must be different from the signed reviewer','reviewer cannot self-publish'
+ repeat('0',64),(select reviewed_at from release_rehearsal_values),'release-rehearsal-stale')$$,
+ '40001','ruleset changed; refresh before publishing','stale approval is rejected even for an authorized reviewer'
 );
 select set_config('request.jwt.claim.sub','79000000-0000-4000-8000-000000000002',true);
 select lives_ok(

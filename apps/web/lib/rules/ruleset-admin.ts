@@ -128,11 +128,14 @@ export async function reviewRuleset(input: {
 export async function publishRuleset(input: {
   rulesetId: string;
   expectedHash: string;
-  expectedReviewedAt: string;
+  expectedReviewedAt: string | null;
   requestId: string;
 }): Promise<void> {
   const client = await signedInClient();
-  type Args = Database["public"]["Functions"]["admin_publish_ruleset"]["Args"];
+  type Args = Omit<
+    Database["public"]["Functions"]["admin_publish_ruleset"]["Args"],
+    "p_expected_reviewed_at"
+  > & { p_expected_reviewed_at: string | null };
   const publish = client.rpc.bind(client) as unknown as (
     name: "admin_publish_ruleset",
     args: Args,

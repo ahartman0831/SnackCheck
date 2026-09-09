@@ -7,7 +7,7 @@ import { publishRuleset } from "@/lib/rules/ruleset-admin";
 const BodySchema = z.object({
   rulesetId: z.string().uuid(),
   expectedHash: z.string().regex(/^[0-9a-f]{64}$/),
-  expectedReviewedAt: z.string().datetime({ offset: true }),
+  expectedReviewedAt: z.string().datetime({ offset: true }).nullable(),
   confirmation: z.literal("PUBLISH"),
 });
 
@@ -31,7 +31,7 @@ export async function POST(request: Request) {
     return NextResponse.json(
       fail(
         "INVALID_BODY",
-        "A reviewed ruleset, current hash, review timestamp, and typed PUBLISH confirmation are required.",
+        "A current ruleset hash, optional review timestamp (or null), and typed PUBLISH approval are required.",
         { id },
       ),
       { status: 400 },
