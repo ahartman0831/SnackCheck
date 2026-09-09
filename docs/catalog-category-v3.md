@@ -156,3 +156,45 @@ manifest/dossier regression cases), web typecheck and targeted lint pass, format
 and diff checks pass. The preceding disclaimer revision `183346e` passed all CI jobs
 in [run 34341906677](https://github.com/ahartman0831/SnackCheck/actions/runs/34341906677).
 Latest-revision CI is recorded separately on the PR.
+
+## Completed shortlist OFF coverage — September 9, 2026
+
+Three further bounded runs completed all 44 outstanding lookups:
+
+- `3564287e-01d8-4ab4-81ec-6a9c0c7ee073`: 15 requests, 14 records, 1 not found.
+- `5d54d3a4-ec27-4721-afce-7eb4a46c5238`: 15 requests, 15 records.
+- `79353b69-d518-4422-b3cc-915bbb887694`: 14 requests, 12 records, 2 not found.
+
+All three runs had zero failed or blocked requests. Each plan/apply selection hash
+matched. Readback verified all 44 exact candidate IDs and outcomes, completed runs,
+and request counters. Every previously queued candidate record is byte-for-field
+unchanged. The queue remains 154; products, formulations, published rules and
+persisted dossiers remain zero. Anonymous users have no evidence-table read grant.
+
+Every candidate in the 60-item shortlist now has an OFF lookup attempt. Review-only
+triage of the latest attempt for each candidate produces: 41 requiring source
+comparison, 12 requiring label-alias review, 3 missing records, and 4 records without
+ingredient text. These mutually exclusive triage categories are local review labels,
+not persisted candidate decisions, current-formulation findings or public statuses.
+The private `off-shortlist-coverage-review.json` contains all IDs, source text, source
+dates, attempt IDs and the reason each record requires review.
+
+The alias check found a concrete limitation in the unpublished draft ruleset:
+literal `Red dye 40` is enabled while the shorter label form `Red 40` is not.
+Similar shorter yellow/blue color names occur in 12 OFF records. A zero result from
+the draft matcher cannot be interpreted as absence of restricted colors. The local
+triage adds a review-only search for these common color names; it does not change
+aliases, rule hashes, publication or candidate states. A sourced alias review must
+precede publication. [FDA's labeling discussion](https://www.fda.gov/inspections-compliance-enforcement-and-criminal-investigations/warning-letters/sweet-production-inc-578494-06172019)
+and [FDA's color-additive record](https://hfpappexternal.fda.gov/Scripts/Fdcc/index.cfm?id=FDCRed40&set=ColorAdditives)
+are primary-source starting points for that review, not completed approval.
+
+Manufacturer/package research for Nutri-Grain and Goldfish is recorded in
+[catalog-package-checks.md](catalog-package-checks.md), including exact target
+barcodes, source disagreements, collection-permission limitations and a concrete
+photo checklist. Neither product yet has a complete approved evidence dossier.
+No manufacturer collection permission was invented and no paid AI calls were made.
+
+The pipeline implementation at `92853da43a4d0b37477d1179af636164efcc3392` passed
+all CI jobs in [run 34342671521](https://github.com/ahartman0831/SnackCheck/actions/runs/34342671521).
+This follow-up changes operational documentation only; formatting and diff checks pass.

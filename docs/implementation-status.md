@@ -9,10 +9,12 @@ formulations and published rulesets remain at zero. Implementation CI is green,
 including WebKit and the full database suite. See
 [catalog category v3](catalog-category-v3.md) for hashes, run IDs and verification.
 
-Evidence collection advanced with a saved 15-candidate batch: 15 records persisted,
-15 text differences identified for manufacturer/package review, zero promotions.
-The collector now requires explicit candidate manifests; dossier assembly uses the
-newest snapshot for each source. See the batch 002 section of the catalog report.
+OFF lookup coverage is complete for all 60 newly shortlisted candidates. The final
+44 lookups saved 41 records, with three not found and no request failures. Review
+triage flags 12 records for common color-name aliases missing from the unpublished
+draft. Manufacturer/package checks remain unresolved; no dossier or product was
+approved. See the catalog report and [package checklist](catalog-package-checks.md).
+The explicit-manifest collector and newest-snapshot dossier fixes passed full CI.
 
 ---
 

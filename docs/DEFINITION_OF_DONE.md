@@ -11,7 +11,10 @@ verification at the release revision, not implementation presence.
       desktop/mobile; useful results require signed rules and sourced real data.
 - [ ] At least 50 independently evidenced current products satisfy strict public
       eligibility. No mocked product is presented as real.
-- [ ] Ruleset reviewer signs exact hash; authorized admin publishes that version.
+- [ ] Ruleset reviewer verifies sourced label aliases (including common forms such as
+      `Red 40`), signs the exact hash, and an authorized admin publishes that version.
+      The current draft omits common color-name variants; zero draft matches are not
+      sufficient for product clearance. See the September 9 catalog coverage report.
 - [ ] Admin OTP, refresh, logout, expired session and role boundaries pass; ordinary
       users cannot read submissions, private storage, staging evidence or admin data.
 - [ ] Missing/invalid inputs, duplicates, no data, unavailable database, provider
