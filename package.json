@@ -2,7 +2,7 @@
   "name": "snackcheck",
   "private": true,
   "version": "0.0.0",
-  "description": "SnackCheck — Arizona Healthy Schools Act food compliance checker",
+  "description": "SnackCheck \u2014 Arizona Healthy Schools Act food compliance checker",
   "packageManager": "pnpm@10.33.0",
   "scripts": {
     "dev": "pnpm --filter web dev",
@@ -37,7 +37,8 @@
     "assemble:evidence:dossiers": "pnpm --filter web exec tsx scripts/assemble-evidence-dossiers.ts",
     "compare:evidence:ai": "NODE_OPTIONS=--conditions=react-server pnpm --filter web exec tsx scripts/compare-catalog-evidence-with-ai.ts",
     "ops:synthetic": "node scripts/run-synthetic-checks.mjs",
-    "ops:retention": "pnpm exec tsx scripts/cleanup-expired-submission-assets.ts"
+    "ops:retention": "pnpm exec tsx scripts/cleanup-expired-submission-assets.ts",
+    "review:catalog": "pnpm --filter web exec tsx scripts/review-catalog-batch.ts"
   },
   "devDependencies": {
     "prettier": "^3.6.2",

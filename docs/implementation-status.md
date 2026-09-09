@@ -1,3 +1,17 @@
+# Ingestion-to-review connection — September 9, 2026
+
+The private catalog workspace now shows ingestion/evidence/publication counts and
+lets a reviewer compare the saved OFF/manufacturer evidence directly with USDA
+ingredients. The new read-only batch command processed the 60 real shortlisted
+candidates: 53 have ingredient evidence and seven still need it. Source differences,
+malformed text, identity and dates remain explicit review work; no product approval,
+rule enablement or publication was inferred. See the
+[catalog review workflow](catalog-review-workspace.md) for the operating sequence,
+command and validation. The remaining bottleneck is resolving evidence and recording
+ruleset review, not getting USDA records into the system.
+
+---
+
 # Color-name screening follow-up — September 9, 2026
 
 **COMPLETE / VERIFIED IN STAGING:** 28 FDA-sourced label-name proposals are saved
@@ -12,7 +26,8 @@ The owner does not need to provide photos. The [acquisition plan](catalog-packag
 now uses licensed records/permitted sources and prioritizes concrete source conflicts.
 See the [color-name review packet](catalog-color-alias-review.md) for reproducible
 results, source references, hashes and validation. Local unit, type and database
-checks pass; CI for this implementation is recorded below when complete.
+checks pass; implementation `e0a7156` passed all jobs in
+[CI run 34345624999](https://github.com/ahartman0831/SnackCheck/actions/runs/34345624999).
 
 ---
 

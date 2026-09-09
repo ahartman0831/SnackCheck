@@ -1,4 +1,9 @@
 import "server-only";
+import {
+  buildCatalogReviewPacket,
+  REVIEW_EVIDENCE_COLUMNS,
+  type CatalogReviewPacket,
+} from "@/lib/catalog-evidence/review-packet";
 import type { Database, Json } from "@snackcheck/db-types";
 import { requireAdmin } from "@/lib/auth/require-admin";
 import { createAdminClient } from "@/lib/supabase/admin";
@@ -33,6 +38,8 @@ export type CatalogCandidateSummary = {
 };
 
 export type CatalogCandidateDetail = CatalogCandidateSummary & {
+  evidenceReview: CatalogReviewPacket;
+  evidenceTruncated: boolean;
   externalRecordId: string;
   sourceVersion: string;
   sourceGtin: string;
@@ -202,7 +209,7 @@ export async function getCatalogCandidate(
     throw new Error("The catalog candidate could not be loaded.");
   if (!candidateResult.data) return { kind: "not-found" };
   const row = candidateResult.data as CandidateRow;
-  const [productResult, auditResult] = await Promise.all([
+  const [productResult, auditResult, evidenceResult] = await Promise.all([
     admin
       .from("products")
       .select("id,brand,name,slug,active")
@@ -214,8 +221,15 @@ export async function getCatalogCandidate(
       .eq("entity_type", "catalog_candidate")
       .eq("entity_id", id)
       .order("created_at", { ascending: false }),
+    admin
+      .from("catalog_evidence_attempts")
+      .select(REVIEW_EVIDENCE_COLUMNS, { count: "exact" })
+      .eq("candidate_id", id)
+      .order("created_at", { ascending: false })
+      .order("id", { ascending: false })
+      .limit(20),
   ]);
-  if (productResult.error || auditResult.error)
+  if (productResult.error || auditResult.error || evidenceResult.error)
     throw new Error("Some catalog candidate evidence could not be loaded.");
   const formulations = productResult.data
     ? await admin
@@ -239,6 +253,15 @@ export async function getCatalogCandidate(
       state: row.candidate_state,
       qualityFlags: strings(row.quality_flags),
       updatedAt: row.updated_at,
+      evidenceReview: buildCatalogReviewPacket(
+        {
+          id: row.id,
+          gtin14: row.normalized_gtin14,
+          rawIngredientText: row.raw_ingredient_text,
+        },
+        evidenceResult.data ?? [],
+      ),
+      evidenceTruncated: (evidenceResult.count ?? 0) > 20,
       externalRecordId: row.external_record_id,
       sourceVersion: row.source_version,
       sourceGtin: row.source_gtin,
@@ -288,4 +311,33 @@ export async function getCatalogCandidate(
       })),
     },
   };
+}
+
+export async function getCatalogProgress() {
+  const auth = await requireAdmin([...REVIEW_ROLES]);
+  if (!auth.allowed) return null;
+  const admin = createAdminClient();
+  if (!admin) return null;
+  const results = await Promise.all([
+    admin.from("catalog_source_records").select("id", { count: "exact", head: true }),
+    admin
+      .from("catalog_source_records")
+      .select("id", { count: "exact", head: true })
+      .eq("candidate_state", "REVIEW_QUEUED"),
+    admin
+      .from("catalog_evidence_attempts")
+      .select("id", { count: "exact", head: true })
+      .eq("outcome", "EVIDENCE_FOUND"),
+    admin.from("catalog_evidence_dossiers").select("id", { count: "exact", head: true }),
+    admin.from("products").select("id", { count: "exact", head: true }),
+    admin
+      .from("rulesets")
+      .select("id", { count: "exact", head: true })
+      .eq("is_published", true),
+  ]);
+  if (results.some((result) => result.error || typeof result.count !== "number"))
+    return null;
+  const [imported, queued, evidenceRecords, dossiers, products, publishedRules] =
+    results.map((result) => result.count!);
+  return { imported, queued, evidenceRecords, dossiers, products, publishedRules };
 }

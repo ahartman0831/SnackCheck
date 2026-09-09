@@ -1,5 +1,6 @@
 import { expect, test } from "@playwright/test";
 import { randomUUID } from "node:crypto";
+import { seedCatalogReviewFixture } from "./catalog-review-fixture";
 
 test("a new visitor can check ingredients without an invented passing result", async ({
   page,
@@ -42,6 +43,7 @@ test("a returning reviewer refreshes an expired session and can sign out", async
   request,
   baseURL,
 }) => {
+  test.setTimeout(60_000);
   const api = process.env.NEXT_PUBLIC_SUPABASE_URL!;
   const service = process.env.SUPABASE_SERVICE_ROLE_KEY!;
   const anon = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!;
@@ -83,6 +85,22 @@ test("a returning reviewer refreshes an expired session and can sign out", async
     await expect(
       page.getByRole("heading", { name: "Operations dashboard" }),
     ).toBeVisible();
+    const candidateId = await seedCatalogReviewFixture(request);
+    await page.goto("/admin/catalog");
+    await expect(page.getByRole("region", { name: "Catalog progress" })).toBeVisible();
+    await expect(page.getByText("Imported records", { exact: true })).toBeVisible();
+    await page.goto(`/admin/catalog/${candidateId}`);
+    await expect(page.getByRole("heading", { name: "Collected evidence" })).toBeVisible();
+    await expect(
+      page.getByText("oats, sunflower oil, salt", { exact: true }),
+    ).toBeVisible();
+    await expect(
+      page.getByText("Ingredient wording differs", { exact: true }),
+    ).toBeVisible();
+    await expect(page.getByText("ODbL-1.0; DbCL-1.0", { exact: true })).toBeVisible();
+    await expect(
+      page.getByRole("button", { name: "Promote verified product" }),
+    ).toBeDisabled();
     const refreshed = (await page.context().cookies()).find(
       (cookie) => cookie.name === name,
     );
@@ -95,6 +113,13 @@ test("a returning reviewer refreshes an expired session and can sign out", async
     ).toBeVisible();
     await expect(page.getByRole("region", { name: "Queue summary" })).toHaveCount(0);
     await expect(page.getByRole("button", { name: /sign out/i })).toHaveCount(0);
+    await page.goto(`/admin/catalog/${candidateId}`);
+    await expect(
+      page.getByText("oats, sunflower oil, salt", { exact: true }),
+    ).toHaveCount(0);
+    await expect(page.getByRole("heading", { name: "Collected evidence" })).toHaveCount(
+      0,
+    );
   } finally {
     await request.delete(`${api}/rest/v1/admin_members?user_id=eq.${user.id}`, {
       headers,

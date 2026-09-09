@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { z } from "zod";
+import { CatalogEvidenceReview } from "@/components/admin/catalog-evidence-review";
 import { CatalogCandidateControls } from "@/components/admin/catalog-candidate-controls";
 import { getCatalogCandidate } from "@/lib/admin/catalog-candidates";
 
@@ -76,6 +77,10 @@ export default async function CatalogCandidatePage({
         <article className="border-border rounded-2xl border p-5">
           <h2 className="text-xl font-semibold">Automated screening</h2>
           <p className="mt-3 text-lg font-semibold">{candidate.screenStatus}</p>
+          <p className="text-muted mt-2 text-sm">
+            This is a stored preliminary ingredient screen, not publication approval.
+            Source review and approved rules are still required.
+          </p>
           <p className="text-muted mt-2 text-sm">Engine {candidate.engineVersion}</p>
           <p className="text-muted mt-1 break-all text-xs">
             Ruleset {candidate.rulesetHash}
@@ -109,6 +114,10 @@ export default async function CatalogCandidatePage({
           {candidate.rawIngredientText}
         </p>
       </section>
+      <CatalogEvidenceReview
+        packet={candidate.evidenceReview}
+        truncated={candidate.evidenceTruncated}
+      />
       {candidate.existingProduct ? (
         <section className="border-warning rounded-2xl border p-5">
           <h2 className="text-xl font-semibold">Existing SnackCheck product found</h2>
