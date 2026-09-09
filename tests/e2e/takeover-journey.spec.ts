@@ -80,6 +80,9 @@ test("a returning reviewer refreshes an expired session and can sign out", async
     await page.context().addCookies([{ name, value, url: baseURL! }]);
     await page.goto("/admin");
     await expect(page.getByRole("button", { name: /sign out/i })).toBeVisible();
+    await expect(
+      page.getByRole("heading", { name: "Operations dashboard" }),
+    ).toBeVisible();
     const refreshed = (await page.context().cookies()).find(
       (cookie) => cookie.name === name,
     );
@@ -87,7 +90,10 @@ test("a returning reviewer refreshes an expired session and can sign out", async
     await page.getByRole("button", { name: /sign out/i }).click();
     await expect(page).toHaveURL(/\/admin\/login/);
     await page.goto("/admin");
-    await expect(page).toHaveURL(/\/admin\/login/);
+    await expect(
+      page.getByRole("heading", { name: "Admin access required" }),
+    ).toBeVisible();
+    await expect(page.getByRole("region", { name: "Queue summary" })).toHaveCount(0);
     await expect(page.getByRole("button", { name: /sign out/i })).toHaveCount(0);
   } finally {
     await request.delete(`${api}/rest/v1/admin_members?user_id=eq.${user.id}`, {
