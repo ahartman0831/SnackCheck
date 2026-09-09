@@ -31,6 +31,28 @@ verification at the release revision, not implementation presence.
       SMTP/monitoring/retention/backup/restore/rollback verified, synthetic alerts tested.
 - [ ] Production smoke tests complete and owner explicitly approves public launch.
 
+## What review means
+
+Ruleset approval is the application's recorded check of the exact restrictions,
+aliases, applicability and source version. Product evidence review checks identity,
+current ingredients and conflicts. AI may assist transcription/comparison; it does
+not replace either approval. These checks do not require a lawyer to review each
+individual snack.
+
+A focused legal review of product claims, disclaimers, terms and privacy is a
+recommended launch risk-control step, not a government licensing requirement
+established by this project. The certification mechanism in
+[A.R.S. § 15-242.01](https://www.azleg.gov/ars/15/00242-01.htm) concerns schools.
+No legal review or approval has been completed for SnackCheck. The owner still
+controls publication and public launch.
+
+The result card, footer and terms explain that ingredient screening is not a
+nutrition rating, allergy assessment, food-safety guarantee or school acceptance.
+Disclosures must match the actual experience: the
+[FTC guidance](https://www.ftc.gov/business-guidance/resources/health-products-compliance-guidance)
+explains that a disclaimer cannot cure a contradictory claim. Draft site copy is
+not a legal opinion or assurance of reduced liability.
+
 Affiliate enablement is a separate acceptance gate: real approved product mapping,
 configured Associates tag, centralized safe URLs, visible approved disclosure,
 neutral ranking, privacy-safe click metrics and destination delivery independent

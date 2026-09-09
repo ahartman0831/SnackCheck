@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LOCAL_RULES_DISCLAIMER } from "@/lib/copy";
+import { INGREDIENT_CHECK_SCOPE, LOCAL_RULES_DISCLAIMER } from "@/lib/copy";
 import { hideAppChrome } from "@/lib/shell";
 
 const links = [
@@ -30,6 +30,7 @@ export function SiteFooter() {
           <p className="text-foreground text-base font-bold">SnackCheck</p>
           <p className="max-w-2xl">{LOCAL_RULES_DISCLAIMER}</p>
         </div>
+        <p className="max-w-3xl">{INGREDIENT_CHECK_SCOPE}</p>
         <nav aria-label="Legal">
           <ul className="flex flex-wrap gap-x-5 gap-y-2">
             {links.map((link) => (

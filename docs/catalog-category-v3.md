@@ -97,9 +97,18 @@ browser, storage, reset and restore checks passed in Ubuntu CI.
 
 Continue bounded permitted independent-evidence collection for queued candidates.
 Keep source conflicts and uncertain identity/formulation matches in review.
-An Open Food Facts collection run needs a configured identifying contact/user agent;
-paid model calls and publication are separate gates. This operation did not create
-evidence, promote candidates, or publish a ruleset.
+The owner supplied the Open Food Facts contact on September 9; the identifying
+user agent is configured in ignored local environments. The existing collector's
+five-candidate pilot selected eligible queued candidates by ID (it was not limited
+to the newest 60). Run `8c44d1aa-967a-44fc-9764-adedf10ebc8f` completed with five
+requests and five persisted evidence records, with no missing, blocked or failed
+retrievals. Normalized ingredient text matched in three records and differed in two.
+A text match alone does not establish current package identity or independent provenance.
+Database readback confirmed all five attempt IDs, the completed run, 154 still queued,
+and zero products, formulations or published rules. No paid AI call was made.
+The original queue operation did not create evidence; this subsequent pilot did.
+Further collection should select an explicit manifest or skip completed attempts,
+because rerunning the current collector selects the same first candidates.
 
 For any future staging schema work, continue using only the owner-designated project
 and exact reviewed SQL. Older individually applied migrations have incomplete remote
