@@ -69,11 +69,12 @@ photos, invented manufacturer evidence, rule signatures or publication were used
 
 ## REQUIRES OWNER ACTION
 
-1. **Approve the new production database's account cost.** The owner requires a
-   separate Supabase project. Both active Free slots are occupied; the existing
-   Pro organization quotes about $10/month additional Micro compute. Creation and
-   charges are pending explicit approval. Vercel and the temporary beta URL are
-   confirmed in the [production handoff](release-review/production-handoff.md).
+1. **Confirm the beta's monitored public support inbox.** The owner approved the
+   approximately $10/month additional Micro compute, and the separate production
+   project `lwkayhbmpirgpfytfryv` now has all 39 migrations, verified application
+   types/access controls, empty user/content storage, and zero published rules.
+   Vercel and the temporary beta URL are confirmed; production builds stay paused.
+   The [production handoff](release-review/production-handoff.md) records details.
 2. **Assign a rules reviewer and a different publishing administrator to the
    [exact review packet](release-review/README.md).** They must approve or amend the
    sourced aliases, verify the final canonical hash, and record review evidence

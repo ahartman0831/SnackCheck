@@ -1,0 +1,243 @@
+{
+  "reviewOnly": true,
+  "projectRef": "lwkayhbmpirgpfytfryv",
+  "rulesetId": "33333333-3333-3333-3333-333333333333",
+  "isPublished": false,
+  "reviewed": false,
+  "canonicalHash": "d1e669395135ffa51bd0f61bae6bf84cfa72e240c18306a7eb8ebc5b3f1e2508",
+  "canonicalPayload": {
+    "code": "AZ-HSA",
+    "contexts": [
+      {
+        "applicabilityStatus": "APPLIES",
+        "context": "CLASSROOM_DISTRIBUTION",
+        "regulatorySourceId": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa4"
+      },
+      {
+        "applicabilityStatus": "UNKNOWN",
+        "context": "FUNDRAISER_DURING_SCHOOL_DAY",
+        "regulatorySourceId": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa1"
+      },
+      {
+        "applicabilityStatus": "PARENT_OWN_CHILD_EXCEPTION",
+        "context": "PARENT_OWN_CHILD",
+        "regulatorySourceId": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa1"
+      },
+      {
+        "applicabilityStatus": "APPLIES",
+        "context": "SCHOOL_SERVED",
+        "regulatorySourceId": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa1"
+      },
+      {
+        "applicabilityStatus": "APPLIES",
+        "context": "SCHOOL_SOLD",
+        "regulatorySourceId": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa1"
+      },
+      {
+        "applicabilityStatus": "APPLIES",
+        "context": "THIRD_PARTY_SOLD",
+        "regulatorySourceId": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa1"
+      },
+      {
+        "applicabilityStatus": "UNKNOWN",
+        "context": "UNKNOWN",
+        "regulatorySourceId": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa1"
+      }
+    ],
+    "effectiveFrom": "2026-07-01",
+    "effectiveUntil": null,
+    "freshnessAgingDays": 365,
+    "freshnessCurrentDays": 180,
+    "id": "33333333-3333-3333-3333-333333333333",
+    "sourceIds": ["aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa1"],
+    "substances": [
+      {
+        "aliases": [
+          {
+            "id": "45c78797-5111-4a36-87f8-2dd04f765b49",
+            "matchMode": "TOKEN_SEQUENCE",
+            "normalizedAlias": "potassium bromate",
+            "pattern": null
+          }
+        ],
+        "canonicalNormalized": "potassium bromate",
+        "id": "44444444-4444-4444-4444-444444444401",
+        "statutoryOrdinal": 1
+      },
+      {
+        "aliases": [
+          {
+            "id": "a9285399-8f0e-458b-944e-34e514030326",
+            "matchMode": "TOKEN_SEQUENCE",
+            "normalizedAlias": "propylparaben",
+            "pattern": null
+          }
+        ],
+        "canonicalNormalized": "propylparaben",
+        "id": "44444444-4444-4444-4444-444444444402",
+        "statutoryOrdinal": 2
+      },
+      {
+        "aliases": [
+          {
+            "id": "6831bbde-9364-4eec-85cd-6df3444afa58",
+            "matchMode": "TOKEN_SEQUENCE",
+            "normalizedAlias": "titanium dioxide",
+            "pattern": null
+          }
+        ],
+        "canonicalNormalized": "titanium dioxide",
+        "id": "44444444-4444-4444-4444-444444444403",
+        "statutoryOrdinal": 3
+      },
+      {
+        "aliases": [
+          {
+            "id": "eaf7b0b1-4f30-42fe-a3ed-987a6cbdfea1",
+            "matchMode": "TOKEN_SEQUENCE",
+            "normalizedAlias": "brominated vegetable oil",
+            "pattern": null
+          }
+        ],
+        "canonicalNormalized": "brominated vegetable oil",
+        "id": "44444444-4444-4444-4444-444444444404",
+        "statutoryOrdinal": 4
+      },
+      {
+        "aliases": [
+          {
+            "id": "7508bb58-4f2f-46e2-a1e3-ee38d9baccf2",
+            "matchMode": "TOKEN_SEQUENCE",
+            "normalizedAlias": "yellow dye 5",
+            "pattern": null
+          },
+          {
+            "id": "d90f5cdd-cf5b-4366-b5b8-dd869a14adbd",
+            "matchMode": "TOKEN_SEQUENCE",
+            "normalizedAlias": "yellow dye no 5",
+            "pattern": null
+          }
+        ],
+        "canonicalNormalized": "yellow dye 5",
+        "id": "44444444-4444-4444-4444-444444444405",
+        "statutoryOrdinal": 5
+      },
+      {
+        "aliases": [
+          {
+            "id": "b20dd8f7-7b77-4fef-9de3-546bc325246e",
+            "matchMode": "TOKEN_SEQUENCE",
+            "normalizedAlias": "yellow dye 6",
+            "pattern": null
+          },
+          {
+            "id": "a46b0f98-7ce4-415a-8883-83328062e858",
+            "matchMode": "TOKEN_SEQUENCE",
+            "normalizedAlias": "yellow dye no 6",
+            "pattern": null
+          }
+        ],
+        "canonicalNormalized": "yellow dye 6",
+        "id": "44444444-4444-4444-4444-444444444406",
+        "statutoryOrdinal": 6
+      },
+      {
+        "aliases": [
+          {
+            "id": "77b3b16c-e381-4fbd-aeac-a3c516a2ff42",
+            "matchMode": "TOKEN_SEQUENCE",
+            "normalizedAlias": "blue dye 1",
+            "pattern": null
+          },
+          {
+            "id": "fa1fabcc-3ac9-4aa2-b1e9-57405dfe3143",
+            "matchMode": "TOKEN_SEQUENCE",
+            "normalizedAlias": "blue dye no 1",
+            "pattern": null
+          }
+        ],
+        "canonicalNormalized": "blue dye 1",
+        "id": "44444444-4444-4444-4444-444444444407",
+        "statutoryOrdinal": 7
+      },
+      {
+        "aliases": [
+          {
+            "id": "1bebafe4-5699-4d40-a98e-ca349ec6ae96",
+            "matchMode": "TOKEN_SEQUENCE",
+            "normalizedAlias": "blue dye 2",
+            "pattern": null
+          },
+          {
+            "id": "84b3fa50-fb8d-4073-b292-4544f1ecffb3",
+            "matchMode": "TOKEN_SEQUENCE",
+            "normalizedAlias": "blue dye no 2",
+            "pattern": null
+          }
+        ],
+        "canonicalNormalized": "blue dye 2",
+        "id": "44444444-4444-4444-4444-444444444408",
+        "statutoryOrdinal": 8
+      },
+      {
+        "aliases": [
+          {
+            "id": "a9091c23-2748-4824-8c74-12fbaed74a70",
+            "matchMode": "TOKEN_SEQUENCE",
+            "normalizedAlias": "green dye 3",
+            "pattern": null
+          },
+          {
+            "id": "2df75841-95ea-4a0c-a177-ac285982d3a3",
+            "matchMode": "TOKEN_SEQUENCE",
+            "normalizedAlias": "green dye no 3",
+            "pattern": null
+          }
+        ],
+        "canonicalNormalized": "green dye 3",
+        "id": "44444444-4444-4444-4444-444444444409",
+        "statutoryOrdinal": 9
+      },
+      {
+        "aliases": [
+          {
+            "id": "5c6c50a6-ff6e-4882-85d4-7f32d4521a52",
+            "matchMode": "TOKEN_SEQUENCE",
+            "normalizedAlias": "red dye 3",
+            "pattern": null
+          },
+          {
+            "id": "261ec4ba-4977-4221-8e49-bf695613376c",
+            "matchMode": "TOKEN_SEQUENCE",
+            "normalizedAlias": "red dye no 3",
+            "pattern": null
+          }
+        ],
+        "canonicalNormalized": "red dye 3",
+        "id": "44444444-4444-4444-4444-444444444410",
+        "statutoryOrdinal": 10
+      },
+      {
+        "aliases": [
+          {
+            "id": "23aebd88-f728-46dc-ab7b-f223f624041f",
+            "matchMode": "TOKEN_SEQUENCE",
+            "normalizedAlias": "red dye 40",
+            "pattern": null
+          },
+          {
+            "id": "a9ba68db-7ed2-4855-8cab-340431d81fcc",
+            "matchMode": "TOKEN_SEQUENCE",
+            "normalizedAlias": "red dye no 40",
+            "pattern": null
+          }
+        ],
+        "canonicalNormalized": "red dye 40",
+        "id": "44444444-4444-4444-4444-444444444411",
+        "statutoryOrdinal": 11
+      }
+    ],
+    "version": 1
+  },
+  "comparisonWithStaging": "Canonical payload matches the frozen staging review payload except for 18 generated alias IDs. Production review must use this project and its exact hash."
+}

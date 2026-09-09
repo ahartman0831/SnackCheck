@@ -19,10 +19,15 @@ Staging: 589 private candidates, 154 queued, zero products/formulations/publishe
 rules/dossiers. Sixty exact review packets and the unsigned rules packet are ready
 in [release-review](release-review/README.md). Preparation does not equal approval.
 
+The separate `SnackCheck Production` database is created on owner-approved Micro
+compute. All 39 migrations and application schema/access checks are verified;
+there are zero users, products, submissions or published rules. It has not been
+connected to the website. The production draft has its own recorded canonical hash.
+
 ## REQUIRES OWNER ACTION
 
 The five exact actions and what can proceed without each are in
-[the release record](RELEASE_AUDIT.md#requires-owner-action): new database cost approval,
+[the release record](RELEASE_AUDIT.md#requires-owner-action): support inbox confirmation,
 reviewer/publisher assignment, production handoff, public policy acceptance and
 final launch authorization. Public deployment and real production service tests
 remain unperformed. These external gates do not make completed engineering unfinished.
