@@ -6,7 +6,11 @@ test("a new visitor can check ingredients without an invented passing result", a
 }) => {
   await page.goto("/scan/ingredients");
   await page.getByLabel("Ingredient list").fill("oats, sugar, salt");
+  const confirmation = page.waitForResponse((response) =>
+    response.url().includes("/confirm"),
+  );
   await page.getByRole("button", { name: "Check this list" }).click();
+  expect((await confirmation).ok()).toBe(true);
   await expect(page.getByRole("button", { name: "Check this list" })).toBeEnabled();
   await expect(page.getByText("VERIFY", { exact: true })).toBeVisible();
   await expect(page.getByLabel("Ingredient list")).toHaveValue("oats, sugar, salt");
@@ -81,7 +85,9 @@ test("a returning reviewer refreshes an expired session and can sign out", async
     );
     expect(Boolean(refreshed && refreshed.value !== value)).toBe(true);
     await page.getByRole("button", { name: /sign out/i }).click();
+    await expect(page).toHaveURL(/\/admin\/login/);
     await page.goto("/admin");
+    await expect(page).toHaveURL(/\/admin\/login/);
     await expect(page.getByRole("button", { name: /sign out/i })).toHaveCount(0);
   } finally {
     await request.delete(`${api}/rest/v1/admin_members?user_id=eq.${user.id}`, {
