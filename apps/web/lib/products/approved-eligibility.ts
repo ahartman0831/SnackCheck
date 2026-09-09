@@ -23,6 +23,12 @@ export function freshnessState(input: {
   if (Number.isNaN(last) || Number.isNaN(now)) {
     return "UNKNOWN";
   }
+  if (
+    Date.parse(input.lastVerifiedAt.slice(0, 10)) >
+    Date.parse(input.evaluationDate.slice(0, 10))
+  ) {
+    return "STALE";
+  }
   const ageDays = Math.floor((now - last) / 86_400_000);
   if (ageDays > input.freshnessAgingDays) {
     return "STALE";

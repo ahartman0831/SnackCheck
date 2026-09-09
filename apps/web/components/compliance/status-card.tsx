@@ -1,6 +1,7 @@
 import { CircleAlert, CircleCheck, ScanSearch } from "lucide-react";
 import type { IngredientStatus } from "@snackcheck/contracts";
 import { INGREDIENT_STATUS_LABELS } from "@snackcheck/contracts";
+import { INGREDIENT_CHECK_SCOPE } from "@/lib/copy";
 import { cn } from "@/lib/utils";
 
 const styles: Record<IngredientStatus, string> = {
@@ -31,6 +32,7 @@ export function StatusCard({
       </p>
       <h2 className="mt-2 text-2xl font-semibold">{INGREDIENT_STATUS_LABELS[status]}</h2>
       <p className="mt-3 text-base">{summary}</p>
+      <p className="mt-4 text-sm leading-relaxed">{INGREDIENT_CHECK_SCOPE}</p>
     </section>
   );
 }

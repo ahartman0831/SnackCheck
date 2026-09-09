@@ -48,11 +48,12 @@ const envSchema = z.object({
     .enum(["true", "false"])
     .default("false")
     .transform((value) => value === "true"),
-  ANONYMOUS_KEY_HMAC_SECRET: optionalString,
+  ANONYMOUS_KEY_HMAC_SECRET: optionalSecret,
   SUBMISSION_TOKEN_SECRET: optionalSecret,
   SENTRY_DSN: optionalString,
   SYNTHETIC_MONITOR_TOKEN: optionalSecret,
   LOG_LEVEL: z.enum(["debug", "info", "warn", "error"]).default("info"),
+  SUPPORT_EMAIL: z.preprocess(emptyToUndefined, z.string().email().optional()),
   MAX_UPLOAD_BYTES: z.coerce.number().int().positive().default(12_582_912),
   MAX_SANITIZED_IMAGE_BYTES: z.coerce.number().int().positive().default(3_145_728),
   MAX_IMAGE_DIMENSION: z.coerce.number().int().positive().default(2200),
@@ -93,6 +94,7 @@ function readEnv(): AppEnv {
     SENTRY_DSN: process.env.SENTRY_DSN,
     SYNTHETIC_MONITOR_TOKEN: process.env.SYNTHETIC_MONITOR_TOKEN,
     LOG_LEVEL: process.env.LOG_LEVEL,
+    SUPPORT_EMAIL: process.env.SUPPORT_EMAIL,
     MAX_UPLOAD_BYTES: process.env.MAX_UPLOAD_BYTES,
     MAX_SANITIZED_IMAGE_BYTES: process.env.MAX_SANITIZED_IMAGE_BYTES,
     MAX_IMAGE_DIMENSION: process.env.MAX_IMAGE_DIMENSION,

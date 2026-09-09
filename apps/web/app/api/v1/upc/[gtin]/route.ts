@@ -1,22 +1,23 @@
+import { catalogUnavailable } from "@/lib/api/unavailable";
 import { NextResponse } from "next/server";
 import { fail, ok, requestId } from "@/lib/api/envelope";
 import { normalizeGtin } from "@/lib/gtin";
 import { lookupGtin } from "@/lib/providers/provider-chain";
-import { getRateLimiter } from "@/lib/rate-limit";
+import { enforceRateLimit } from "@/lib/rate-limit/request";
 
 export async function GET(
-  _request: Request,
+  request: Request,
   context: { params: Promise<{ gtin: string }> },
 ) {
   const id = requestId();
-  const limiter = await getRateLimiter();
-  const limited = await limiter.limit("upc:public", 30, 60_000);
-  if (!limited.success) {
-    return NextResponse.json(
-      fail("RATE_LIMITED", "Too many lookups.", { retryable: true, id }),
-      { status: 429 },
-    );
-  }
+  const rateLimit = await enforceRateLimit({
+    request,
+    scope: "upc",
+    max: 30,
+    windowMs: 60000,
+    requestId: id,
+  });
+  if (rateLimit) return rateLimit;
 
   const { gtin } = await context.params;
   const normalized = normalizeGtin(gtin);
@@ -26,6 +27,10 @@ export async function GET(
     });
   }
 
-  const lookup = await lookupGtin(normalized.gtin14);
-  return NextResponse.json(ok({ gtin: normalized, lookup }, id));
+  try {
+    const lookup = await lookupGtin(normalized.gtin14);
+    return NextResponse.json(ok({ gtin: normalized, lookup }, id));
+  } catch (error) {
+    return catalogUnavailable(error, id, "/api/v1/upc/[gtin]");
+  }
 }

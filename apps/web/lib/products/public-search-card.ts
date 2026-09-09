@@ -35,6 +35,12 @@ export type PublicSearchCard = PublicProductCard;
 
 /** Finished public cards always have PASS, FAIL, or VERIFY — never null. */
 export function mapLiveSearchCard(row: LiveSearchRow): PublicSearchCard {
+  const unsafePass =
+    row.ingredient_status === "PASS" &&
+    (!row.last_verified_at ||
+      row.formulation_conflict ||
+      !["CURRENT", "AGING"].includes(row.freshness_state ?? "UNKNOWN") ||
+      !["VERIFIED", "PACKAGE_VERIFIED"].includes(row.verification_status ?? ""));
   return {
     id: row.id,
     slug: row.slug,
@@ -45,7 +51,7 @@ export function mapLiveSearchCard(row: LiveSearchRow): PublicSearchCard {
     category: row.category,
     imageUrl: row.image_url,
     imageAttribution: row.image_attribution ?? null,
-    ingredientStatus: row.ingredient_status ?? "VERIFY",
+    ingredientStatus: unsafePass ? "VERIFY" : (row.ingredient_status ?? "VERIFY"),
     verificationStatus:
       (row.verification_status as PublicSearchCard["verificationStatus"]) ?? null,
     lastVerifiedAt: row.last_verified_at ?? null,

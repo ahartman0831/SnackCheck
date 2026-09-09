@@ -2,13 +2,11 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import {
   ArrowRight,
-  Camera,
+  ListChecks,
   CheckCircle2,
   ScanLine,
   Search,
   ShieldCheck,
-  ShoppingBag,
-  Sparkles,
 } from "lucide-react";
 import { ProductSearch } from "@/components/public/product-search";
 import { Button } from "@/components/ui/button";
@@ -34,23 +32,30 @@ export const metadata: Metadata = {
 
 const steps = [
   {
-    icon: Sparkles,
-    title: "AI reads the package",
-    body: "When a photo pipeline is enabled, AI may transcribe ingredient text. Today you search or paste the list. AI never decides PASS, FAIL, or VERIFY.",
+    icon: ListChecks,
+    title: "Paste the ingredient list",
+    body: "Copy the full ingredient panel from the package, check the text, and submit it. No account or photo is needed.",
   },
   {
     icon: ShieldCheck,
     title: "Reviewed rules check the ingredients",
-    body: "A deterministic engine applies the versioned Arizona list. Unpublished fixtures are not treated as current law.",
+    body: "SnackCheck compares your text with the published Arizona restrictions. If reviewed rules are unavailable, the result is VERIFY.",
   },
   {
     icon: CheckCircle2,
-    title: "SnackCheck shows the evidence",
-    body: "You see the status, the matched label text, sources, and freshness.",
+    title: "Understand the result",
+    body: "Listed restrictions are flagged. A list without matches stays VERIFY until its package evidence is independently reviewed. Always check your school's policies.",
   },
 ];
 
 const quickActions = [
+  {
+    href: "/scan/ingredients",
+    icon: ListChecks,
+    title: ingredientActionLabel(),
+    body: "Start with the full ingredient panel",
+    tone: "bg-[var(--sun-soft)] text-verify",
+  },
   {
     href: "/search",
     icon: Search,
@@ -64,13 +69,6 @@ const quickActions = [
     title: barcodeActionLabel(),
     body: "Use the number on the package",
     tone: "bg-[var(--spark-soft)] text-[var(--spark)]",
-  },
-  {
-    href: "/scan/ingredients",
-    icon: Camera,
-    title: ingredientActionLabel(),
-    body: "Paste the ingredient panel",
-    tone: "bg-[var(--sun-soft)] text-verify",
   },
 ];
 
@@ -88,7 +86,7 @@ export default function HomePage() {
         />
         <div className="relative grid items-center gap-9 lg:grid-cols-[1.1fr_0.9fr] lg:gap-12">
           <div>
-            <p className="eyebrow">Arizona · 2026–27 school year</p>
+            <p className="eyebrow">Arizona · Ingredient-screening beta</p>
             <h1 className="mt-5 max-w-3xl text-4xl font-extrabold leading-[1.02] tracking-[-0.04em] sm:text-6xl">
               {APP_TAGLINE}
             </h1>
@@ -101,9 +99,9 @@ export default function HomePage() {
                 size="lg"
                 className="bg-white text-[#352d91] hover:bg-white/90"
               >
-                <Link href="/approved">
-                  <ShoppingBag className="size-5" aria-hidden />
-                  Show me what I can bring
+                <Link href="/scan/ingredients">
+                  <ListChecks className="size-5" aria-hidden />
+                  Check an ingredient list
                 </Link>
               </Button>
               <Button
@@ -123,11 +121,15 @@ export default function HomePage() {
                   <Search className="size-5" aria-hidden />
                 </span>
                 <div>
-                  <p className="font-bold">Start with what’s in your hand</p>
-                  <p className="text-sm text-[#687086]">Product, brand, or package</p>
+                  <p className="font-bold">Already in the catalog?</p>
+                  <p className="text-sm text-[#687086]">Search by product or brand</p>
                 </div>
               </div>
               <ProductSearch showAlternatives={false} />
+              <p className="mt-3 text-sm text-[#687086]">
+                Catalog coverage is limited during the beta. If your product is missing,
+                paste its ingredient list to check it.
+              </p>
             </div>
           </div>
         </div>
@@ -205,9 +207,7 @@ export default function HomePage() {
                     <span className="bg-accent-soft text-accent flex size-11 items-center justify-center rounded-[16px]">
                       <Icon className="size-5" aria-hidden />
                     </span>
-                    <span className="text-muted/60 text-3xl font-black">
-                      0{index + 1}
-                    </span>
+                    <span className="text-muted text-3xl font-black">0{index + 1}</span>
                   </div>
                   <h3 className="mt-5 text-lg font-bold">{step.title}</h3>
                   <p className="text-muted mt-2 text-sm leading-relaxed">{step.body}</p>

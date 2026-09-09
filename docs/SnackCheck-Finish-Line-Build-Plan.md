@@ -1,5 +1,7 @@
 # SnackCheck Finish-Line Build Plan
 
+> Historical roadmap. Current execution authority is the [takeover audit](SNACKCHECK_TAKEOVER_AUDIT.md), [definition of done](DEFINITION_OF_DONE.md), and [release audit](RELEASE_AUDIT.md). Preserve the source-permission, regulatory-review and production-approval boundaries described here; old phase ordering and per-slice stop instructions are superseded by the owner's takeover request.
+
 **Recorded:** September 6, 2026  
 **Objective:** Take the existing SnackCheck repository from its current staging state to a trustworthy public Arizona beta, then complete the optional commercial and expansion layers without weakening product integrity.
 
@@ -49,9 +51,11 @@ The permanent architecture principle remains:
 - The current Supabase project is owner-designated staging/non-production.
 - Production camera, photo, AI, and affiliate features remain off.
 - The public approved catalog remains empty until evidence, ruleset, and promotion gates pass.
-- PR #19 contains `classroom-use-v2` routing. Migration `0032` and the guarded 489-record assessment were applied only to staging. Independent read-back confirmed 95 `AUTO_EVIDENCE`, 6 `HUMAN_EXCEPTION`, 388 `DEPRIORITIZED`, 489 matching audit entries, and zero products or formulations. PR #19 is ready to merge after its final documentation-only CI run.
+- PR #19 merged at `ee1b1c5` after migration `0032` and the guarded 489-record assessment were applied only to staging. Independent read-back confirmed 95 `AUTO_EVIDENCE`, 6 `HUMAN_EXCEPTION`, 388 `DEPRIORITIZED`, 489 matching audit entries, and zero products or formulations. Post-merge `main` CI is green on run 34041127695.
 
 ## Milestone 1 — Complete classroom relevance routing
+
+Status: `COMPLETE`
 
 ### Work
 
@@ -73,6 +77,25 @@ The permanent architecture principle remains:
 
 ## Milestone 2 — Automated independent evidence collection
 
+Status: `PARTIAL` on `codex/phase-11-evidence-collection`. The bounded collector, source
+policy, exact-barcode OFF adapter, and private persistence layer are implemented. Migration
+`0033` and controlled evidence runs were applied only to owner-designated staging after
+explicit approval. The OFF pilot produced five secondary dossiers with four exact
+ingredient matches and one conflict. The first manufacturer run persisted five official
+page snapshots, but the paid comparison exposed that all five visible-text ingredient
+fields were noisy or incomplete. The parser now rejects page boilerplate and the paid
+runner refuses implausible stored evidence. Migration `0036` is the local, unapplied
+multi-source foundation: it preserves separate identity, ingredient, and supporting
+records in an immutable dossier instead of flattening unlike sources into one claim.
+Clean first-party recollection and a staging dossier pilot remain before this milestone can
+complete.
+
+The first current terms review blocked automated collection from Blue Diamond, Simple
+Mills, and PepsiCo Partners before any new request was made. Do not bypass that result.
+Obtain written permission or a supported manufacturer feed, or use licensed OFF evidence
+and user-contributed current-package evidence. The dossier model remains the correct place
+to combine those independently sourced records.
+
 ### Work
 
 Build a bounded collector for the 95 promising candidates. For each candidate, attempt to locate and preserve:
@@ -93,6 +116,14 @@ Reject search snippets, unverifiable retailer copy, mismatched flavors or sizes,
 - Costs, request counts, provenance, and failures are measurable.
 
 ## Milestone 3 — AI-assisted evidence extraction and comparison
+
+Status: `PARTIAL` on `codex/phase-11-evidence-collection`. Strict comparison contracts,
+the non-retained OpenAI adapter, deterministic conflict override, guarded persistence,
+detailed central spend accounting, and a private preview-only admin runner are implemented.
+Migrations `0034` and `0035` are applied to staging. Five live comparisons completed for
+`$0.002568000`, with zero provider failures and five safe human exceptions caused by noisy
+or incomplete evidence. Authentication, accounting, and fail-closed behavior are proven;
+clean multi-source evidence and a representative accuracy sample remain.
 
 ### Work
 

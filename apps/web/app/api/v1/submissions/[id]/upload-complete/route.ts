@@ -5,7 +5,7 @@ import { z } from "zod";
 import { fail, ok, requestId } from "@/lib/api/envelope";
 import { env } from "@/lib/env";
 import { isIngredientPhotoEnabled } from "@/lib/features";
-import { getRateLimiter } from "@/lib/rate-limit";
+import { enforceRateLimit } from "@/lib/rate-limit/request";
 import {
   ImageSanitizerError,
   sanitizeIngredientImage,
@@ -72,17 +72,15 @@ export async function POST(
   }
 
   try {
-    const limiter = await getRateLimiter();
-    const limited = await limiter.limit(`photo-sanitize:${id}`, 3, 60 * 60 * 1000);
-    if (!limited.success) {
-      return NextResponse.json(
-        fail("PHOTO_DAILY_LIMIT", "Photo processing is paused for today.", {
-          retryable: true,
-          id: reqId,
-        }),
-        { status: 429 },
-      );
-    }
+    const rateLimit = await enforceRateLimit({
+      request,
+      scope: "photo-sanitize",
+      max: 3,
+      windowMs: 3600000,
+      requestId: reqId,
+      ownedResourceId: id,
+    });
+    if (rateLimit) return rateLimit;
 
     const dailySlot = await admin.rpc("claim_photo_processing_slot", {
       p_limit: env.EXTRACTION_DAILY_LIMIT,

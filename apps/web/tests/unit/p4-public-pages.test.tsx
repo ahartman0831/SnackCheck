@@ -24,7 +24,7 @@ describe("public route copy", () => {
       screen.getAllByRole("link", { name: "Paste ingredients" }).length,
     ).toBeGreaterThan(0);
     expect(
-      screen.getByRole("link", { name: "Show me what I can bring" }),
+      screen.getByRole("link", { name: "Check an ingredient list" }),
     ).toBeInTheDocument();
     expect(screen.queryByText("Scan ingredients")).not.toBeInTheDocument();
   });

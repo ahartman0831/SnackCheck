@@ -2,7 +2,8 @@ import path from "node:path";
 import { expect, test } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 
-const artifacts = path.join(__dirname, "artifacts");
+const artifacts =
+  process.env.PLAYWRIGHT_ARTIFACTS_DIR ?? path.join(__dirname, "artifacts");
 
 const widths = [320, 390, 768, 1280, 1440] as const;
 
@@ -17,7 +18,7 @@ test.describe("Phase 3 shell and gallery", () => {
       await page.goto("/");
       await expect(
         page.getByRole("heading", {
-          name: "Scan it. Search it. Know before you bring it.",
+          name: "Start with the ingredients.",
         }),
       ).toBeVisible();
       const overflow = await page.evaluate(() => {
@@ -37,6 +38,13 @@ test.describe("Phase 3 shell and gallery", () => {
     await page.emulateMedia({ colorScheme: "dark", reducedMotion: "reduce" });
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/");
+    await page.getByRole("combobox", { name: "Search a food or brand" }).fill("Oat bars");
+    const dark = await new AxeBuilder({ page }).analyze();
+    expect(
+      dark.violations.filter(
+        (item) => item.impact === "critical" || item.impact === "serious",
+      ),
+    ).toEqual([]);
     const overflow = await page.evaluate(() => {
       return (
         document.documentElement.scrollWidth > document.documentElement.clientWidth + 1
@@ -69,7 +77,14 @@ test.describe("Phase 3 shell and gallery", () => {
     );
     expect(homeSerious).toEqual([]);
 
-    await page.goto("/dev/ui");
+    const galleryResponse = await page.goto("/dev/ui");
+    if (process.env.CI || process.env.PLAYWRIGHT_PRODUCTION === "true") {
+      expect(galleryResponse?.status()).toBe(404);
+      await expect(
+        page.getByRole("heading", { name: "SnackCheck UI gallery" }),
+      ).toHaveCount(0);
+      return;
+    }
     await expect(
       page.getByRole("heading", { name: "SnackCheck UI gallery" }),
     ).toBeVisible();

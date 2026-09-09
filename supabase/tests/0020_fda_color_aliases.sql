@@ -1,0 +1,10 @@
+begin;
+select plan(6);
+select is((select count(*)::int from public.rule_aliases where regulatory_source_id='a0390000-0000-4000-8000-000000000001' and not enabled and match_mode='EXACT_SEGMENT' and review_status='PENDING_REVIEW' and reviewed_by is null and reviewed_at is null),28,'28 sourced exact label forms await review');
+select is((select is_published from public.rulesets where id='33333333-3333-3333-3333-333333333333'),false,'draft remains unpublished');
+select ok((select reviewed_by is null and reviewed_at is null and published_by is null from public.rulesets where id='33333333-3333-3333-3333-333333333333'),'no human sign-off is invented');
+select ok((select ruleset_hash=public.ruleset_canonical_hash(id) from public.rulesets where id='33333333-3333-3333-3333-333333333333'),'disabled proposals preserve the canonical hash');
+select is((select count(*)::int from public.rule_aliases where enabled and normalized_alias in ('allura red ac','e129','red 40 lake')),0,'broader pending synonyms remain disabled');
+select throws_ok($test$update public.rule_aliases set enabled=true,review_status='AUTHORITATIVE_SYNONYM' where id='a0390001-0000-4000-8000-000000000111'$test$,'P0001','reviewed aliases require reviewer and review timestamp','sourced proposals still require named review');
+select * from finish();
+rollback;

@@ -2,7 +2,7 @@
   "name": "snackcheck",
   "private": true,
   "version": "0.0.0",
-  "description": "SnackCheck — Arizona Healthy Schools Act food compliance checker",
+  "description": "SnackCheck \u2014 Arizona Healthy Schools Act food compliance checker",
   "packageManager": "pnpm@10.33.0",
   "scripts": {
     "dev": "pnpm --filter web dev",
@@ -17,9 +17,11 @@
     "test:coverage": "pnpm --filter @snackcheck/compliance test:coverage",
     "test:integration": "pnpm --filter web test:integration",
     "test:e2e": "pnpm --filter web test:e2e",
+    "test:e2e:database": "pnpm --filter web exec playwright test --config=playwright.database.config.ts",
     "test:e2e:webkit": "pnpm --filter web exec playwright test --project=mobile-webkit",
     "test:e2e:camera": "pnpm --filter web exec playwright test --config=playwright.camera.config.ts --project=mobile-webkit",
-    "test:db": "supabase test db",
+    "test:db": "node scripts/test-db.mjs",
+    "test:db-runner": "node --test scripts/test-db.test.mjs",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "db:types": "pnpm exec tsx scripts/generate-db-types.ts",
@@ -30,8 +32,13 @@
     "import:candidates": "pnpm --filter web exec tsx scripts/import-catalog-candidates.ts",
     "assess:candidates": "pnpm --filter web exec tsx scripts/assess-catalog-candidates.ts",
     "shortlist:candidates": "pnpm --filter web exec tsx scripts/shortlist-catalog-candidates.ts",
+    "collect:evidence:off": "pnpm --filter web exec tsx scripts/collect-open-food-facts-evidence.ts",
+    "collect:evidence:manufacturer": "pnpm --filter web exec tsx scripts/collect-manufacturer-evidence.ts",
+    "assemble:evidence:dossiers": "pnpm --filter web exec tsx scripts/assemble-evidence-dossiers.ts",
+    "compare:evidence:ai": "NODE_OPTIONS=--conditions=react-server pnpm --filter web exec tsx scripts/compare-catalog-evidence-with-ai.ts",
     "ops:synthetic": "node scripts/run-synthetic-checks.mjs",
-    "ops:retention": "pnpm exec tsx scripts/cleanup-expired-submission-assets.ts"
+    "ops:retention": "pnpm exec tsx scripts/cleanup-expired-submission-assets.ts",
+    "review:catalog": "pnpm --filter web exec tsx scripts/review-catalog-batch.ts"
   },
   "devDependencies": {
     "prettier": "^3.6.2",
@@ -44,7 +51,8 @@
   },
   "pnpm": {
     "overrides": {
-      "browserslist": "4.28.8"
+      "browserslist": "4.28.8",
+      "js-yaml": "4.3.2"
     }
   }
 }

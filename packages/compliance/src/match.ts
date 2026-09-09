@@ -47,7 +47,13 @@ function tokensEqualSequence(haystack: string[], needle: string[]): boolean {
 
 function aliasMatches(ingredient: ParsedIngredient, alias: EnabledAlias): boolean {
   if (alias.matchMode === "EXACT_SEGMENT") {
-    return ingredient.normalized === alias.normalizedAlias;
+    // Keep the original label and precautionary classification in the match.
+    // Only remove this explicit lead-in; do not broaden exact aliases to tokens.
+    const value =
+      ingredient.presenceKind === "PRECAUTIONARY"
+        ? ingredient.normalized.replace(/^may contain /, "")
+        : ingredient.normalized;
+    return value === alias.normalizedAlias;
   }
 
   if (alias.matchMode === "TOKEN_SEQUENCE") {

@@ -34,7 +34,7 @@ export function barcodeNavLabel(env?: FeatureEnv): string {
   return isBarcodeCameraEnabled(env) ? "Scan" : "Barcode";
 }
 
-export const APP_TAGLINE = "Scan it. Search it. Know before you bring it.";
+export { APP_TAGLINE } from "./brand";
 export const APP_SUPPORTING =
   "Check packaged-food ingredients against Arizona’s school distribution rules.";
 export const APPROVED_HEADING = "Products that pass the Arizona ingredient check";

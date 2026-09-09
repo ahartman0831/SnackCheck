@@ -9,3 +9,5 @@ test-results
 supabase/.temp
 packages/db-types/src/database.types.ts
 apps/web/next-env.d.ts
+# Owner-supplied review artifacts, not maintained application source.
+Claude outputs/

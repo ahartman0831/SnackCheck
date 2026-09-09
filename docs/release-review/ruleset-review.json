@@ -1,0 +1,999 @@
+{
+  "reviewOnly": true,
+  "rulesetId": "33333333-3333-3333-3333-333333333333",
+  "baseRulesetHash": "0a6dc59239f351b62f2b39f75aa2291b491963fcb168f9a3c2cfae2efc5531e6",
+  "ruleset": {
+    "code": "AZ-HSA",
+    "version": 1,
+    "title": "Arizona Healthy Schools Act ingredient ruleset",
+    "effective_from": "2026-07-01",
+    "effective_until": null,
+    "freshness_current_days": 180,
+    "freshness_aging_days": 365,
+    "is_published": false,
+    "reviewed_at": null,
+    "review_document_url": null,
+    "review_document_hash": null
+  },
+  "canonicalPayload": {
+    "code": "AZ-HSA",
+    "contexts": [
+      {
+        "applicabilityStatus": "APPLIES",
+        "context": "CLASSROOM_DISTRIBUTION",
+        "regulatorySourceId": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa4"
+      },
+      {
+        "applicabilityStatus": "UNKNOWN",
+        "context": "FUNDRAISER_DURING_SCHOOL_DAY",
+        "regulatorySourceId": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa1"
+      },
+      {
+        "applicabilityStatus": "PARENT_OWN_CHILD_EXCEPTION",
+        "context": "PARENT_OWN_CHILD",
+        "regulatorySourceId": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa1"
+      },
+      {
+        "applicabilityStatus": "APPLIES",
+        "context": "SCHOOL_SERVED",
+        "regulatorySourceId": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa1"
+      },
+      {
+        "applicabilityStatus": "APPLIES",
+        "context": "SCHOOL_SOLD",
+        "regulatorySourceId": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa1"
+      },
+      {
+        "applicabilityStatus": "APPLIES",
+        "context": "THIRD_PARTY_SOLD",
+        "regulatorySourceId": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa1"
+      },
+      {
+        "applicabilityStatus": "UNKNOWN",
+        "context": "UNKNOWN",
+        "regulatorySourceId": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa1"
+      }
+    ],
+    "effectiveFrom": "2026-07-01",
+    "effectiveUntil": null,
+    "freshnessAgingDays": 365,
+    "freshnessCurrentDays": 180,
+    "id": "33333333-3333-3333-3333-333333333333",
+    "sourceIds": ["aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa1"],
+    "substances": [
+      {
+        "aliases": [
+          {
+            "id": "e43e8544-6be5-426a-8685-ab2ca669a0d1",
+            "matchMode": "TOKEN_SEQUENCE",
+            "normalizedAlias": "potassium bromate",
+            "pattern": null
+          }
+        ],
+        "canonicalNormalized": "potassium bromate",
+        "id": "44444444-4444-4444-4444-444444444401",
+        "statutoryOrdinal": 1
+      },
+      {
+        "aliases": [
+          {
+            "id": "1e6de2aa-11a1-432c-b3c4-4be2f90e5472",
+            "matchMode": "TOKEN_SEQUENCE",
+            "normalizedAlias": "propylparaben",
+            "pattern": null
+          }
+        ],
+        "canonicalNormalized": "propylparaben",
+        "id": "44444444-4444-4444-4444-444444444402",
+        "statutoryOrdinal": 2
+      },
+      {
+        "aliases": [
+          {
+            "id": "01808779-ae6f-455e-a2f5-55dbd1b4777e",
+            "matchMode": "TOKEN_SEQUENCE",
+            "normalizedAlias": "titanium dioxide",
+            "pattern": null
+          }
+        ],
+        "canonicalNormalized": "titanium dioxide",
+        "id": "44444444-4444-4444-4444-444444444403",
+        "statutoryOrdinal": 3
+      },
+      {
+        "aliases": [
+          {
+            "id": "1207bd82-e247-421f-80de-8c237f098602",
+            "matchMode": "TOKEN_SEQUENCE",
+            "normalizedAlias": "brominated vegetable oil",
+            "pattern": null
+          }
+        ],
+        "canonicalNormalized": "brominated vegetable oil",
+        "id": "44444444-4444-4444-4444-444444444404",
+        "statutoryOrdinal": 4
+      },
+      {
+        "aliases": [
+          {
+            "id": "db48fddd-df39-4030-aa81-46870acc9d46",
+            "matchMode": "TOKEN_SEQUENCE",
+            "normalizedAlias": "yellow dye 5",
+            "pattern": null
+          },
+          {
+            "id": "a7c1837e-7fc6-4ad1-8b93-4c70fdbf12e3",
+            "matchMode": "TOKEN_SEQUENCE",
+            "normalizedAlias": "yellow dye no 5",
+            "pattern": null
+          }
+        ],
+        "canonicalNormalized": "yellow dye 5",
+        "id": "44444444-4444-4444-4444-444444444405",
+        "statutoryOrdinal": 5
+      },
+      {
+        "aliases": [
+          {
+            "id": "0c93936c-a597-4674-b38b-cce0b4fbd2ca",
+            "matchMode": "TOKEN_SEQUENCE",
+            "normalizedAlias": "yellow dye 6",
+            "pattern": null
+          },
+          {
+            "id": "88f08759-ba2c-4474-9b50-3b7785556318",
+            "matchMode": "TOKEN_SEQUENCE",
+            "normalizedAlias": "yellow dye no 6",
+            "pattern": null
+          }
+        ],
+        "canonicalNormalized": "yellow dye 6",
+        "id": "44444444-4444-4444-4444-444444444406",
+        "statutoryOrdinal": 6
+      },
+      {
+        "aliases": [
+          {
+            "id": "456b9900-5cfe-488e-b4b1-d26d1f95af3d",
+            "matchMode": "TOKEN_SEQUENCE",
+            "normalizedAlias": "blue dye 1",
+            "pattern": null
+          },
+          {
+            "id": "c1875832-c97b-4e9a-915b-4297b486168f",
+            "matchMode": "TOKEN_SEQUENCE",
+            "normalizedAlias": "blue dye no 1",
+            "pattern": null
+          }
+        ],
+        "canonicalNormalized": "blue dye 1",
+        "id": "44444444-4444-4444-4444-444444444407",
+        "statutoryOrdinal": 7
+      },
+      {
+        "aliases": [
+          {
+            "id": "aaaf2f12-949a-44a0-ae69-3f013976f5e4",
+            "matchMode": "TOKEN_SEQUENCE",
+            "normalizedAlias": "blue dye 2",
+            "pattern": null
+          },
+          {
+            "id": "fdcdac16-47fe-4e6b-8095-0277d2a5bba5",
+            "matchMode": "TOKEN_SEQUENCE",
+            "normalizedAlias": "blue dye no 2",
+            "pattern": null
+          }
+        ],
+        "canonicalNormalized": "blue dye 2",
+        "id": "44444444-4444-4444-4444-444444444408",
+        "statutoryOrdinal": 8
+      },
+      {
+        "aliases": [
+          {
+            "id": "7c033aba-b4a0-497a-9565-5fd9f689ba77",
+            "matchMode": "TOKEN_SEQUENCE",
+            "normalizedAlias": "green dye 3",
+            "pattern": null
+          },
+          {
+            "id": "0490f006-e460-441b-8fb1-e16b340c947b",
+            "matchMode": "TOKEN_SEQUENCE",
+            "normalizedAlias": "green dye no 3",
+            "pattern": null
+          }
+        ],
+        "canonicalNormalized": "green dye 3",
+        "id": "44444444-4444-4444-4444-444444444409",
+        "statutoryOrdinal": 9
+      },
+      {
+        "aliases": [
+          {
+            "id": "317d517b-5670-4f91-bedb-11a096ad7654",
+            "matchMode": "TOKEN_SEQUENCE",
+            "normalizedAlias": "red dye 3",
+            "pattern": null
+          },
+          {
+            "id": "dec7a87e-05c7-4fd1-a471-3c33b23d2352",
+            "matchMode": "TOKEN_SEQUENCE",
+            "normalizedAlias": "red dye no 3",
+            "pattern": null
+          }
+        ],
+        "canonicalNormalized": "red dye 3",
+        "id": "44444444-4444-4444-4444-444444444410",
+        "statutoryOrdinal": 10
+      },
+      {
+        "aliases": [
+          {
+            "id": "a8a36bd1-c5c0-4fb6-9c11-349edf2a453f",
+            "matchMode": "TOKEN_SEQUENCE",
+            "normalizedAlias": "red dye 40",
+            "pattern": null
+          },
+          {
+            "id": "d9857f6e-caac-4a92-bb0d-c5885704a2b4",
+            "matchMode": "TOKEN_SEQUENCE",
+            "normalizedAlias": "red dye no 40",
+            "pattern": null
+          }
+        ],
+        "canonicalNormalized": "red dye 40",
+        "id": "44444444-4444-4444-4444-444444444411",
+        "statutoryOrdinal": 11
+      }
+    ],
+    "version": 1
+  },
+  "substances": [
+    {
+      "id": "44444444-4444-4444-4444-444444444401",
+      "canonical_name": "Potassium bromate",
+      "canonical_normalized": "potassium bromate",
+      "statutory_ordinal": 1,
+      "regulatory_source_id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa1",
+      "source_locator": "A.R.S. \u00a7 15-242.01",
+      "enabled": true
+    },
+    {
+      "id": "44444444-4444-4444-4444-444444444402",
+      "canonical_name": "Propylparaben",
+      "canonical_normalized": "propylparaben",
+      "statutory_ordinal": 2,
+      "regulatory_source_id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa1",
+      "source_locator": "A.R.S. \u00a7 15-242.01",
+      "enabled": true
+    },
+    {
+      "id": "44444444-4444-4444-4444-444444444403",
+      "canonical_name": "Titanium dioxide",
+      "canonical_normalized": "titanium dioxide",
+      "statutory_ordinal": 3,
+      "regulatory_source_id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa1",
+      "source_locator": "A.R.S. \u00a7 15-242.01",
+      "enabled": true
+    },
+    {
+      "id": "44444444-4444-4444-4444-444444444404",
+      "canonical_name": "Brominated vegetable oil",
+      "canonical_normalized": "brominated vegetable oil",
+      "statutory_ordinal": 4,
+      "regulatory_source_id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa1",
+      "source_locator": "A.R.S. \u00a7 15-242.01",
+      "enabled": true
+    },
+    {
+      "id": "44444444-4444-4444-4444-444444444405",
+      "canonical_name": "Yellow dye 5",
+      "canonical_normalized": "yellow dye 5",
+      "statutory_ordinal": 5,
+      "regulatory_source_id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa1",
+      "source_locator": "A.R.S. \u00a7 15-242.01",
+      "enabled": true
+    },
+    {
+      "id": "44444444-4444-4444-4444-444444444406",
+      "canonical_name": "Yellow dye 6",
+      "canonical_normalized": "yellow dye 6",
+      "statutory_ordinal": 6,
+      "regulatory_source_id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa1",
+      "source_locator": "A.R.S. \u00a7 15-242.01",
+      "enabled": true
+    },
+    {
+      "id": "44444444-4444-4444-4444-444444444407",
+      "canonical_name": "Blue dye 1",
+      "canonical_normalized": "blue dye 1",
+      "statutory_ordinal": 7,
+      "regulatory_source_id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa1",
+      "source_locator": "A.R.S. \u00a7 15-242.01",
+      "enabled": true
+    },
+    {
+      "id": "44444444-4444-4444-4444-444444444408",
+      "canonical_name": "Blue dye 2",
+      "canonical_normalized": "blue dye 2",
+      "statutory_ordinal": 8,
+      "regulatory_source_id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa1",
+      "source_locator": "A.R.S. \u00a7 15-242.01",
+      "enabled": true
+    },
+    {
+      "id": "44444444-4444-4444-4444-444444444409",
+      "canonical_name": "Green dye 3",
+      "canonical_normalized": "green dye 3",
+      "statutory_ordinal": 9,
+      "regulatory_source_id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa1",
+      "source_locator": "A.R.S. \u00a7 15-242.01",
+      "enabled": true
+    },
+    {
+      "id": "44444444-4444-4444-4444-444444444410",
+      "canonical_name": "Red dye 3",
+      "canonical_normalized": "red dye 3",
+      "statutory_ordinal": 10,
+      "regulatory_source_id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa1",
+      "source_locator": "A.R.S. \u00a7 15-242.01",
+      "enabled": true
+    },
+    {
+      "id": "44444444-4444-4444-4444-444444444411",
+      "canonical_name": "Red dye 40",
+      "canonical_normalized": "red dye 40",
+      "statutory_ordinal": 11,
+      "regulatory_source_id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa1",
+      "source_locator": "A.R.S. \u00a7 15-242.01",
+      "enabled": true
+    }
+  ],
+  "aliases": [
+    {
+      "id": "01808779-ae6f-455e-a2f5-55dbd1b4777e",
+      "prohibited_substance_id": "44444444-4444-4444-4444-444444444403",
+      "alias": "Titanium dioxide",
+      "normalized_alias": "titanium dioxide",
+      "match_mode": "TOKEN_SEQUENCE",
+      "enabled": true,
+      "review_status": "EXACT_STATUTE_TERM",
+      "regulatory_source_id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa1",
+      "reviewed_at": null
+    },
+    {
+      "id": "0490f006-e460-441b-8fb1-e16b340c947b",
+      "prohibited_substance_id": "44444444-4444-4444-4444-444444444409",
+      "alias": "Green dye #3",
+      "normalized_alias": "green dye no 3",
+      "match_mode": "TOKEN_SEQUENCE",
+      "enabled": true,
+      "review_status": "EXACT_STATUTE_TERM",
+      "regulatory_source_id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa1",
+      "reviewed_at": null
+    },
+    {
+      "id": "0c93936c-a597-4674-b38b-cce0b4fbd2ca",
+      "prohibited_substance_id": "44444444-4444-4444-4444-444444444406",
+      "alias": "Yellow dye 6",
+      "normalized_alias": "yellow dye 6",
+      "match_mode": "TOKEN_SEQUENCE",
+      "enabled": true,
+      "review_status": "EXACT_STATUTE_TERM",
+      "regulatory_source_id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa1",
+      "reviewed_at": null
+    },
+    {
+      "id": "1207bd82-e247-421f-80de-8c237f098602",
+      "prohibited_substance_id": "44444444-4444-4444-4444-444444444404",
+      "alias": "Brominated vegetable oil",
+      "normalized_alias": "brominated vegetable oil",
+      "match_mode": "TOKEN_SEQUENCE",
+      "enabled": true,
+      "review_status": "EXACT_STATUTE_TERM",
+      "regulatory_source_id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa1",
+      "reviewed_at": null
+    },
+    {
+      "id": "1e6de2aa-11a1-432c-b3c4-4be2f90e5472",
+      "prohibited_substance_id": "44444444-4444-4444-4444-444444444402",
+      "alias": "Propylparaben",
+      "normalized_alias": "propylparaben",
+      "match_mode": "TOKEN_SEQUENCE",
+      "enabled": true,
+      "review_status": "EXACT_STATUTE_TERM",
+      "regulatory_source_id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa1",
+      "reviewed_at": null
+    },
+    {
+      "id": "20a920ff-3b5a-4d26-ab3d-e66357dc8235",
+      "prohibited_substance_id": "44444444-4444-4444-4444-444444444411",
+      "alias": "E129",
+      "normalized_alias": "e129",
+      "match_mode": "EXACT_SEGMENT",
+      "enabled": false,
+      "review_status": "PENDING_REVIEW",
+      "regulatory_source_id": null,
+      "reviewed_at": null
+    },
+    {
+      "id": "317d517b-5670-4f91-bedb-11a096ad7654",
+      "prohibited_substance_id": "44444444-4444-4444-4444-444444444410",
+      "alias": "Red dye 3",
+      "normalized_alias": "red dye 3",
+      "match_mode": "TOKEN_SEQUENCE",
+      "enabled": true,
+      "review_status": "EXACT_STATUTE_TERM",
+      "regulatory_source_id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa1",
+      "reviewed_at": null
+    },
+    {
+      "id": "456b9900-5cfe-488e-b4b1-d26d1f95af3d",
+      "prohibited_substance_id": "44444444-4444-4444-4444-444444444407",
+      "alias": "Blue dye 1",
+      "normalized_alias": "blue dye 1",
+      "match_mode": "TOKEN_SEQUENCE",
+      "enabled": true,
+      "review_status": "EXACT_STATUTE_TERM",
+      "regulatory_source_id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa1",
+      "reviewed_at": null
+    },
+    {
+      "id": "7c033aba-b4a0-497a-9565-5fd9f689ba77",
+      "prohibited_substance_id": "44444444-4444-4444-4444-444444444409",
+      "alias": "Green dye 3",
+      "normalized_alias": "green dye 3",
+      "match_mode": "TOKEN_SEQUENCE",
+      "enabled": true,
+      "review_status": "EXACT_STATUTE_TERM",
+      "regulatory_source_id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa1",
+      "reviewed_at": null
+    },
+    {
+      "id": "88f08759-ba2c-4474-9b50-3b7785556318",
+      "prohibited_substance_id": "44444444-4444-4444-4444-444444444406",
+      "alias": "Yellow dye #6",
+      "normalized_alias": "yellow dye no 6",
+      "match_mode": "TOKEN_SEQUENCE",
+      "enabled": true,
+      "review_status": "EXACT_STATUTE_TERM",
+      "regulatory_source_id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa1",
+      "reviewed_at": null
+    },
+    {
+      "id": "a0390001-0000-4000-8000-000000000051",
+      "prohibited_substance_id": "44444444-4444-4444-4444-444444444405",
+      "alias": "Yellow 5",
+      "normalized_alias": "yellow 5",
+      "match_mode": "EXACT_SEGMENT",
+      "enabled": false,
+      "review_status": "PENDING_REVIEW",
+      "regulatory_source_id": "a0390000-0000-4000-8000-000000000001",
+      "reviewed_at": null
+    },
+    {
+      "id": "a0390001-0000-4000-8000-000000000052",
+      "prohibited_substance_id": "44444444-4444-4444-4444-444444444405",
+      "alias": "Yellow No. 5",
+      "normalized_alias": "yellow no 5",
+      "match_mode": "EXACT_SEGMENT",
+      "enabled": false,
+      "review_status": "PENDING_REVIEW",
+      "regulatory_source_id": "a0390000-0000-4000-8000-000000000001",
+      "reviewed_at": null
+    },
+    {
+      "id": "a0390001-0000-4000-8000-000000000053",
+      "prohibited_substance_id": "44444444-4444-4444-4444-444444444405",
+      "alias": "FD&C Yellow 5",
+      "normalized_alias": "fd and c yellow 5",
+      "match_mode": "EXACT_SEGMENT",
+      "enabled": false,
+      "review_status": "PENDING_REVIEW",
+      "regulatory_source_id": "a0390000-0000-4000-8000-000000000001",
+      "reviewed_at": null
+    },
+    {
+      "id": "a0390001-0000-4000-8000-000000000054",
+      "prohibited_substance_id": "44444444-4444-4444-4444-444444444405",
+      "alias": "FD&C Yellow No. 5",
+      "normalized_alias": "fd and c yellow no 5",
+      "match_mode": "EXACT_SEGMENT",
+      "enabled": false,
+      "review_status": "PENDING_REVIEW",
+      "regulatory_source_id": "a0390000-0000-4000-8000-000000000001",
+      "reviewed_at": null
+    },
+    {
+      "id": "a0390001-0000-4000-8000-000000000061",
+      "prohibited_substance_id": "44444444-4444-4444-4444-444444444406",
+      "alias": "Yellow 6",
+      "normalized_alias": "yellow 6",
+      "match_mode": "EXACT_SEGMENT",
+      "enabled": false,
+      "review_status": "PENDING_REVIEW",
+      "regulatory_source_id": "a0390000-0000-4000-8000-000000000001",
+      "reviewed_at": null
+    },
+    {
+      "id": "a0390001-0000-4000-8000-000000000062",
+      "prohibited_substance_id": "44444444-4444-4444-4444-444444444406",
+      "alias": "Yellow No. 6",
+      "normalized_alias": "yellow no 6",
+      "match_mode": "EXACT_SEGMENT",
+      "enabled": false,
+      "review_status": "PENDING_REVIEW",
+      "regulatory_source_id": "a0390000-0000-4000-8000-000000000001",
+      "reviewed_at": null
+    },
+    {
+      "id": "a0390001-0000-4000-8000-000000000063",
+      "prohibited_substance_id": "44444444-4444-4444-4444-444444444406",
+      "alias": "FD&C Yellow 6",
+      "normalized_alias": "fd and c yellow 6",
+      "match_mode": "EXACT_SEGMENT",
+      "enabled": false,
+      "review_status": "PENDING_REVIEW",
+      "regulatory_source_id": "a0390000-0000-4000-8000-000000000001",
+      "reviewed_at": null
+    },
+    {
+      "id": "a0390001-0000-4000-8000-000000000064",
+      "prohibited_substance_id": "44444444-4444-4444-4444-444444444406",
+      "alias": "FD&C Yellow No. 6",
+      "normalized_alias": "fd and c yellow no 6",
+      "match_mode": "EXACT_SEGMENT",
+      "enabled": false,
+      "review_status": "PENDING_REVIEW",
+      "regulatory_source_id": "a0390000-0000-4000-8000-000000000001",
+      "reviewed_at": null
+    },
+    {
+      "id": "a0390001-0000-4000-8000-000000000071",
+      "prohibited_substance_id": "44444444-4444-4444-4444-444444444407",
+      "alias": "Blue 1",
+      "normalized_alias": "blue 1",
+      "match_mode": "EXACT_SEGMENT",
+      "enabled": false,
+      "review_status": "PENDING_REVIEW",
+      "regulatory_source_id": "a0390000-0000-4000-8000-000000000001",
+      "reviewed_at": null
+    },
+    {
+      "id": "a0390001-0000-4000-8000-000000000072",
+      "prohibited_substance_id": "44444444-4444-4444-4444-444444444407",
+      "alias": "Blue No. 1",
+      "normalized_alias": "blue no 1",
+      "match_mode": "EXACT_SEGMENT",
+      "enabled": false,
+      "review_status": "PENDING_REVIEW",
+      "regulatory_source_id": "a0390000-0000-4000-8000-000000000001",
+      "reviewed_at": null
+    },
+    {
+      "id": "a0390001-0000-4000-8000-000000000073",
+      "prohibited_substance_id": "44444444-4444-4444-4444-444444444407",
+      "alias": "FD&C Blue 1",
+      "normalized_alias": "fd and c blue 1",
+      "match_mode": "EXACT_SEGMENT",
+      "enabled": false,
+      "review_status": "PENDING_REVIEW",
+      "regulatory_source_id": "a0390000-0000-4000-8000-000000000001",
+      "reviewed_at": null
+    },
+    {
+      "id": "a0390001-0000-4000-8000-000000000074",
+      "prohibited_substance_id": "44444444-4444-4444-4444-444444444407",
+      "alias": "FD&C Blue No. 1",
+      "normalized_alias": "fd and c blue no 1",
+      "match_mode": "EXACT_SEGMENT",
+      "enabled": false,
+      "review_status": "PENDING_REVIEW",
+      "regulatory_source_id": "a0390000-0000-4000-8000-000000000001",
+      "reviewed_at": null
+    },
+    {
+      "id": "a0390001-0000-4000-8000-000000000081",
+      "prohibited_substance_id": "44444444-4444-4444-4444-444444444408",
+      "alias": "Blue 2",
+      "normalized_alias": "blue 2",
+      "match_mode": "EXACT_SEGMENT",
+      "enabled": false,
+      "review_status": "PENDING_REVIEW",
+      "regulatory_source_id": "a0390000-0000-4000-8000-000000000001",
+      "reviewed_at": null
+    },
+    {
+      "id": "a0390001-0000-4000-8000-000000000082",
+      "prohibited_substance_id": "44444444-4444-4444-4444-444444444408",
+      "alias": "Blue No. 2",
+      "normalized_alias": "blue no 2",
+      "match_mode": "EXACT_SEGMENT",
+      "enabled": false,
+      "review_status": "PENDING_REVIEW",
+      "regulatory_source_id": "a0390000-0000-4000-8000-000000000001",
+      "reviewed_at": null
+    },
+    {
+      "id": "a0390001-0000-4000-8000-000000000083",
+      "prohibited_substance_id": "44444444-4444-4444-4444-444444444408",
+      "alias": "FD&C Blue 2",
+      "normalized_alias": "fd and c blue 2",
+      "match_mode": "EXACT_SEGMENT",
+      "enabled": false,
+      "review_status": "PENDING_REVIEW",
+      "regulatory_source_id": "a0390000-0000-4000-8000-000000000001",
+      "reviewed_at": null
+    },
+    {
+      "id": "a0390001-0000-4000-8000-000000000084",
+      "prohibited_substance_id": "44444444-4444-4444-4444-444444444408",
+      "alias": "FD&C Blue No. 2",
+      "normalized_alias": "fd and c blue no 2",
+      "match_mode": "EXACT_SEGMENT",
+      "enabled": false,
+      "review_status": "PENDING_REVIEW",
+      "regulatory_source_id": "a0390000-0000-4000-8000-000000000001",
+      "reviewed_at": null
+    },
+    {
+      "id": "a0390001-0000-4000-8000-000000000091",
+      "prohibited_substance_id": "44444444-4444-4444-4444-444444444409",
+      "alias": "Green 3",
+      "normalized_alias": "green 3",
+      "match_mode": "EXACT_SEGMENT",
+      "enabled": false,
+      "review_status": "PENDING_REVIEW",
+      "regulatory_source_id": "a0390000-0000-4000-8000-000000000001",
+      "reviewed_at": null
+    },
+    {
+      "id": "a0390001-0000-4000-8000-000000000092",
+      "prohibited_substance_id": "44444444-4444-4444-4444-444444444409",
+      "alias": "Green No. 3",
+      "normalized_alias": "green no 3",
+      "match_mode": "EXACT_SEGMENT",
+      "enabled": false,
+      "review_status": "PENDING_REVIEW",
+      "regulatory_source_id": "a0390000-0000-4000-8000-000000000001",
+      "reviewed_at": null
+    },
+    {
+      "id": "a0390001-0000-4000-8000-000000000093",
+      "prohibited_substance_id": "44444444-4444-4444-4444-444444444409",
+      "alias": "FD&C Green 3",
+      "normalized_alias": "fd and c green 3",
+      "match_mode": "EXACT_SEGMENT",
+      "enabled": false,
+      "review_status": "PENDING_REVIEW",
+      "regulatory_source_id": "a0390000-0000-4000-8000-000000000001",
+      "reviewed_at": null
+    },
+    {
+      "id": "a0390001-0000-4000-8000-000000000094",
+      "prohibited_substance_id": "44444444-4444-4444-4444-444444444409",
+      "alias": "FD&C Green No. 3",
+      "normalized_alias": "fd and c green no 3",
+      "match_mode": "EXACT_SEGMENT",
+      "enabled": false,
+      "review_status": "PENDING_REVIEW",
+      "regulatory_source_id": "a0390000-0000-4000-8000-000000000001",
+      "reviewed_at": null
+    },
+    {
+      "id": "a0390001-0000-4000-8000-000000000101",
+      "prohibited_substance_id": "44444444-4444-4444-4444-444444444410",
+      "alias": "Red 3",
+      "normalized_alias": "red 3",
+      "match_mode": "EXACT_SEGMENT",
+      "enabled": false,
+      "review_status": "PENDING_REVIEW",
+      "regulatory_source_id": "a0390000-0000-4000-8000-000000000001",
+      "reviewed_at": null
+    },
+    {
+      "id": "a0390001-0000-4000-8000-000000000102",
+      "prohibited_substance_id": "44444444-4444-4444-4444-444444444410",
+      "alias": "Red No. 3",
+      "normalized_alias": "red no 3",
+      "match_mode": "EXACT_SEGMENT",
+      "enabled": false,
+      "review_status": "PENDING_REVIEW",
+      "regulatory_source_id": "a0390000-0000-4000-8000-000000000001",
+      "reviewed_at": null
+    },
+    {
+      "id": "a0390001-0000-4000-8000-000000000103",
+      "prohibited_substance_id": "44444444-4444-4444-4444-444444444410",
+      "alias": "FD&C Red 3",
+      "normalized_alias": "fd and c red 3",
+      "match_mode": "EXACT_SEGMENT",
+      "enabled": false,
+      "review_status": "PENDING_REVIEW",
+      "regulatory_source_id": "a0390000-0000-4000-8000-000000000001",
+      "reviewed_at": null
+    },
+    {
+      "id": "a0390001-0000-4000-8000-000000000104",
+      "prohibited_substance_id": "44444444-4444-4444-4444-444444444410",
+      "alias": "FD&C Red No. 3",
+      "normalized_alias": "fd and c red no 3",
+      "match_mode": "EXACT_SEGMENT",
+      "enabled": false,
+      "review_status": "PENDING_REVIEW",
+      "regulatory_source_id": "a0390000-0000-4000-8000-000000000001",
+      "reviewed_at": null
+    },
+    {
+      "id": "a0390001-0000-4000-8000-000000000111",
+      "prohibited_substance_id": "44444444-4444-4444-4444-444444444411",
+      "alias": "Red 40",
+      "normalized_alias": "red 40",
+      "match_mode": "EXACT_SEGMENT",
+      "enabled": false,
+      "review_status": "PENDING_REVIEW",
+      "regulatory_source_id": "a0390000-0000-4000-8000-000000000001",
+      "reviewed_at": null
+    },
+    {
+      "id": "a0390001-0000-4000-8000-000000000112",
+      "prohibited_substance_id": "44444444-4444-4444-4444-444444444411",
+      "alias": "Red No. 40",
+      "normalized_alias": "red no 40",
+      "match_mode": "EXACT_SEGMENT",
+      "enabled": false,
+      "review_status": "PENDING_REVIEW",
+      "regulatory_source_id": "a0390000-0000-4000-8000-000000000001",
+      "reviewed_at": null
+    },
+    {
+      "id": "a0390001-0000-4000-8000-000000000113",
+      "prohibited_substance_id": "44444444-4444-4444-4444-444444444411",
+      "alias": "FD&C Red 40",
+      "normalized_alias": "fd and c red 40",
+      "match_mode": "EXACT_SEGMENT",
+      "enabled": false,
+      "review_status": "PENDING_REVIEW",
+      "regulatory_source_id": "a0390000-0000-4000-8000-000000000001",
+      "reviewed_at": null
+    },
+    {
+      "id": "a0390001-0000-4000-8000-000000000114",
+      "prohibited_substance_id": "44444444-4444-4444-4444-444444444411",
+      "alias": "FD&C Red No. 40",
+      "normalized_alias": "fd and c red no 40",
+      "match_mode": "EXACT_SEGMENT",
+      "enabled": false,
+      "review_status": "PENDING_REVIEW",
+      "regulatory_source_id": "a0390000-0000-4000-8000-000000000001",
+      "reviewed_at": null
+    },
+    {
+      "id": "a7c1837e-7fc6-4ad1-8b93-4c70fdbf12e3",
+      "prohibited_substance_id": "44444444-4444-4444-4444-444444444405",
+      "alias": "Yellow dye #5",
+      "normalized_alias": "yellow dye no 5",
+      "match_mode": "TOKEN_SEQUENCE",
+      "enabled": true,
+      "review_status": "EXACT_STATUTE_TERM",
+      "regulatory_source_id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa1",
+      "reviewed_at": null
+    },
+    {
+      "id": "a8a36bd1-c5c0-4fb6-9c11-349edf2a453f",
+      "prohibited_substance_id": "44444444-4444-4444-4444-444444444411",
+      "alias": "Red dye 40",
+      "normalized_alias": "red dye 40",
+      "match_mode": "TOKEN_SEQUENCE",
+      "enabled": true,
+      "review_status": "EXACT_STATUTE_TERM",
+      "regulatory_source_id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa1",
+      "reviewed_at": null
+    },
+    {
+      "id": "aaaf2f12-949a-44a0-ae69-3f013976f5e4",
+      "prohibited_substance_id": "44444444-4444-4444-4444-444444444408",
+      "alias": "Blue dye 2",
+      "normalized_alias": "blue dye 2",
+      "match_mode": "TOKEN_SEQUENCE",
+      "enabled": true,
+      "review_status": "EXACT_STATUTE_TERM",
+      "regulatory_source_id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa1",
+      "reviewed_at": null
+    },
+    {
+      "id": "c1875832-c97b-4e9a-915b-4297b486168f",
+      "prohibited_substance_id": "44444444-4444-4444-4444-444444444407",
+      "alias": "Blue dye #1",
+      "normalized_alias": "blue dye no 1",
+      "match_mode": "TOKEN_SEQUENCE",
+      "enabled": true,
+      "review_status": "EXACT_STATUTE_TERM",
+      "regulatory_source_id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa1",
+      "reviewed_at": null
+    },
+    {
+      "id": "cdfdbd69-287b-41b2-acbf-93a0e6435adc",
+      "prohibited_substance_id": "44444444-4444-4444-4444-444444444411",
+      "alias": "Allura Red AC",
+      "normalized_alias": "allura red ac",
+      "match_mode": "TOKEN_SEQUENCE",
+      "enabled": false,
+      "review_status": "PENDING_REVIEW",
+      "regulatory_source_id": null,
+      "reviewed_at": null
+    },
+    {
+      "id": "d9857f6e-caac-4a92-bb0d-c5885704a2b4",
+      "prohibited_substance_id": "44444444-4444-4444-4444-444444444411",
+      "alias": "Red dye #40",
+      "normalized_alias": "red dye no 40",
+      "match_mode": "TOKEN_SEQUENCE",
+      "enabled": true,
+      "review_status": "EXACT_STATUTE_TERM",
+      "regulatory_source_id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa1",
+      "reviewed_at": null
+    },
+    {
+      "id": "db48fddd-df39-4030-aa81-46870acc9d46",
+      "prohibited_substance_id": "44444444-4444-4444-4444-444444444405",
+      "alias": "Yellow dye 5",
+      "normalized_alias": "yellow dye 5",
+      "match_mode": "TOKEN_SEQUENCE",
+      "enabled": true,
+      "review_status": "EXACT_STATUTE_TERM",
+      "regulatory_source_id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa1",
+      "reviewed_at": null
+    },
+    {
+      "id": "dec7a87e-05c7-4fd1-a471-3c33b23d2352",
+      "prohibited_substance_id": "44444444-4444-4444-4444-444444444410",
+      "alias": "Red dye #3",
+      "normalized_alias": "red dye no 3",
+      "match_mode": "TOKEN_SEQUENCE",
+      "enabled": true,
+      "review_status": "EXACT_STATUTE_TERM",
+      "regulatory_source_id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa1",
+      "reviewed_at": null
+    },
+    {
+      "id": "e43e8544-6be5-426a-8685-ab2ca669a0d1",
+      "prohibited_substance_id": "44444444-4444-4444-4444-444444444401",
+      "alias": "Potassium bromate",
+      "normalized_alias": "potassium bromate",
+      "match_mode": "TOKEN_SEQUENCE",
+      "enabled": true,
+      "review_status": "EXACT_STATUTE_TERM",
+      "regulatory_source_id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa1",
+      "reviewed_at": null
+    },
+    {
+      "id": "eb2513ed-85c4-45d1-b041-5cb479127aeb",
+      "prohibited_substance_id": "44444444-4444-4444-4444-444444444411",
+      "alias": "Red 40 Lake",
+      "normalized_alias": "red 40 lake",
+      "match_mode": "TOKEN_SEQUENCE",
+      "enabled": false,
+      "review_status": "PENDING_REVIEW",
+      "regulatory_source_id": null,
+      "reviewed_at": null
+    },
+    {
+      "id": "fdcdac16-47fe-4e6b-8095-0277d2a5bba5",
+      "prohibited_substance_id": "44444444-4444-4444-4444-444444444408",
+      "alias": "Blue dye #2",
+      "normalized_alias": "blue dye no 2",
+      "match_mode": "TOKEN_SEQUENCE",
+      "enabled": true,
+      "review_status": "EXACT_STATUTE_TERM",
+      "regulatory_source_id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa1",
+      "reviewed_at": null
+    }
+  ],
+  "contexts": [
+    {
+      "context": "CLASSROOM_DISTRIBUTION",
+      "applicability_status": "APPLIES",
+      "regulatory_source_id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa4",
+      "source_locator": "ADE May 2026 FAQ",
+      "public_summary": "ADE guidance states that compliance is campus-wide and includes classroom-based food distribution, including celebrations, birthday parties, prizes/incentives, and classroom snacks. This is agency implementation guidance, not additional statutory text.",
+      "enabled": true
+    },
+    {
+      "context": "FUNDRAISER_DURING_SCHOOL_DAY",
+      "applicability_status": "UNKNOWN",
+      "regulatory_source_id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa1",
+      "source_locator": "A.R.S. \u00a7 15-242.01",
+      "public_summary": "The statute addresses serving, selling, and third-party selling during the normal school day. Whether a particular fundraiser is in scope depends on facts not resolved in the seeded sources.",
+      "enabled": true
+    },
+    {
+      "context": "PARENT_OWN_CHILD",
+      "applicability_status": "PARENT_OWN_CHILD_EXCEPTION",
+      "regulatory_source_id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa1",
+      "source_locator": "A.R.S. \u00a7 15-242.01",
+      "public_summary": "Arizona's school-day restriction does not prevent a parent or guardian from providing this food to their own student. Your school may still have other policies, including allergy or campus rules.",
+      "enabled": true
+    },
+    {
+      "context": "SCHOOL_SERVED",
+      "applicability_status": "APPLIES",
+      "regulatory_source_id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa1",
+      "source_locator": "A.R.S. \u00a7 15-242.01",
+      "public_summary": "The statute prohibits a participating school from serving covered food on campus during the normal school day.",
+      "enabled": true
+    },
+    {
+      "context": "SCHOOL_SOLD",
+      "applicability_status": "APPLIES",
+      "regulatory_source_id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa1",
+      "source_locator": "A.R.S. \u00a7 15-242.01",
+      "public_summary": "The statute prohibits a participating school from selling covered food on campus during the normal school day.",
+      "enabled": true
+    },
+    {
+      "context": "THIRD_PARTY_SOLD",
+      "applicability_status": "APPLIES",
+      "regulatory_source_id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa1",
+      "source_locator": "A.R.S. \u00a7 15-242.01",
+      "public_summary": "The statute prohibits a participating school from allowing a third party to sell covered food on campus during the normal school day.",
+      "enabled": true
+    },
+    {
+      "context": "UNKNOWN",
+      "applicability_status": "UNKNOWN",
+      "regulatory_source_id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa1",
+      "source_locator": "A.R.S. \u00a7 15-242.01",
+      "public_summary": "The selected context is not resolved by the published sources.",
+      "enabled": true
+    }
+  ],
+  "sources": [
+    {
+      "id": "a0390000-0000-4000-8000-000000000001",
+      "title": "FDA color additive label names",
+      "citation": "FDA: Color Additives Questions and Answers for Consumers",
+      "source_type": "AGENCY_GUIDANCE",
+      "url": "https://www.fda.gov/food/color-additives-information-consumers/color-additives-questions-and-answers-consumers",
+      "published_at": null,
+      "retrieved_at": "2026-09-09T11:23:23.469092+00:00"
+    },
+    {
+      "id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa1",
+      "title": "A.R.S. \u00a7 15-242.01",
+      "citation": "A.R.S. \u00a7 15-242.01",
+      "source_type": "STATUTE",
+      "url": "https://www.azleg.gov/ars/15/00242-01.htm",
+      "published_at": "2025-05-12",
+      "retrieved_at": "2026-08-25T00:00:00+00:00"
+    },
+    {
+      "id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa2",
+      "title": "Arizona Laws 2025, Chapter 52 / HB 2164",
+      "citation": "Ariz. Laws 2025, ch. 52",
+      "source_type": "STATUTE",
+      "url": "https://www.azleg.gov/legtext/57Leg/1R/laws/0052.pdf",
+      "published_at": "2025-05-12",
+      "retrieved_at": "2026-08-25T00:00:00+00:00"
+    },
+    {
+      "id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa3",
+      "title": "ADE May 5, 2026 compliance memorandum",
+      "citation": "Arizona Department of Education, May 5, 2026",
+      "source_type": "AGENCY_GUIDANCE",
+      "url": "https://www.azed.gov/sites/default/files/2026/05/Arizona%20Healthy%20Schools%20Act.pdf",
+      "published_at": "2026-05-05",
+      "retrieved_at": "2026-08-25T00:00:00+00:00"
+    },
+    {
+      "id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa4",
+      "title": "ADE May 2026 administrator resource and FAQ",
+      "citation": "Arizona Department of Education, May 2026",
+      "source_type": "AGENCY_GUIDANCE",
+      "url": "https://www.azed.gov/sites/default/files/2026/01/The%20Basics%20of%20the%20Arizona%20Healthy%20Schools%20Act%20Resource%20for%20School%20Administrators.pdf",
+      "published_at": "2026-05-01",
+      "retrieved_at": "2026-08-25T00:00:00+00:00"
+    }
+  ]
+}

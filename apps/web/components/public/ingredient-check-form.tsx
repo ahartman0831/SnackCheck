@@ -15,7 +15,11 @@ function subscribeDraft(onChange: () => void) {
 }
 
 function readDraft() {
-  return window.sessionStorage.getItem(STORAGE_KEY) ?? "";
+  try {
+    return window.sessionStorage.getItem(STORAGE_KEY) ?? "";
+  } catch {
+    return "";
+  }
 }
 
 export function IngredientCheckForm() {
@@ -25,6 +29,7 @@ export function IngredientCheckForm() {
   const [result, setResult] = useState<ComplianceResult | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [notice, setNotice] = useState<string | null>(null);
   const gtin = params.get("gtin");
   const request = params.get("request");
   const requestedQuery = params.get("q")?.slice(0, 80);
@@ -33,13 +38,20 @@ export function IngredientCheckForm() {
 
   function persist(next: string) {
     setOverride(next);
-    window.sessionStorage.setItem(STORAGE_KEY, next);
+    setResult(null);
+    setNotice(null);
+    try {
+      window.sessionStorage.setItem(STORAGE_KEY, next);
+    } catch {
+      // The in-memory draft still works when browser storage is unavailable.
+    }
   }
 
   async function confirm(event: React.FormEvent) {
     event.preventDefault();
     setBusy(true);
     setError(null);
+    setResult(null);
     try {
       const created = await fetch("/api/v1/uploads/ingredient-label", {
         method: "POST",
@@ -48,17 +60,40 @@ export function IngredientCheckForm() {
       });
       const createdJson = await created.json();
       if (!created.ok) {
+        if (createdJson.error?.code === "SUBMISSIONS_DISABLED") {
+          const check = await fetch("/api/v1/evaluations", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ ingredients: text }),
+          });
+          const checked = await check.json();
+          if (check.ok && checked.data) {
+            setResult(checked.data);
+            setNotice(
+              "Checked without saving a review submission. This text has not been independently verified.",
+            );
+            return;
+          }
+        }
         setError(
           createdJson.error?.message ?? "Checking is unavailable. Your text was kept.",
         );
         return;
       }
       const submissionId = createdJson.data.submissionId as string;
-      await fetch(`/api/v1/submissions/${submissionId}/extract`, {
+      const extracted = await fetch(`/api/v1/submissions/${submissionId}/extract`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ pastedText: text }),
       });
+      if (!extracted.ok) {
+        const extractionJson = await extracted.json();
+        setError(
+          extractionJson.error?.message ??
+            "Your text could not be processed. Please try again.",
+        );
+        return;
+      }
       const confirmed = await fetch(`/api/v1/submissions/${submissionId}/confirm`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -118,6 +153,7 @@ export function IngredientCheckForm() {
         <Textarea
           id="ingredient-text"
           required
+          maxLength={10_000}
           aria-invalid={Boolean(error)}
           aria-describedby={error ? "ingredient-text-error" : "ingredient-text-hint"}
           value={text}
@@ -128,10 +164,24 @@ export function IngredientCheckForm() {
         {busy ? "Checking…" : "Check this list"}
       </Button>
       {result ? (
-        <StatusCard
-          status={result.ingredientStatus}
-          summary={result.explanation.summary}
-        />
+        <div className="flex flex-col gap-3">
+          <StatusCard
+            status={result.ingredientStatus}
+            summary={result.explanation.summary}
+          />
+          <p className="text-muted text-sm">
+            {result.qualityFlags?.includes("RULESET_UNAVAILABLE")
+              ? "Reviewed Arizona rules are not available yet, so this list could not be screened for restrictions. Check the package and contact your school before bringing it."
+              : result.ingredientStatus === "VERIFY"
+                ? "VERIFY is not clearance. Check that you included the complete current ingredient panel and ask your school about its requirements."
+                : "Compare the listed ingredient with your current package and ask your school about a suitable alternative."}
+          </p>
+        </div>
+      ) : null}
+      {notice ? (
+        <p role="status" className="text-muted text-sm">
+          {notice}
+        </p>
       ) : null}
     </form>
   );

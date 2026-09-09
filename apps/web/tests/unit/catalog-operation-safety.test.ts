@@ -1,5 +1,8 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { assertStagingApplySafety } from "@/lib/catalog-candidates/operation-safety";
+import {
+  assertStagingApplySafety,
+  assertStagingRuntimeSafety,
+} from "@/lib/catalog-candidates/operation-safety";
 
 const confirmation = "APPLY_TEST_TO_STAGING";
 const url = "https://stagingfixture.supabase.co";
@@ -58,5 +61,33 @@ describe("catalog operation staging safety", () => {
         url,
       }),
     ).toThrow("both staging project references");
+  });
+});
+
+describe("catalog runtime staging safety", () => {
+  it("allows the designated database only in preview", () => {
+    configureStaging();
+    expect(() =>
+      assertStagingRuntimeSafety({
+        url,
+        vercelEnvironment: "preview",
+      }),
+    ).not.toThrow();
+  });
+
+  it("refuses production deployments and production databases", () => {
+    configureStaging();
+    expect(() =>
+      assertStagingRuntimeSafety({
+        url,
+        vercelEnvironment: "production",
+      }),
+    ).toThrow("only in a Vercel preview");
+    expect(() =>
+      assertStagingRuntimeSafety({
+        url: "https://productionfixture.supabase.co",
+        vercelEnvironment: "preview",
+      }),
+    ).toThrow("production Supabase project");
   });
 });

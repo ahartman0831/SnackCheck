@@ -2,7 +2,8 @@ import path from "node:path";
 import { expect, test } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 
-const artifacts = path.join(__dirname, "artifacts");
+const artifacts =
+  process.env.PLAYWRIGHT_ARTIFACTS_DIR ?? path.join(__dirname, "artifacts");
 
 const routes = [
   { path: "/", name: "home" },
@@ -38,7 +39,15 @@ test.describe("Phase 4 public routes", () => {
   for (const route of routes) {
     test(`${route.name} screenshot and axe`, async ({ page }) => {
       test.setTimeout(60_000);
-      await page.goto(route.path, { waitUntil: "domcontentloaded" });
+      const response = await page.goto(route.path, { waitUntil: "domcontentloaded" });
+      if (
+        route.path.startsWith("/product/dev-fixture-") &&
+        (process.env.CI || process.env.PLAYWRIGHT_PRODUCTION === "true")
+      ) {
+        expect(response?.status()).toBe(404);
+      } else {
+        expect(response?.ok()).toBe(true);
+      }
       await page
         .getByRole("heading")
         .first()

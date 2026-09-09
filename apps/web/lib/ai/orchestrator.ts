@@ -5,6 +5,7 @@ import type {
   ExtractionImageInput,
   ExtractionOrchestrationResult,
   ExtractionProvider,
+  ProviderUsage,
 } from "./contracts";
 import { ExtractionOutputError, parseProviderOutput } from "./output-validator";
 import {
@@ -65,6 +66,7 @@ export async function orchestrateExtraction(options: {
       const controller = new AbortController();
       const timer = setTimeout(() => controller.abort(), options.timeoutMs);
       let shouldRetry = false;
+      let usage: ProviderUsage | undefined;
       try {
         const operation = () => provider.extract(options.input, controller.signal);
         const response = options.executionPolicy
@@ -73,6 +75,7 @@ export async function orchestrateExtraction(options: {
               operation,
             )
           : await operation();
+        usage = response.usage;
         const extraction = parseProviderOutput(response.outputText);
         const lowConfidence = needsEscalation(extraction, options.confidenceThreshold);
         attempts.push({
@@ -124,6 +127,7 @@ export async function orchestrateExtraction(options: {
               ? "INVALID"
               : "ERROR",
           failureCode: code,
+          usage,
         });
         shouldRetry =
           retryAvailable &&

@@ -1,5 +1,7 @@
 # SnackCheck Cursor Master Build Plan
 
+> Historical roadmap. Current execution authority is the [takeover audit](SNACKCHECK_TAKEOVER_AUDIT.md), [definition of done](DEFINITION_OF_DONE.md), and [release audit](RELEASE_AUDIT.md). Preserve the source-permission, regulatory-review and production-approval boundaries described here; old phase ordering and per-slice stop instructions are superseded by the owner's takeover request.
+
 **Project:** SnackCheck  
 **Prepared:** August 28, 2026  
 **Repository:** `https://github.com/ahartman0831/SnackCheck`  

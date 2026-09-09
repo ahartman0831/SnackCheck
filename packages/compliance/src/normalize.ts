@@ -39,7 +39,7 @@ function stripAbbreviationPeriods(value: string): string {
 }
 
 function preserveDecimalPoints(value: string): string {
-  return value.replace(/[^\p{L}\p{N}.]+/gu, " ").replace(/(?<!\d)\.(?!\d)/g, " ");
+  return value.replace(/[^\p{L}\p{N}.]+/gu, " ").replace(/\.(?!\d)/g, " ");
 }
 
 export function normalizeTokenString(value: string): string {

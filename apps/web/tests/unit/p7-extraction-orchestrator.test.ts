@@ -143,4 +143,19 @@ describe("Phase 7 extraction boundaries", () => {
     const result = await orchestrateExtraction({ ...base, providers });
     expect(result.attempts).toHaveLength(3);
   });
+  it("retains billable usage when a provider returns malformed output", async () => {
+    const usage = { inputTokens: 120, outputTokens: 40 };
+    const result = await orchestrateExtraction({
+      ...base,
+      providers: [
+        {
+          name: "fixture",
+          model: "test",
+          extract: async () => ({ outputText: "not-json", usage }),
+        },
+      ],
+    });
+    expect(result.ok).toBe(false);
+    expect(result.attempts[0]).toMatchObject({ outcome: "INVALID", usage });
+  });
 });

@@ -1,8 +1,12 @@
 import Link from "next/link";
+import { CatalogAiRunner } from "@/components/admin/catalog-ai-runner";
+import { requireAdmin } from "@/lib/auth/require-admin";
 import {
+  getCatalogProgress,
   listCatalogCandidates,
   parseCatalogCandidateFilters,
 } from "@/lib/admin/catalog-candidates";
+import { createAdminClient } from "@/lib/supabase/admin";
 
 export default async function AdminCatalogPage({
   searchParams,
@@ -10,7 +14,11 @@ export default async function AdminCatalogPage({
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const filters = parseCatalogCandidateFilters(await searchParams);
-  const candidates = await listCatalogCandidates(filters);
+  const [candidates, auth, progress] = await Promise.all([
+    listCatalogCandidates(filters),
+    requireAdmin(),
+    getCatalogProgress(),
+  ]);
   if (!candidates)
     return (
       <>
@@ -18,6 +26,22 @@ export default async function AdminCatalogPage({
         <p className="text-muted mt-3">No catalog candidates were loaded.</p>
       </>
     );
+  const admin = createAdminClient();
+  const dossierIds =
+    auth.role === "SUPER_ADMIN" && filters.route === "AUTO_EVIDENCE" && admin
+      ? await admin
+          .from("catalog_evidence_dossiers")
+          .select("candidate_id")
+          .in(
+            "candidate_id",
+            candidates.map(({ id }) => id),
+          )
+      : null;
+  const dossierCandidateIds = new Set(
+    dossierIds?.error
+      ? []
+      : (dossierIds?.data ?? []).map(({ candidate_id }) => candidate_id),
+  );
   return (
     <div>
       <h1 className="text-2xl font-semibold">Catalog candidates</h1>
@@ -26,6 +50,43 @@ export default async function AdminCatalogPage({
         the routine work. Use this workspace for exceptions and quality sampling; a USDA
         lead alone never verifies a current package.
       </p>
+      <section aria-label="Catalog progress" className="mt-6">
+        <h2 className="text-xl font-semibold">From USDA import to publication</h2>
+        {progress ? (
+          <>
+            <dl className="mt-3 grid grid-cols-2 gap-3 lg:grid-cols-3">
+              {[
+                ["Imported records", progress.imported],
+                ["Queued for review", progress.queued],
+                ["Saved evidence records", progress.evidenceRecords],
+                ["Evidence dossiers assembled", progress.dossiers],
+                ["Products created", progress.products],
+                ["Published rulesets", progress.publishedRules],
+              ].map(([label, value]) => (
+                <div key={label} className="border-border rounded-2xl border p-4">
+                  <dt className="text-muted text-sm">{label}</dt>
+                  <dd className="mt-1 text-2xl font-semibold">{value}</dd>
+                </div>
+              ))}
+            </dl>
+            <p className="text-muted mt-3 text-sm">
+              These are catalog-wide counts. Records, evidence snapshots and dossiers can
+              refer to the same product; they are not a count of publicly approved snacks.
+            </p>
+            {!progress.publishedRules ? (
+              <p className="mt-2 text-sm">
+                Publication is waiting for recorded ruleset review. Imports and evidence
+                collection can continue.
+              </p>
+            ) : null}
+          </>
+        ) : (
+          <p className="text-muted mt-3">
+            Catalog totals are temporarily unavailable. Missing totals are not zero
+            progress.
+          </p>
+        )}
+      </section>
       <form className="border-border mt-6 grid gap-3 rounded-2xl border p-4 md:grid-cols-6">
         <label className="text-sm font-semibold md:col-span-2">
           Product, brand, or GTIN
@@ -86,7 +147,23 @@ export default async function AdminCatalogPage({
           </Link>
         </div>
       </form>
-      <div className="mt-6 flex flex-col gap-3">
+      {auth.role === "SUPER_ADMIN" && filters.route === "AUTO_EVIDENCE" ? (
+        <CatalogAiRunner
+          candidates={candidates
+            .filter(({ id }) => dossierCandidateIds.has(id))
+            .map(({ id, brand, name, gtin14 }) => ({
+              id,
+              brand,
+              name,
+              gtin14,
+            }))}
+        />
+      ) : null}
+      <p className="text-muted mt-6 text-sm">
+        Showing up to 50 matching candidates. Use the filters to find a specific product.
+        Open a candidate to compare its collected ingredient evidence.
+      </p>
+      <div className="mt-3 flex flex-col gap-3">
         {candidates.map((candidate) => (
           <article key={candidate.id} className="border-border rounded-2xl border p-4">
             <div className="flex flex-wrap items-start justify-between gap-3">

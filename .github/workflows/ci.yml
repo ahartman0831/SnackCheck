@@ -34,6 +34,8 @@ jobs:
         run: pnpm typecheck
       - name: Type generation policy
         run: pnpm test:types-policy
+      - name: Database runner policy
+        run: pnpm test:db-runner
       - name: Unit tests
         run: pnpm test:unit
       - name: P0-5 submission ownership regression
@@ -73,7 +75,7 @@ jobs:
       - name: Reset and seed through latest migration
         run: supabase db reset --yes
       - name: pgTAP
-        run: supabase test db
+        run: pnpm test:db
       - name: Generate types from the local database
         run: pnpm db:types
         env:
@@ -94,12 +96,41 @@ jobs:
           NEXT_PUBLIC_SUPABASE_URL="$API_URL" \
           SUPABASE_SERVICE_ROLE_KEY="$SERVICE_ROLE_KEY" \
           pnpm --filter web exec vitest run tests/integration/p6-photo-storage-local.test.ts --config vitest.integration.config.ts
+      - name: Install database-journey browsers
+        run: pnpm --filter web exec playwright install --with-deps chromium webkit
+      - name: Build and test the real local ingredient journey
+        shell: bash
+        run: |
+          source <(supabase status -o env)
+          export NEXT_PUBLIC_SUPABASE_URL="$API_URL"
+          export NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY="$ANON_KEY"
+          export SUPABASE_SERVICE_ROLE_KEY="$SERVICE_ROLE_KEY"
+          export SUBMISSION_TOKEN_SECRET="$(openssl rand -hex 32)"
+          export ANONYMOUS_KEY_HMAC_SECRET="$(openssl rand -hex 32)"
+          export VERCEL_ENV=preview
+          export ALLOW_PREVIEW_MEMORY_RATE_LIMIT=true
+          export OPEN_FOOD_FACTS_ENABLED=false
+          export PLAYWRIGHT_BASE_URL=https://127.0.0.1:3100
+          export NEXT_PUBLIC_APP_URL="$PLAYWRIGHT_BASE_URL"
+          pnpm build
+          pnpm test:e2e:database
+        env:
+          CI: true
+      - name: Upload failed database browser evidence
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: database-browser-failure
+          path: apps/web/test-results/
+          retention-days: 1
       - name: Disposable backup and restore rehearsal
         run: bash scripts/rehearse-local-backup-restore.sh
+        env:
+          SNACKCHECK_DISPOSABLE_RESTORE_CONFIRM: DISPOSABLE_LOCAL_ONLY
       - name: Reset a second time
         run: supabase db reset --yes
       - name: pgTAP after second reset
-        run: supabase test db
+        run: pnpm test:db
       - name: Stop local Supabase
         if: always()
         run: supabase stop --no-backup
@@ -118,10 +149,15 @@ jobs:
           cache: pnpm
       - name: Install
         run: pnpm install --frozen-lockfile
-      - name: Install WebKit
-        run: pnpm --filter web exec playwright install --with-deps webkit
+      - name: Install public-journey browsers
+        run: pnpm --filter web exec playwright install --with-deps chromium webkit
       - name: Build production app for WebKit
         run: pnpm build
+      - name: Run desktop Chromium and accessibility checks
+        run: pnpm --filter web exec playwright test --project=desktop-chromium
+        env:
+          CI: true
+          DEV_CATALOG_ENABLED: "true"
       - name: Run mobile WebKit
         run: pnpm test:e2e:webkit
         env:

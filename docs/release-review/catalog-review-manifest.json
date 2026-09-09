@@ -1,0 +1,550 @@
+{
+  "reviewOnly": true,
+  "sourcePacketPath": "data/catalog-imports/category-v3/reviewer-packets.json",
+  "sourcePacketSha256": "51f185595677a292eac8927b1d852d256e3b600a5012593648529dcc45150968",
+  "candidateCount": 60,
+  "recommendedPromotionCandidateIds": [],
+  "recommendation": "HOLD: no candidate in this batch has the required current manufacturer ingredient evidence and resolved identity/text review.",
+  "candidates": [
+    {
+      "candidateId": "033d1789-296d-4388-a1b7-0da1c224668e",
+      "gtin14": "00818780014397",
+      "sourceUrl": "https://fdc.nal.usda.gov/fdc-app.html#/food-details/2774384",
+      "ingredientTextSha256": "b71561233d0ba017eeed290e3e950df6f757ce5c5407b2dfc2789a1adaf5be01",
+      "evidenceAttemptIds": ["31724bf3-732e-45b0-9f78-bc69f5adc872"],
+      "nextStep": "COMPARE_INGREDIENTS",
+      "recommendedDecision": "HOLD"
+    },
+    {
+      "candidateId": "0b148fa3-f84e-415d-b1f5-c3f1f0c363b2",
+      "gtin14": "00038000597749",
+      "sourceUrl": "https://fdc.nal.usda.gov/fdc-app.html#/food-details/2775332",
+      "ingredientTextSha256": "48f3adef72a33fa2918cc98f63ba685d31aaa68205d663f6870f608c4cc1aef2",
+      "evidenceAttemptIds": ["275b2719-8062-4095-a5ca-ac6214dfe5fa"],
+      "nextStep": "COMPARE_INGREDIENTS",
+      "recommendedDecision": "HOLD"
+    },
+    {
+      "candidateId": "0b70e72e-f02e-46d0-9dbf-f99a7a02ad60",
+      "gtin14": "00041200104549",
+      "sourceUrl": "https://fdc.nal.usda.gov/fdc-app.html#/food-details/2774214",
+      "ingredientTextSha256": "954690817cf931cca259c875bc40f22467c0c3dd7078a75dc2cad2bbe87f7c41",
+      "evidenceAttemptIds": ["3d2691f9-0512-4cf8-abaf-5234c03f25ae"],
+      "nextStep": "COMPARE_INGREDIENTS",
+      "recommendedDecision": "HOLD"
+    },
+    {
+      "candidateId": "0bce6c94-545b-45bc-8249-2404eddcd7a5",
+      "gtin14": "00030100545101",
+      "sourceUrl": "https://fdc.nal.usda.gov/fdc-app.html#/food-details/2775499",
+      "ingredientTextSha256": "4a1d0cb58c04b00a7e8036e1dfea6a22b0b4815bae7d29634df0b95d628fbdcb",
+      "evidenceAttemptIds": ["ea9c3597-8970-45ec-885b-218b1944be7f"],
+      "nextStep": "COMPARE_INGREDIENTS",
+      "recommendedDecision": "HOLD"
+    },
+    {
+      "candidateId": "11166092-3afb-4c08-8dbe-496d816e6050",
+      "gtin14": "00038000195488",
+      "sourceUrl": "https://fdc.nal.usda.gov/fdc-app.html#/food-details/2775368",
+      "ingredientTextSha256": "ab91a2ad477cc3d0136c9d3022092b25bcec65eacb349db19a755087869c4789",
+      "evidenceAttemptIds": ["510b5092-2648-407f-abe1-8ed54e1a7712"],
+      "nextStep": "COMPARE_INGREDIENTS",
+      "recommendedDecision": "HOLD"
+    },
+    {
+      "candidateId": "191a8447-51f5-4c2d-84cc-1d517b8b346b",
+      "gtin14": "00030100322924",
+      "sourceUrl": "https://fdc.nal.usda.gov/fdc-app.html#/food-details/2775511",
+      "ingredientTextSha256": "1712a62f327536ab24f0d7a8df4189bd775c9228d94dbb6be25e3c43f8563fb2",
+      "evidenceAttemptIds": ["b0d594d2-7e6d-40f1-92c8-9cec76db3fd2"],
+      "nextStep": "COMPARE_INGREDIENTS",
+      "recommendedDecision": "HOLD"
+    },
+    {
+      "candidateId": "1982558d-5d58-49fe-aa61-304894142b3e",
+      "gtin14": "00016000229341",
+      "sourceUrl": "https://fdc.nal.usda.gov/fdc-app.html#/food-details/2740707",
+      "ingredientTextSha256": "11e75dc70cfe60666d52f66553bf729377fcf1c4c29aaf3869f424fdd40cf3c0",
+      "evidenceAttemptIds": [],
+      "nextStep": "COLLECT_INGREDIENT_EVIDENCE",
+      "recommendedDecision": "HOLD"
+    },
+    {
+      "candidateId": "19e1810a-bbbc-46dd-a709-df0298b52808",
+      "gtin14": "00030100119654",
+      "sourceUrl": "https://fdc.nal.usda.gov/fdc-app.html#/food-details/2775508",
+      "ingredientTextSha256": "ea16e28b91a8687b7d31b2f0d7855b88670528686e0ec50c19a5ff2cff8f11b7",
+      "evidenceAttemptIds": ["15dedf8d-98bd-4ad7-9967-6986bb8ef44d"],
+      "nextStep": "COMPARE_INGREDIENTS",
+      "recommendedDecision": "HOLD"
+    },
+    {
+      "candidateId": "229fa8a3-47b4-4b35-a0b5-2b583cca8228",
+      "gtin14": "00818780011471",
+      "sourceUrl": "https://fdc.nal.usda.gov/fdc-app.html#/food-details/2774408",
+      "ingredientTextSha256": "18288eb0953749cfcb074f5c1b22d592254fcf13fe0aa8fb345a0414c9f0cb56",
+      "evidenceAttemptIds": ["2c01cf18-d162-4040-9510-bdfcabca3c9d"],
+      "nextStep": "COMPARE_INGREDIENTS",
+      "recommendedDecision": "HOLD"
+    },
+    {
+      "candidateId": "29cc3ede-ab09-4f8a-8131-eea29067692d",
+      "gtin14": "00038000355219",
+      "sourceUrl": "https://fdc.nal.usda.gov/fdc-app.html#/food-details/2775358",
+      "ingredientTextSha256": "230517d871bf993e49609688b2d8104b1626ba0fc8db2db954cdd653322c4cee",
+      "evidenceAttemptIds": ["6d82964a-6620-4c44-b097-ef0e874465ab"],
+      "nextStep": "COMPARE_INGREDIENTS",
+      "recommendedDecision": "HOLD"
+    },
+    {
+      "candidateId": "2bac25e1-dcc3-46ad-bf89-020462dc6350",
+      "gtin14": "00041200033627",
+      "sourceUrl": "https://fdc.nal.usda.gov/fdc-app.html#/food-details/2774339",
+      "ingredientTextSha256": "954690817cf931cca259c875bc40f22467c0c3dd7078a75dc2cad2bbe87f7c41",
+      "evidenceAttemptIds": ["3bb4cb52-c25d-4080-a0dc-4c0a7b3a78d1"],
+      "nextStep": "COMPARE_INGREDIENTS",
+      "recommendedDecision": "HOLD"
+    },
+    {
+      "candidateId": "2eb2d337-301a-4983-b7a4-d16a409a53b6",
+      "gtin14": "00041200104556",
+      "sourceUrl": "https://fdc.nal.usda.gov/fdc-app.html#/food-details/2774215",
+      "ingredientTextSha256": "18f5540b90e8626ce3aff76f8aa38e017436c4d72fa1a08c00371471d06895f3",
+      "evidenceAttemptIds": ["9801381d-189b-4b13-a1e6-e82e5064394f"],
+      "nextStep": "COMPARE_INGREDIENTS",
+      "recommendedDecision": "HOLD"
+    },
+    {
+      "candidateId": "2eddf071-95a1-4e06-961f-d327af237374",
+      "gtin14": "00038000357008",
+      "sourceUrl": "https://fdc.nal.usda.gov/fdc-app.html#/food-details/2775364",
+      "ingredientTextSha256": "3a3e90e195331602369dfe9dfaa4f8c853609efbc52b124c34b46464c31a2e64",
+      "evidenceAttemptIds": ["44ee60c3-7701-41ca-a362-30625e89db9b"],
+      "nextStep": "REPAIR_SOURCE_TEXT",
+      "recommendedDecision": "HOLD"
+    },
+    {
+      "candidateId": "305d5b87-6a04-4bf6-8926-3cb9a68033c4",
+      "gtin14": "00030100215981",
+      "sourceUrl": "https://fdc.nal.usda.gov/fdc-app.html#/food-details/2775505",
+      "ingredientTextSha256": "c5908c8a205d5e71177799e12bdcdb55525ab1edde28c15ca86b58152c69d8c6",
+      "evidenceAttemptIds": ["0d7fc209-37c7-4c6a-877c-0b1839c82abe"],
+      "nextStep": "COMPARE_INGREDIENTS",
+      "recommendedDecision": "HOLD"
+    },
+    {
+      "candidateId": "3741feaf-052a-4ec4-93d3-8b9cab1cff85",
+      "gtin14": "00014100085393",
+      "sourceUrl": "https://fdc.nal.usda.gov/fdc-app.html#/food-details/2775225",
+      "ingredientTextSha256": "014f503991060d84dde3c420b58f0d8fdb88e8a9a87295523f3ea575549fb70a",
+      "evidenceAttemptIds": ["48cb55ab-beeb-4d97-a459-8fa3c0f50a3a"],
+      "nextStep": "COMPARE_INGREDIENTS",
+      "recommendedDecision": "HOLD"
+    },
+    {
+      "candidateId": "3b0706b8-e2b0-4f7e-b45a-c1bdc39bb30a",
+      "gtin14": "00016000223288",
+      "sourceUrl": "https://fdc.nal.usda.gov/fdc-app.html#/food-details/2741259",
+      "ingredientTextSha256": "6d8ea447b103f0d9eff3b275168c6dc37aa9478427b0e280fc642a4c9512cde4",
+      "evidenceAttemptIds": ["9cf5cf76-7ae7-4790-97fc-85e39247d2fb"],
+      "nextStep": "COLLECT_INGREDIENT_EVIDENCE",
+      "recommendedDecision": "HOLD"
+    },
+    {
+      "candidateId": "3e5c3361-3262-4bfb-8651-fec831528275",
+      "gtin14": "00038000358487",
+      "sourceUrl": "https://fdc.nal.usda.gov/fdc-app.html#/food-details/2775392",
+      "ingredientTextSha256": "a8e2d7468dda7bc058f0b08039c9f0424e5f034ab941e1a9f640bfa6683cc394",
+      "evidenceAttemptIds": ["88204ee4-0465-43c1-a6b7-5100051e1833"],
+      "nextStep": "COLLECT_INGREDIENT_EVIDENCE",
+      "recommendedDecision": "HOLD"
+    },
+    {
+      "candidateId": "3fe25f1e-5059-4197-8796-97a9e7b6e846",
+      "gtin14": "00038000367007",
+      "sourceUrl": "https://fdc.nal.usda.gov/fdc-app.html#/food-details/2775389",
+      "ingredientTextSha256": "3e7b7b2da504dbdda5e78b7ff6a5280617056d00018741117956f572035dee7a",
+      "evidenceAttemptIds": ["a920cfab-c651-4373-869e-892755c3ef26"],
+      "nextStep": "COMPARE_INGREDIENTS",
+      "recommendedDecision": "HOLD"
+    },
+    {
+      "candidateId": "463fc97a-e43b-4b04-9d8b-98e4ea3192c3",
+      "gtin14": "00818780015035",
+      "sourceUrl": "https://fdc.nal.usda.gov/fdc-app.html#/food-details/2774383",
+      "ingredientTextSha256": "720ce2989a6043342131ee0963372d8523544f251968b5dc865dbd451535e51d",
+      "evidenceAttemptIds": ["57babea0-a79a-4299-9240-d45951fc49b7"],
+      "nextStep": "COMPARE_INGREDIENTS",
+      "recommendedDecision": "HOLD"
+    },
+    {
+      "candidateId": "4e4be428-2f20-49eb-965d-3be48de03d9c",
+      "gtin14": "00038000195495",
+      "sourceUrl": "https://fdc.nal.usda.gov/fdc-app.html#/food-details/2775367",
+      "ingredientTextSha256": "ab91a2ad477cc3d0136c9d3022092b25bcec65eacb349db19a755087869c4789",
+      "evidenceAttemptIds": ["313ba269-9b52-43ea-a8dc-b9d8c222d5c2"],
+      "nextStep": "COMPARE_INGREDIENTS",
+      "recommendedDecision": "HOLD"
+    },
+    {
+      "candidateId": "56c7daa5-ede0-4638-b0ec-2b7762f0d473",
+      "gtin14": "00038000356216",
+      "sourceUrl": "https://fdc.nal.usda.gov/fdc-app.html#/food-details/2775357",
+      "ingredientTextSha256": "6b8d88f74ef52afd0d9446c3078d8231c78ced5d4caa54007175ba95225bfa93",
+      "evidenceAttemptIds": ["c89606c3-9b3c-40ea-a21d-59b08050fee6"],
+      "nextStep": "REPAIR_SOURCE_TEXT",
+      "recommendedDecision": "HOLD"
+    },
+    {
+      "candidateId": "5a60d206-c831-4705-a685-5115e70dcfe8",
+      "gtin14": "00041200104853",
+      "sourceUrl": "https://fdc.nal.usda.gov/fdc-app.html#/food-details/2774179",
+      "ingredientTextSha256": "b61000fb0c34aea945aeff5af6f275acf8d367dd1cdbea41013d2333ee87672e",
+      "evidenceAttemptIds": ["16295435-e5fd-4b94-81aa-8244c2060a8b"],
+      "nextStep": "COMPARE_INGREDIENTS",
+      "recommendedDecision": "HOLD"
+    },
+    {
+      "candidateId": "60ceab6a-b966-48ff-876b-5fcbf71229a9",
+      "gtin14": "00038000359484",
+      "sourceUrl": "https://fdc.nal.usda.gov/fdc-app.html#/food-details/2775390",
+      "ingredientTextSha256": "88bf4fa6c55207ff26ea5051f7e6cb04870a199c628966e4b34e4166373a83fe",
+      "evidenceAttemptIds": ["baef3f00-c3db-41ff-98e5-8bee1d51f129"],
+      "nextStep": "REPAIR_SOURCE_TEXT",
+      "recommendedDecision": "HOLD"
+    },
+    {
+      "candidateId": "638324b3-a2d8-4ac8-90d5-1728a0bc91ff",
+      "gtin14": "00016000223271",
+      "sourceUrl": "https://fdc.nal.usda.gov/fdc-app.html#/food-details/2773434",
+      "ingredientTextSha256": "3c4128c7a8cedc3fa9f0bfc047449b799fb7c08aadf59746211708b5fef60248",
+      "evidenceAttemptIds": ["6f516411-775c-4360-89e2-4fa1b4e48c93"],
+      "nextStep": "COMPARE_INGREDIENTS",
+      "recommendedDecision": "HOLD"
+    },
+    {
+      "candidateId": "641cf644-7a4b-4488-8cac-a5c0517c67ca",
+      "gtin14": "00030100100706",
+      "sourceUrl": "https://fdc.nal.usda.gov/fdc-app.html#/food-details/2775510",
+      "ingredientTextSha256": "78502bb43aa8aa0c97eb5b5e7578a6a503b1da8c1aa2a507de7ce3d67fd5ce8e",
+      "evidenceAttemptIds": ["2b92b944-bd81-4dd4-803d-8d188aa2b57e"],
+      "nextStep": "COMPARE_INGREDIENTS",
+      "recommendedDecision": "HOLD"
+    },
+    {
+      "candidateId": "67b7a90a-b667-4c65-a14b-ac9f40b1792e",
+      "gtin14": "00038000358210",
+      "sourceUrl": "https://fdc.nal.usda.gov/fdc-app.html#/food-details/2775384",
+      "ingredientTextSha256": "a8e2d7468dda7bc058f0b08039c9f0424e5f034ab941e1a9f640bfa6683cc394",
+      "evidenceAttemptIds": ["cea9510d-7248-44fd-8f26-1fa608055309"],
+      "nextStep": "COMPARE_INGREDIENTS",
+      "recommendedDecision": "HOLD"
+    },
+    {
+      "candidateId": "67de9a19-5fd1-4841-8e10-428270b0d798",
+      "gtin14": "00038000355004",
+      "sourceUrl": "https://fdc.nal.usda.gov/fdc-app.html#/food-details/2775359",
+      "ingredientTextSha256": "230517d871bf993e49609688b2d8104b1626ba0fc8db2db954cdd653322c4cee",
+      "evidenceAttemptIds": ["79ab7a2f-54a3-45f0-9d64-ced8b88c3d6d"],
+      "nextStep": "COMPARE_INGREDIENTS",
+      "recommendedDecision": "HOLD"
+    },
+    {
+      "candidateId": "6b2b3163-b213-45ef-a9cb-dce725e539d1",
+      "gtin14": "00014100052586",
+      "sourceUrl": "https://fdc.nal.usda.gov/fdc-app.html#/food-details/2775232",
+      "ingredientTextSha256": "eacabc7d8ce22e313b19361726a81cb552f01aa9bb0da691a621091036d9fabe",
+      "evidenceAttemptIds": ["c390479c-0b0a-4a66-ad51-1c7e7d4846cc"],
+      "nextStep": "COMPARE_INGREDIENTS",
+      "recommendedDecision": "HOLD"
+    },
+    {
+      "candidateId": "6c890a2d-8c2a-41b1-9653-aef4db4c7f99",
+      "gtin14": "00030100211488",
+      "sourceUrl": "https://fdc.nal.usda.gov/fdc-app.html#/food-details/2775506",
+      "ingredientTextSha256": "7b89c0f65904bb364c9f5a0d0ca5afdbd04b1633d3127a51a0d4dac0e9e25c02",
+      "evidenceAttemptIds": ["9ebd24b9-4ecb-45b5-b809-0cd888adadf8"],
+      "nextStep": "COMPARE_INGREDIENTS",
+      "recommendedDecision": "HOLD"
+    },
+    {
+      "candidateId": "7506df55-33cd-466d-b337-517bb7ac597b",
+      "gtin14": "00014100085478",
+      "sourceUrl": "https://fdc.nal.usda.gov/fdc-app.html#/food-details/2775224",
+      "ingredientTextSha256": "b95db07b45cc26cb969ab36c97709118e801290378e366da9cc5e09c6f19e3df",
+      "evidenceAttemptIds": ["aed9d4a0-ba0c-4191-877a-7837f70ea1bc"],
+      "nextStep": "COMPARE_INGREDIENTS",
+      "recommendedDecision": "HOLD"
+    },
+    {
+      "candidateId": "7a15fd4d-f983-4627-b249-77613c223e10",
+      "gtin14": "00038000359217",
+      "sourceUrl": "https://fdc.nal.usda.gov/fdc-app.html#/food-details/2775391",
+      "ingredientTextSha256": "88bf4fa6c55207ff26ea5051f7e6cb04870a199c628966e4b34e4166373a83fe",
+      "evidenceAttemptIds": ["f552601a-311f-45ab-beb7-5f4170d5e566"],
+      "nextStep": "COMPARE_INGREDIENTS",
+      "recommendedDecision": "HOLD"
+    },
+    {
+      "candidateId": "7a2895bb-d492-4598-9b84-483a4e893066",
+      "gtin14": "00038000358005",
+      "sourceUrl": "https://fdc.nal.usda.gov/fdc-app.html#/food-details/2775375",
+      "ingredientTextSha256": "a8e2d7468dda7bc058f0b08039c9f0424e5f034ab941e1a9f640bfa6683cc394",
+      "evidenceAttemptIds": ["9a798cdd-e4ef-4fc0-9835-676aa3eca2f1"],
+      "nextStep": "COMPARE_INGREDIENTS",
+      "recommendedDecision": "HOLD"
+    },
+    {
+      "candidateId": "7c99edbb-43eb-4d9f-afe1-dac48bd7185b",
+      "gtin14": "00030100053637",
+      "sourceUrl": "https://fdc.nal.usda.gov/fdc-app.html#/food-details/2775493",
+      "ingredientTextSha256": "4202d7349ef02916524066764b267b8c1f534ee2c634fa8799fe46c4e00b96e0",
+      "evidenceAttemptIds": ["535f25b4-de4f-4109-8a1d-58bc283e626f"],
+      "nextStep": "COMPARE_INGREDIENTS",
+      "recommendedDecision": "HOLD"
+    },
+    {
+      "candidateId": "823cc231-2891-48d6-bb6a-29cd0f40a368",
+      "gtin14": "00030100100553",
+      "sourceUrl": "https://fdc.nal.usda.gov/fdc-app.html#/food-details/2775494",
+      "ingredientTextSha256": "6d4587c6ec88809fbdf04748d94261c52f967a2d0cb80d43a7af5df513a60ab4",
+      "evidenceAttemptIds": ["8df349c8-a834-4ef2-bc46-5f81b150c410"],
+      "nextStep": "REPAIR_SOURCE_TEXT",
+      "recommendedDecision": "HOLD"
+    },
+    {
+      "candidateId": "899660ef-eeab-496e-bcd4-ea820ae709f5",
+      "gtin14": "00064144106318",
+      "sourceUrl": "https://fdc.nal.usda.gov/fdc-app.html#/food-details/2774668",
+      "ingredientTextSha256": "e6f60bada0b02d3af9a9475ce370cf745e802b9c08b418b436860c9e2412b3d3",
+      "evidenceAttemptIds": ["c597bae2-7a7b-4753-b64d-bed6636ff6e8"],
+      "nextStep": "COMPARE_INGREDIENTS",
+      "recommendedDecision": "HOLD"
+    },
+    {
+      "candidateId": "8b537e84-fa6e-4e1e-9063-ddf0f3ebfd8f",
+      "gtin14": "00038000291722",
+      "sourceUrl": "https://fdc.nal.usda.gov/fdc-app.html#/food-details/2775365",
+      "ingredientTextSha256": "fa1abf3bcdc1f2f78e297a4defa515740171bb64d311baeea7171dee81fc2129",
+      "evidenceAttemptIds": ["24700949-2d6d-4877-8338-c45f174f5a79"],
+      "nextStep": "COMPARE_INGREDIENTS",
+      "recommendedDecision": "HOLD"
+    },
+    {
+      "candidateId": "8c9691c3-8e3f-4343-9f98-abb85dc3ec58",
+      "gtin14": "00016000226159",
+      "sourceUrl": "https://fdc.nal.usda.gov/fdc-app.html#/food-details/2740709",
+      "ingredientTextSha256": "4a89b310b054f88055066fe3fafce849f45aa3840fd45595279d41fc327fb965",
+      "evidenceAttemptIds": [],
+      "nextStep": "COLLECT_INGREDIENT_EVIDENCE",
+      "recommendedDecision": "HOLD"
+    },
+    {
+      "candidateId": "8d9927e8-6afa-40b3-a6a3-14ff179c02d2",
+      "gtin14": "00041200033610",
+      "sourceUrl": "https://fdc.nal.usda.gov/fdc-app.html#/food-details/2774338",
+      "ingredientTextSha256": "18f5540b90e8626ce3aff76f8aa38e017436c4d72fa1a08c00371471d06895f3",
+      "evidenceAttemptIds": ["857e8579-bc8c-4cd9-80c8-2e7bdccb6aee"],
+      "nextStep": "COLLECT_INGREDIENT_EVIDENCE",
+      "recommendedDecision": "HOLD"
+    },
+    {
+      "candidateId": "90f919c9-b924-4ad4-9ea6-437863369d83",
+      "gtin14": "00038000367212",
+      "sourceUrl": "https://fdc.nal.usda.gov/fdc-app.html#/food-details/2775388",
+      "ingredientTextSha256": "3e7b7b2da504dbdda5e78b7ff6a5280617056d00018741117956f572035dee7a",
+      "evidenceAttemptIds": ["d8650ee9-b779-4370-b4bf-6142a099aa3c"],
+      "nextStep": "COMPARE_INGREDIENTS",
+      "recommendedDecision": "HOLD"
+    },
+    {
+      "candidateId": "9faae6cf-272e-499b-848f-ea92a745acbd",
+      "gtin14": "00030100473244",
+      "sourceUrl": "https://fdc.nal.usda.gov/fdc-app.html#/food-details/2775501",
+      "ingredientTextSha256": "eb67cdb0a3487d3364883a4aeaba81bd38281b21bd198da2cc4203ed56cb02f1",
+      "evidenceAttemptIds": ["e1756345-ca21-47ad-863e-7b11db97c4a0"],
+      "nextStep": "COMPARE_INGREDIENTS",
+      "recommendedDecision": "HOLD"
+    },
+    {
+      "candidateId": "a8815269-b1e1-4299-ab2b-33ce62ee571c",
+      "gtin14": "00030100472414",
+      "sourceUrl": "https://fdc.nal.usda.gov/fdc-app.html#/food-details/2775503",
+      "ingredientTextSha256": "4a1d0cb58c04b00a7e8036e1dfea6a22b0b4815bae7d29634df0b95d628fbdcb",
+      "evidenceAttemptIds": ["4f3ad9dd-f357-423c-86b1-f95eb2ba40fc"],
+      "nextStep": "COMPARE_INGREDIENTS",
+      "recommendedDecision": "HOLD"
+    },
+    {
+      "candidateId": "b2b2ebfa-3267-454c-b00f-323844bf3439",
+      "gtin14": "00038000597732",
+      "sourceUrl": "https://fdc.nal.usda.gov/fdc-app.html#/food-details/2775344",
+      "ingredientTextSha256": "48f3adef72a33fa2918cc98f63ba685d31aaa68205d663f6870f608c4cc1aef2",
+      "evidenceAttemptIds": ["1cfa08ec-271a-4908-ae2d-5031a9d784df"],
+      "nextStep": "COLLECT_INGREDIENT_EVIDENCE",
+      "recommendedDecision": "HOLD"
+    },
+    {
+      "candidateId": "b2c638fd-63b1-4738-8f7d-063a7d2837e5",
+      "gtin14": "00014100085485",
+      "sourceUrl": "https://fdc.nal.usda.gov/fdc-app.html#/food-details/2775223",
+      "ingredientTextSha256": "22fff880e59ac5142caf779d7b53cb46f6730397c950332ccd65d115ac8d3013",
+      "evidenceAttemptIds": ["778da100-5754-4a05-aa94-4fdaee639c89"],
+      "nextStep": "COMPARE_INGREDIENTS",
+      "recommendedDecision": "HOLD"
+    },
+    {
+      "candidateId": "b4a1cf43-887d-41f7-91a5-a336812a8012",
+      "gtin14": "00014100050759",
+      "sourceUrl": "https://fdc.nal.usda.gov/fdc-app.html#/food-details/2775233",
+      "ingredientTextSha256": "d4914476a6208d40a710ea2b735476ca6d06ce4348ba03a6c8385a8ed2aa6d19",
+      "evidenceAttemptIds": ["b899ca02-3b88-403e-a677-27069235e0ec"],
+      "nextStep": "COMPARE_INGREDIENTS",
+      "recommendedDecision": "HOLD"
+    },
+    {
+      "candidateId": "b4bfbcd5-1675-427b-918a-47fa3e072492",
+      "gtin14": "00030100228707",
+      "sourceUrl": "https://fdc.nal.usda.gov/fdc-app.html#/food-details/2775504",
+      "ingredientTextSha256": "c41545d42451a9f46817f373fa48da29f66de4701efdc8123b99761cf11f7bbb",
+      "evidenceAttemptIds": ["fd4d450f-99a1-4a02-8631-928fe9130317"],
+      "nextStep": "COMPARE_INGREDIENTS",
+      "recommendedDecision": "HOLD"
+    },
+    {
+      "candidateId": "bd281f4a-8b96-4758-8e00-d3356e8495d6",
+      "gtin14": "00016000220997",
+      "sourceUrl": "https://fdc.nal.usda.gov/fdc-app.html#/food-details/2773433",
+      "ingredientTextSha256": "3c4128c7a8cedc3fa9f0bfc047449b799fb7c08aadf59746211708b5fef60248",
+      "evidenceAttemptIds": ["5e235b83-ceb2-4f0b-b564-3bb586adafc3"],
+      "nextStep": "COMPARE_INGREDIENTS",
+      "recommendedDecision": "HOLD"
+    },
+    {
+      "candidateId": "bd43a38e-6423-4155-a77b-b1f76a198c51",
+      "gtin14": "00038000000102",
+      "sourceUrl": "https://fdc.nal.usda.gov/fdc-app.html#/food-details/2775587",
+      "ingredientTextSha256": "fa1abf3bcdc1f2f78e297a4defa515740171bb64d311baeea7171dee81fc2129",
+      "evidenceAttemptIds": ["62110566-66fc-4e3e-afd6-f94e6a223432"],
+      "nextStep": "COMPARE_INGREDIENTS",
+      "recommendedDecision": "HOLD"
+    },
+    {
+      "candidateId": "c075ff32-92a3-4db1-b4cb-1475d13555a5",
+      "gtin14": "00030100132196",
+      "sourceUrl": "https://fdc.nal.usda.gov/fdc-app.html#/food-details/2775507",
+      "ingredientTextSha256": "adce8fe71a692091d6423de2773b723c1cd9dd4ba6c8c70cdaeeb9953d234d80",
+      "evidenceAttemptIds": ["2dda541d-f950-46c8-972f-bc4db1e98fd9"],
+      "nextStep": "COMPARE_INGREDIENTS",
+      "recommendedDecision": "HOLD"
+    },
+    {
+      "candidateId": "c2e2f92f-ad57-4d47-9440-fa34bc40523e",
+      "gtin14": "00030100001331",
+      "sourceUrl": "https://fdc.nal.usda.gov/fdc-app.html#/food-details/2775492",
+      "ingredientTextSha256": "ed4f9aa288e39706ebe26f30fcbd644b8d1dbb190d908dd0b21b9f9216c12610",
+      "evidenceAttemptIds": ["60006f14-1ecd-4417-87fb-eb1f848e470c"],
+      "nextStep": "COMPARE_INGREDIENTS",
+      "recommendedDecision": "HOLD"
+    },
+    {
+      "candidateId": "c3c11263-a3fd-4dff-bc05-a3f9a15c0fc7",
+      "gtin14": "00014100054726",
+      "sourceUrl": "https://fdc.nal.usda.gov/fdc-app.html#/food-details/2775231",
+      "ingredientTextSha256": "4ab6d0fe02c05e12afdf8f28a40cc1e68dda71d3445ff6f047317e30e41d0be5",
+      "evidenceAttemptIds": ["d18a584a-9663-49e8-8845-f2c700d499b6"],
+      "nextStep": "COMPARE_INGREDIENTS",
+      "recommendedDecision": "HOLD"
+    },
+    {
+      "candidateId": "c8e33d63-cc4f-4208-9760-13db81c0ba43",
+      "gtin14": "00014100048459",
+      "sourceUrl": "https://fdc.nal.usda.gov/fdc-app.html#/food-details/2775234",
+      "ingredientTextSha256": "4ac832eb1a86380c32e599680a1e4461c348b6188c5cc0c18c49d80f48d785a0",
+      "evidenceAttemptIds": [],
+      "nextStep": "COLLECT_INGREDIENT_EVIDENCE",
+      "recommendedDecision": "HOLD"
+    },
+    {
+      "candidateId": "cd51af53-21f4-468b-b052-94092e3698ce",
+      "gtin14": "00041200104877",
+      "sourceUrl": "https://fdc.nal.usda.gov/fdc-app.html#/food-details/2774180",
+      "ingredientTextSha256": "463e71e7ca52ab3bb4040751947f4b8f92b441b95a55df6eed2f465eda098c23",
+      "evidenceAttemptIds": ["95c00c85-57b3-4354-81d2-83f81460ede1"],
+      "nextStep": "COMPARE_INGREDIENTS",
+      "recommendedDecision": "HOLD"
+    },
+    {
+      "candidateId": "d028f241-f6a0-4ed2-a512-3ebcb489c982",
+      "gtin14": "00016000220980",
+      "sourceUrl": "https://fdc.nal.usda.gov/fdc-app.html#/food-details/2773432",
+      "ingredientTextSha256": "4a89b310b054f88055066fe3fafce849f45aa3840fd45595279d41fc327fb965",
+      "evidenceAttemptIds": ["fa28f77b-a456-41c3-a6a1-760f24bb21d3"],
+      "nextStep": "COMPARE_INGREDIENTS",
+      "recommendedDecision": "HOLD"
+    },
+    {
+      "candidateId": "d18b6072-f9c3-4bff-b966-7bcabb907d8d",
+      "gtin14": "00016000350670",
+      "sourceUrl": "https://fdc.nal.usda.gov/fdc-app.html#/food-details/2772903",
+      "ingredientTextSha256": "b8b3c9b42ade10de51c9ac33a42eda42f1efcc188ed7e780df99bb22eed60a72",
+      "evidenceAttemptIds": ["22b32236-9ae1-4848-b455-c5989fbfea37"],
+      "nextStep": "COMPARE_INGREDIENTS",
+      "recommendedDecision": "HOLD"
+    },
+    {
+      "candidateId": "e1a283db-e9ef-4288-84d9-35bf58833842",
+      "gtin14": "00014100077602",
+      "sourceUrl": "https://fdc.nal.usda.gov/fdc-app.html#/food-details/2775235",
+      "ingredientTextSha256": "4ac832eb1a86380c32e599680a1e4461c348b6188c5cc0c18c49d80f48d785a0",
+      "evidenceAttemptIds": ["769952db-d7fd-4576-814c-597910dac87e"],
+      "nextStep": "COMPARE_INGREDIENTS",
+      "recommendedDecision": "HOLD"
+    },
+    {
+      "candidateId": "e4da46a8-fa89-48eb-9914-4cf82c42b01f",
+      "gtin14": "00038000000119",
+      "sourceUrl": "https://fdc.nal.usda.gov/fdc-app.html#/food-details/2775586",
+      "ingredientTextSha256": "20f014cfc041c86d90d70b9bcf448a63744ba9fb9b76556fbc1e3c269a81f9f4",
+      "evidenceAttemptIds": ["96bc73e0-e7cd-42cb-af9b-e183ab9e8399"],
+      "nextStep": "COMPARE_INGREDIENTS",
+      "recommendedDecision": "HOLD"
+    },
+    {
+      "candidateId": "f0c72d45-cec3-4235-88d4-3b2f1bfc2e31",
+      "gtin14": "00038000291760",
+      "sourceUrl": "https://fdc.nal.usda.gov/fdc-app.html#/food-details/2775363",
+      "ingredientTextSha256": "20f014cfc041c86d90d70b9bcf448a63744ba9fb9b76556fbc1e3c269a81f9f4",
+      "evidenceAttemptIds": ["2bdf9867-2e08-4131-90b8-49778187c07f"],
+      "nextStep": "COMPARE_INGREDIENTS",
+      "recommendedDecision": "HOLD"
+    },
+    {
+      "candidateId": "f58120fb-896c-4162-90d5-e225a6083621",
+      "gtin14": "00014100046127",
+      "sourceUrl": "https://fdc.nal.usda.gov/fdc-app.html#/food-details/2775226",
+      "ingredientTextSha256": "4ac832eb1a86380c32e599680a1e4461c348b6188c5cc0c18c49d80f48d785a0",
+      "evidenceAttemptIds": ["07c210f4-b16f-49a8-bb32-92bb38023f6e"],
+      "nextStep": "COMPARE_INGREDIENTS",
+      "recommendedDecision": "HOLD"
+    },
+    {
+      "candidateId": "f6fc3827-707f-435b-b5be-adbd3e8fdae2",
+      "gtin14": "00038000291791",
+      "sourceUrl": "https://fdc.nal.usda.gov/fdc-app.html#/food-details/2775362",
+      "ingredientTextSha256": "0e411cc31cc68540d775f2585cd21dc9d16f894182ec6e0be735d48376d48e53",
+      "evidenceAttemptIds": ["cb599321-dfb4-42a2-b9b6-0958211ebe23"],
+      "nextStep": "COMPARE_INGREDIENTS",
+      "recommendedDecision": "HOLD"
+    },
+    {
+      "candidateId": "f997d168-6ac5-4f4a-b154-8da86bc37465",
+      "gtin14": "00014100075233",
+      "sourceUrl": "https://fdc.nal.usda.gov/fdc-app.html#/food-details/2775228",
+      "ingredientTextSha256": "4ac832eb1a86380c32e599680a1e4461c348b6188c5cc0c18c49d80f48d785a0",
+      "evidenceAttemptIds": ["ad826bbc-8556-463f-9e74-5bd4df32636e"],
+      "nextStep": "REPAIR_SOURCE_TEXT",
+      "recommendedDecision": "HOLD"
+    }
+  ]
+}

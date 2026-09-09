@@ -4,6 +4,7 @@ const mocks = vi.hoisted(() => ({
   createUserServerClient: vi.fn(),
   createAdminClient: vi.fn(),
   getUser: vi.fn(),
+  bearerGetUser: vi.fn(),
   maybeSingle: vi.fn(),
 }));
 
@@ -17,7 +18,18 @@ vi.mock("@/lib/supabase/admin", () => ({
   createAdminClient: mocks.createAdminClient,
 }));
 
-import { requireAdmin } from "@/lib/auth/require-admin";
+vi.mock("@supabase/supabase-js", () => ({
+  createClient: () => ({ auth: { getUser: mocks.bearerGetUser } }),
+}));
+
+vi.mock("@/lib/env", () => ({
+  env: {
+    NEXT_PUBLIC_SUPABASE_URL: "https://stagingfixture.supabase.co",
+    NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: "publishable-key",
+  },
+}));
+
+import { requireAdmin, requireAdminFromRequest } from "@/lib/auth/require-admin";
 
 describe("Phase 8 admin authorization", () => {
   beforeEach(() => {
@@ -60,5 +72,21 @@ describe("Phase 8 admin authorization", () => {
       allowed: false,
       role: "REVIEWER",
     });
+  });
+
+  it("accepts a verified bearer token but still requires the database role", async () => {
+    mocks.bearerGetUser.mockResolvedValue({ data: { user: { id: "owner-1" } } });
+    mocks.maybeSingle.mockResolvedValue({ data: { role: "SUPER_ADMIN", active: true } });
+    const request = new Request("https://example.test/api/admin/catalog-evidence", {
+      headers: { authorization: "Bearer signed-user-token" },
+    });
+
+    await expect(
+      requireAdminFromRequest(request, ["SUPER_ADMIN"]),
+    ).resolves.toMatchObject({
+      allowed: true,
+      role: "SUPER_ADMIN",
+    });
+    expect(mocks.bearerGetUser).toHaveBeenCalledWith("signed-user-token");
   });
 });
