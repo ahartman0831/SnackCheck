@@ -2,7 +2,7 @@
   "name": "snackcheck",
   "private": true,
   "version": "0.0.0",
-  "description": "SnackCheck \u2014 Arizona Healthy Schools Act food compliance checker",
+  "description": "SnackCheck \u2014 Arizona ingredient-screening assistant",
   "packageManager": "pnpm@10.33.0",
   "scripts": {
     "dev": "pnpm --filter web dev",

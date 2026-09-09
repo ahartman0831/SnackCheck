@@ -12,7 +12,7 @@ three [main CI jobs passed](https://github.com/ahartman0831/SnackCheck/actions/r
 It includes #20/#21; those are superseded and must not be merged separately.
 No public deployment or rules publication is authorized by the merge.
 
-Use Node 22.23.2, pnpm 10.33.0 and Supabase CLI 2.84.2. Engine version is 0.1.2.
+Use Node 22.23.2, pnpm 10.33.0 and Supabase CLI 2.84.2. Engine version is 0.1.3 in the informational-screening PR.
 The owner selected Vercel `snack-check-web` in `Hartman Dev` and temporary URL
 `https://snack-check-web.vercel.app`; a custom domain is deferred. Keep the saved
 **Only build pre-production** behavior: the merge's production build was canceled
@@ -28,7 +28,7 @@ verification, the unpublished production rules hash, and remaining inputs are in
 CI has three required jobs: verify, Local Supabase reset and pgTAP, Playwright WebKit.
 It builds the default production app, checks code/security/dependencies, runs public
 and camera browser cases, and tests the real local homepage/ingredient/review journey
-in Chromium and WebKit over disposable HTTPS. Database gates apply all 39 migrations,
+in Chromium and WebKit over disposable HTTPS. Database gates apply all 40 migrations,
 check generated types/private storage, rehearse backup/restore, reset and rerun SQL.
 CI must never link or mutate a hosted database. See [test matrix](TEST_MATRIX.md).
 
@@ -37,7 +37,8 @@ CI must never link or mutate a hosted database. See [test matrix](TEST_MATRIX.md
 1. Complete [production-handoff.md](release-review/production-handoff.md) without
    putting secret values in files or messages. Use separate environment settings for
    preview and production. Next.js local env belongs in `apps/web/.env.local`.
-2. The new production database has reviewed migrations 0001–0039. Keep the draft
+2. The new production database has reviewed migrations 0001–0039. Migration 0040
+   is proposed and requires separate authorization before hosted application. Keep the draft
    rules unpublished. For any future fresh bootstrap, apply 0001–0016 atomically
    with a zero-published-rules commit check, because legacy 0015 temporarily marks
    the seed published before 0016 removes that state. Never blindly push to the linked staging project: its
@@ -49,7 +50,9 @@ CI must never link or mutate a hosted database. See [test matrix](TEST_MATRIX.md
    proxy adapter or uses conservative shared buckets.
 4. Deploy the release commit to an access-controlled preview and verify admin OTP,
    session refresh/logout, ownership, private storage, support and ingredient checks.
-   Use the protected lifecycle for actual reviewed rules and a separate publisher.
+   Use the protected lifecycle for owner/admin approval and publication of a sourced
+   ruleset. A separate expert/human review is optional, as described in the
+   [informational-screening model](informational-screening.md).
 5. Configure and exercise synthetic health/alerts, agreed retention, restore into a
    separate project and deployment rollback. Record exact project/commit/URL, rules
    hash, operator, timestamps, outcomes and limitations. The existing procedures are

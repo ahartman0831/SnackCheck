@@ -10,7 +10,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { category } = await params;
   return pageMetadata({
-    title: `What can I bring? · ${categoryLabel(category)}`,
+    title: `Screened products · ${categoryLabel(category)}`,
     path: `/approved/${category}`,
   });
 }

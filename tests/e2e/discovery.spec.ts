@@ -13,11 +13,13 @@ async function expectNoSeriousAxe(page: import("@playwright/test").Page) {
 test.describe("What can I bring discovery", () => {
   test("fails closed honestly without a published ruleset", async ({ page }) => {
     await page.goto("/approved");
-    await expect(page.getByRole("heading", { name: "What can I bring?" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Screened products" })).toBeVisible();
     await expect(
-      page.getByRole("heading", { name: "Arizona ruleset is under review" }),
+      page.getByRole("heading", {
+        name: "Arizona screening rules are not yet published",
+      }),
     ).toBeVisible();
-    await expect(page.getByText(/No current passing products yet/)).toHaveCount(0);
+    await expect(page.getByText(/No current screened products yet/)).toHaveCount(0);
     await expectNoSeriousAxe(page);
   });
 
@@ -25,7 +27,9 @@ test.describe("What can I bring discovery", () => {
     await page.goto("/approved/fruit-snacks");
     await expect(page).toHaveURL(/\/approved\?category=fruit-snacks$/);
     await expect(
-      page.getByRole("heading", { name: "Arizona ruleset is under review" }),
+      page.getByRole("heading", {
+        name: "Arizona screening rules are not yet published",
+      }),
     ).toBeVisible();
     await expectNoSeriousAxe(page);
   });

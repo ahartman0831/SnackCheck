@@ -15,8 +15,8 @@ export default async function AdminRulesPage() {
       <h1 className="text-2xl font-semibold">Rulesets</h1>
       <p className="text-muted mt-3">
         Draft from a published version, require sources before enabling aliases, then
-        publish an immutable snapshot. The signed reviewer and publisher must be different
-        administrators.
+        approve and publish an immutable screening snapshot. One authorized owner/admin
+        can do both; independent human or expert review is optional.
       </p>
       <div className="mt-6 flex flex-col gap-5">
         {operations.rulesets.map((ruleset) => {
@@ -50,7 +50,7 @@ export default async function AdminRulesPage() {
                   </dd>
                 </div>
                 <div>
-                  <dt>Signed review</dt>
+                  <dt>Optional review</dt>
                   <dd className="text-foreground font-semibold">
                     {ruleset.reviewedAt
                       ? new Date(ruleset.reviewedAt).toLocaleString()
@@ -73,7 +73,7 @@ export default async function AdminRulesPage() {
                   rel="noreferrer"
                   className="mt-3 inline-block text-sm underline"
                 >
-                  Open signed review document
+                  Open optional review document
                 </a>
               ) : null}
               <div className="mt-4">
@@ -96,7 +96,6 @@ export default async function AdminRulesPage() {
                 expectedHash={ruleset.rulesetHash}
                 published={ruleset.published}
                 reviewedAt={ruleset.reviewedAt}
-                reviewedByCurrentActor={ruleset.reviewedBy === operations.actorId}
                 publicationBlockers={ruleset.blockers}
               />
             </article>

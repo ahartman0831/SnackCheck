@@ -31,8 +31,9 @@ export default function IngredientScanPage() {
             : "Paste or type the complete ingredient list from the package, then check the text before submitting."}
         </p>
         <p className="text-muted mt-3 text-sm">
-          This beta flags listed restrictions. A no-match list stays VERIFY because pasted
-          text alone does not verify the package or your school&apos;s acceptance.
+          This beta flags listed restrictions. A no-match list still needs verification
+          because pasted text alone does not verify the package or your school&apos;s
+          acceptance.
         </p>
       </header>
       {photo ? (

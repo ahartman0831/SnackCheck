@@ -49,7 +49,7 @@ Brand gradients (`--brand-from` / `--brand-to`) are for identity only. They neve
 | `--fail` / `--fail-surface`     | `#FCA5A5` / `#7F1D1D` | FAIL                          |
 | `--verify` / `--verify-surface` | `#FCD34D` / `#78350F` | VERIFY                        |
 
-Status badges always include an icon and the words PASS, FAIL, or VERIFY.
+Status badges always include an icon and the public labels “No listed restriction found,” “Potential listed restriction found,” or “Needs verification.” PASS/FAIL/VERIFY remain internal codes only.
 
 ## Shape and motion
 

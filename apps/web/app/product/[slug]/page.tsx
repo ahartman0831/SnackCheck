@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { INGREDIENT_STATUS_LABELS } from "@snackcheck/contracts";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { ContextPanels } from "@/components/compliance/context-panels";
@@ -39,10 +40,10 @@ export async function generateMetadata({
     ...pageMetadata({
       title,
       path: `/product/${model.product.slug}`,
-      description: `${model.classroom.ingredientStatus}: ${model.classroom.explanation.headline}. Passing the ingredient check is not a school-policy approval.`,
+      description: `${INGREDIENT_STATUS_LABELS[model.classroom.ingredientStatus]}. Verify with your school or governing authority; this is not approval.`,
     }),
     openGraph: {
-      title: `${model.classroom.ingredientStatus} · ${title}`,
+      title: `${INGREDIENT_STATUS_LABELS[model.classroom.ingredientStatus]} · ${title}`,
       description: model.classroom.explanation.summary,
     },
   };
@@ -152,7 +153,8 @@ export default async function ProductPage({
               : "Other products to consider"}
           </h2>
           <p className="text-muted mt-1">
-            These products independently pass the current Arizona ingredient screen. They
+            No listed restriction was found in the available ingredient text for these
+            products. Verify with your school or governing authority before deciding. They
             are ordered by category, evidence eligibility, brand, and name—not by
             affiliate payment.
           </p>
@@ -177,7 +179,7 @@ export default async function ProductPage({
             </ul>
           ) : (
             <p className="text-muted mt-3">
-              No current passing alternative is available in this category yet.
+              No current screened alternative is available in this category yet.
             </p>
           )}
           {model.product.category ? (

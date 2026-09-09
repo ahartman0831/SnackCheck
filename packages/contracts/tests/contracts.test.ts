@@ -15,9 +15,9 @@ describe("shared contracts", () => {
   });
 
   it("uses required consumer labels", () => {
-    expect(INGREDIENT_STATUS_LABELS.PASS).toBe("Passes AZ ingredient check");
-    expect(INGREDIENT_STATUS_LABELS.FAIL).toBe("Doesn't pass AZ ingredient check");
-    expect(INGREDIENT_STATUS_LABELS.VERIFY).toBe("Verify this package");
+    expect(INGREDIENT_STATUS_LABELS.PASS).toBe("No listed restriction found");
+    expect(INGREDIENT_STATUS_LABELS.FAIL).toBe("Potential listed restriction found");
+    expect(INGREDIENT_STATUS_LABELS.VERIFY).toBe("Needs verification");
   });
 
   it("accepts privacy-safe barcode camera events", () => {

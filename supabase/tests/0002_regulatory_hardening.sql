@@ -4,7 +4,7 @@ select plan(7);
 select is(
   (select is_published from public.rulesets where id = '33333333-3333-3333-3333-333333333333'),
   false,
-  'AZ-HSA v1 is unpublished until signed review'
+  'AZ-HSA v1 is unpublished until explicit owner/admin publication'
 );
 
 select ok(

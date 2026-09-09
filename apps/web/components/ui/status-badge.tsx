@@ -15,26 +15,17 @@ const STYLES: Record<IngredientStatus, string> = {
   VERIFY: "bg-verify-surface text-verify",
 };
 
-export function StatusBadge({
-  status,
-  showLabel = true,
-}: {
-  status: IngredientStatus;
-  showLabel?: boolean;
-}) {
+export function StatusBadge({ status }: { status: IngredientStatus }) {
   const Icon = ICONS[status];
   return (
     <span
       className={cn(
-        "inline-flex min-h-8 items-center gap-1.5 rounded-full px-3 text-xs font-semibold uppercase tracking-wide",
+        "inline-flex min-h-8 items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold",
         STYLES[status],
       )}
     >
       <Icon className="size-3.5" aria-hidden />
-      <span>{status}</span>
-      {showLabel ? (
-        <span className="sr-only">{INGREDIENT_STATUS_LABELS[status]}</span>
-      ) : null}
+      <span>{INGREDIENT_STATUS_LABELS[status]}</span>
     </span>
   );
 }

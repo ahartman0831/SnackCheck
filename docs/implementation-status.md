@@ -1,11 +1,18 @@
 # Implementation status — September 9, 2026
 
-## READY NOW
+## Proposed informational-model update
+
+See [informational-screening.md](informational-screening.md). The new PR permits
+one authorized admin to approve/publish sourced rules, retains optional review,
+versioning, auditing and rollback, and uses informational public labels. Migration
+0040 is not applied to hosted projects; no rules are published by this work.
+
+## Previous verified baseline
 
 The engineering release candidate delivers the owner-approved ingredient-screening
 beta. Home → paste → confirm → real stored result is implemented and covered on
 desktop/mobile. Declared restrictions match published rules; unverified no-match
-lists remain VERIFY. Engine 0.1.2, private USDA/OFF ingestion and review, authentication,
+lists remain VERIFY. Engine 0.1.3 (proposed informational wording), private USDA/OFF ingestion and review, authentication,
 ownership, abuse controls and migration/recovery verification are complete.
 
 [RELEASE_AUDIT.md](RELEASE_AUDIT.md) is the single current release record, including
@@ -28,7 +35,7 @@ connected to the website. The production draft has its own recorded canonical ha
 
 The five exact actions and what can proceed without each are in
 [the release record](RELEASE_AUDIT.md#requires-owner-action): support inbox confirmation,
-reviewer/publisher assignment, production handoff, public policy acceptance and
+owner/admin rules approval (independent review optional), production handoff, public policy acceptance and
 final launch authorization. Public deployment and real production service tests
 remain unperformed. These external gates do not make completed engineering unfinished.
 

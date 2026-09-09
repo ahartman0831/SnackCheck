@@ -1,12 +1,16 @@
 # SnackCheck
 
+SnackCheck is an informational screening assistant, not a certifying authority or
+final decision-maker. [Current model](docs/informational-screening.md): one authorized
+owner/admin may approve and publish; independent review is optional.
+
 SnackCheck helps Arizona parents and school staff inspect packaged-food ingredients
 before bringing food to school. The first release is an ingredient-screening beta:
-paste the full label, confirm it, and see listed restrictions or a VERIFY result.
+paste the full label, confirm it, and see potential listed restrictions or a “Needs verification” result.
 Search and barcode lookup remain available as the reviewed catalog grows.
 
 The engineering release candidate is prepared in PR #22 directly against main.
-Public launch still requires reviewed published rules, configured production
+Public launch still requires owner/admin-approved sourced rules, configured production
 operations and owner approval. The owner deferred the 50-product catalog until
 after this beta; development examples never become production product data.
 
@@ -39,8 +43,8 @@ Never paste operational key values into issues, logs or documents.
 
 Without Supabase, the public shell and honest unavailable states render. With local
 Supabase, pasted submissions can be checked and reviewed. The seed has no invented
-products and its ruleset is unpublished: VERIFY is expected until a qualified review
-and authorized publication. AI/camera/photo flags default off; no model key is needed
+products and its ruleset is unpublished: “Needs verification” is expected until
+explicit owner/admin approval and authorized publication. AI/camera/photo flags default off; no model key is needed
 for the initial manual flow. Scripts consume their process environment; root env files
 are operator inputs and are not automatically loaded by Next.js or every script.
 

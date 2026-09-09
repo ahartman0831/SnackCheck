@@ -6,8 +6,8 @@ import { StatusBadge } from "../../components/ui/status-badge";
 describe("status communication", () => {
   it("includes text and an accessible name, not color alone", () => {
     render(<StatusBadge status="FAIL" />);
-    expect(screen.getByText("FAIL")).toBeInTheDocument();
-    expect(screen.getByText("Doesn't pass AZ ingredient check")).toBeInTheDocument();
+    expect(screen.getByText("Potential listed restriction found")).toBeVisible();
+    expect(screen.queryByText("FAIL", { exact: true })).not.toBeInTheDocument();
   });
 
   it("labels freshness in text", () => {

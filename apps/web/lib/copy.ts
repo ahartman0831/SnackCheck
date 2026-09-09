@@ -5,4 +5,4 @@ export {
 } from "@snackcheck/contracts";
 
 export const INGREDIENT_CHECK_SCOPE =
-  "This result checks the available ingredient text against the listed Arizona restrictions. It is not a nutrition rating, allergy assessment, or guarantee of food safety or school acceptance. Check the current package and your school's policies.";
+  "SnackCheck is an informational screening assistant, not a certifying authority, regulator, legal-compliance service, or final decision-maker. This result compares available ingredient text with listed Arizona restrictions. It does not establish safety, eligibility, nutrition, allergy suitability, or legal compliance. Check the current package and verify with your school or governing authority.";

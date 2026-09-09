@@ -69,9 +69,7 @@ test.describe("Phase 7 confirmation", () => {
     await field.fill("Sugar, sea salt");
     await page.getByRole("button", { name: "Confirm and check" }).click();
 
-    await expect(
-      page.getByRole("heading", { name: "Verify this package" }),
-    ).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Needs verification" })).toBeVisible();
     expect(confirmedText).toBe("Sugar, sea salt");
   });
 

@@ -10,7 +10,6 @@ export function RulesetOperationControls({
   expectedHash,
   published,
   reviewedAt,
-  reviewedByCurrentActor,
   publicationBlockers,
 }: {
   rulesetId: string;
@@ -18,7 +17,6 @@ export function RulesetOperationControls({
   expectedHash: string | null;
   published: boolean;
   reviewedAt: string | null;
-  reviewedByCurrentActor: boolean;
   publicationBlockers: string[];
 }) {
   const router = useRouter();
@@ -74,8 +72,9 @@ export function RulesetOperationControls({
           className="mt-1 h-5 w-5"
         />
         <span className="text-sm">
-          I reviewed this version, its canonical hash, sources, blockers, and current
-          publication state.
+          I checked this version, its canonical hash, citations, and publication state.
+          Publishing records my approval for informational screening, not official
+          certification.
         </span>
       </label>
 
@@ -99,7 +98,11 @@ export function RulesetOperationControls({
       ) : (
         <div className="mt-4 grid gap-5 lg:grid-cols-2">
           <div>
-            <h3 className="font-semibold">Record signed review</h3>
+            <h3 className="font-semibold">Optional review record</h3>
+            <p className="text-muted mt-2 text-sm">
+              Independent human or expert review is optional. A review document can be
+              recorded here when available.
+            </p>
             <label className="mt-3 block text-sm">
               HTTPS review document
               <input
@@ -147,10 +150,10 @@ export function RulesetOperationControls({
             </Button>
           </div>
           <div>
-            <h3 className="font-semibold">Publish immutable snapshot</h3>
+            <h3 className="font-semibold">Approve and publish immutable snapshot</h3>
             <p className="text-muted mt-2 text-sm">
-              Publication changes public compliance results. A different administrator
-              must publish after the signed review.
+              Publication changes public screening results. One authorized owner/admin may
+              approve and publish this sourced version, with or without a separate review.
             </p>
             <label className="mt-3 block text-sm">
               Type PUBLISH
@@ -167,8 +170,6 @@ export function RulesetOperationControls({
                 !acknowledged ||
                 busy !== null ||
                 publishText !== "PUBLISH" ||
-                !reviewedAt ||
-                reviewedByCurrentActor ||
                 prePublishBlockers.length > 0
               }
               onClick={() =>
@@ -186,11 +187,6 @@ export function RulesetOperationControls({
             >
               {busy === "publish" ? "Publishing…" : `Publish ${code}`}
             </Button>
-            {reviewedByCurrentActor ? (
-              <p className="text-muted mt-2 text-sm">
-                You recorded this review; another administrator must publish it.
-              </p>
-            ) : null}
           </div>
         </div>
       )}

@@ -13,7 +13,7 @@ const ready = {
   reviewedBy: "reviewer",
   reviewedAt: "2026-08-26T00:00:00.000Z",
   reviewDocumentUrl: "https://example.test/review",
-  reviewDocumentHash: "hash",
+  reviewDocumentHash: "a".repeat(64),
   publishedBy: "publisher",
   activePrimarySourceCount: 4,
   enabledSubstanceCount: 11,
@@ -23,7 +23,7 @@ const ready = {
 };
 
 describe("Phase 1 ruleset lifecycle", () => {
-  it("blocks publication without signed review or hash", () => {
+  it("blocks publication without a hash or publisher", () => {
     expect(
       publicationBlockers({
         ...ready,
@@ -35,12 +35,19 @@ describe("Phase 1 ruleset lifecycle", () => {
         publishedBy: null,
       }).length,
     ).toBeGreaterThan(0);
-    expect(canPublishRuleset({ ...ready, reviewedBy: null, reviewedAt: null })).toBe(
-      false,
-    );
+    expect(
+      canPublishRuleset({
+        ...ready,
+        reviewedBy: null,
+        reviewedAt: null,
+        reviewDocumentUrl: null,
+        reviewDocumentHash: null,
+      }),
+    ).toBe(true);
+    expect(canPublishRuleset({ ...ready, reviewedBy: null })).toBe(false);
   });
 
-  it("allows publish only when review, hash, 11 substances, and provenance are present", () => {
+  it("requires the hash, 11 substances, and provenance even when review is optional", () => {
     expect(canPublishRuleset(ready)).toBe(true);
     expect(canPublishRuleset({ ...ready, enabledSubstanceCount: 10 })).toBe(false);
   });

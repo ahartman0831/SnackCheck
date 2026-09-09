@@ -87,13 +87,13 @@ export const AdminRoleSchema = z.enum(["REVIEWER", "REGULATORY_ADMIN", "SUPER_AD
 export type AdminRole = z.infer<typeof AdminRoleSchema>;
 
 export const INGREDIENT_STATUS_LABELS: Record<IngredientStatus, string> = {
-  PASS: "Passes AZ ingredient check",
-  FAIL: "Doesn't pass AZ ingredient check",
-  VERIFY: "Verify this package",
+  PASS: "No listed restriction found",
+  FAIL: "Potential listed restriction found",
+  VERIFY: "Needs verification",
 };
 
 export const LOCAL_RULES_DISCLAIMER =
-  "Your school may have additional food, allergy, packaging, or classroom-celebration rules. Passing the Arizona ingredient check does not guarantee that the school will accept this food.";
+  "Verify with your school or governing authority before deciding what to bring. Schools may have additional food, allergy, packaging, or celebration rules. A screening result is not school approval or a legal-compliance decision.";
 
 export const PARENT_OWN_CHILD_DISCLAIMER =
   "Arizona's school-day restriction does not prevent a parent or guardian from providing this food to their own student. Your school may still have other policies, including allergy or campus rules.";

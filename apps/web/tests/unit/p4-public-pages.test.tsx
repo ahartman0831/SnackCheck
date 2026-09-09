@@ -51,22 +51,29 @@ describe("public route copy", () => {
       screen.getByRole("link", { name: "Read the Arizona sources" }),
     ).toBeInTheDocument();
     rerender(<OfflineState />);
-    expect(screen.getByText(/cached PASS is not shown as current/i)).toBeInTheDocument();
+    expect(
+      screen.getByText(/cached screening result is not shown as current/i),
+    ).toBeInTheDocument();
     rerender(<ProductNotFoundState />);
     expect(
       screen.getAllByRole("link", { name: "Search products" }).length,
     ).toBeGreaterThan(0);
   });
 
-  it("shows PASS, FAIL, and VERIFY as text plus an icon", () => {
+  it("shows informational labels with prominent scope and school verification guidance", () => {
     const { rerender } = render(
       <StatusCard status="PASS" summary="No prohibited ingredient matched." />,
     );
-    expect(screen.getByText("PASS")).toBeInTheDocument();
+    expect(screen.getByText("No listed restriction found")).toBeVisible();
+    expect(screen.queryByText("PASS", { exact: true })).not.toBeInTheDocument();
+    expect(screen.getByText(/not a certifying authority/)).toBeVisible();
+    expect(
+      screen.getByText(/verify with your school or governing authority/),
+    ).toBeVisible();
     rerender(<StatusCard status="FAIL" summary="A prohibited ingredient matched." />);
-    expect(screen.getByText("FAIL")).toBeInTheDocument();
+    expect(screen.getByText("Potential listed restriction found")).toBeInTheDocument();
     rerender(<StatusCard status="VERIFY" summary="The evidence is incomplete." />);
-    expect(screen.getByText("VERIFY")).toBeInTheDocument();
+    expect(screen.getByText("Needs verification")).toBeInTheDocument();
   });
 
   it("highlights matched spans when offsets are valid", () => {

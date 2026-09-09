@@ -17,7 +17,6 @@ describe("Phase 8 ruleset operation controls", () => {
     expectedHash: "a".repeat(64),
     published: false,
     reviewedAt: "2026-08-30T01:00:00.000Z",
-    reviewedByCurrentActor: false,
     publicationBlockers: ["publisher is required"],
   };
 
@@ -30,13 +29,13 @@ describe("Phase 8 ruleset operation controls", () => {
     expect(button).toBeEnabled();
   });
 
-  it("prevents the signed reviewer from publishing their own review", async () => {
-    render(<RulesetOperationControls {...draft} reviewedByCurrentActor />);
+  it("allows an authorized admin to approve without a separate review", async () => {
+    render(<RulesetOperationControls {...draft} reviewedAt={null} />);
     await userEvent.click(screen.getByRole("checkbox"));
     await userEvent.type(screen.getByLabelText("Type PUBLISH"), "PUBLISH");
-    expect(screen.getByRole("button", { name: "Publish AZ-HSA" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Publish AZ-HSA" })).toBeEnabled();
     expect(
-      screen.getByText(/another administrator must publish it/i),
+      screen.getByText(/Independent human or expert review is optional/i),
     ).toBeInTheDocument();
   });
 
@@ -45,7 +44,7 @@ describe("Phase 8 ruleset operation controls", () => {
       <RulesetOperationControls
         {...draft}
         publicationBlockers={[
-          "signed reviewer and reviewed_at are required",
+          "every enabled substance must have source provenance",
           "publisher is required",
         ]}
       />,
