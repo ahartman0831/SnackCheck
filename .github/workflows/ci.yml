@@ -96,6 +96,10 @@ jobs:
           NEXT_PUBLIC_SUPABASE_URL="$API_URL" \
           SUPABASE_SERVICE_ROLE_KEY="$SERVICE_ROLE_KEY" \
           pnpm --filter web exec vitest run tests/integration/p6-photo-storage-local.test.ts --config vitest.integration.config.ts
+      - name: Exclude unused system Chrome package feed
+        # CI uses Playwright's locked browsers, not the runner's Google Chrome.
+        # An inconsistent Chrome APT index must not block Ubuntu dependencies.
+        run: sudo rm -f /etc/apt/sources.list.d/google-chrome.list /etc/apt/sources.list.d/google-chrome.sources
       - name: Install database-journey browsers
         run: pnpm --filter web exec playwright install --with-deps chromium webkit
       - name: Build and test the real local ingredient journey
@@ -149,6 +153,10 @@ jobs:
           cache: pnpm
       - name: Install
         run: pnpm install --frozen-lockfile
+      - name: Exclude unused system Chrome package feed
+        # CI uses Playwright's locked browsers, not the runner's Google Chrome.
+        # An inconsistent Chrome APT index must not block Ubuntu dependencies.
+        run: sudo rm -f /etc/apt/sources.list.d/google-chrome.list /etc/apt/sources.list.d/google-chrome.sources
       - name: Install public-journey browsers
         run: pnpm --filter web exec playwright install --with-deps chromium webkit
       - name: Build production app for WebKit
