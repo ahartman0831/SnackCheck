@@ -1,17 +1,29 @@
 # Catalog category policy v3 — September 8, 2026
 
-## Outcome and current gate
+## Verified staging outcome — September 9, 2026
 
-The category mismatch from the 100-row USDA import is fixed locally in
-`classroom-use-v3`. A read-only staging assessment produces a bounded shortlist
-of **60 candidates with 60 distinct barcodes**. No hosted schema, candidate state,
-evidence record or publication was changed by this follow-up.
+Migration `0038_catalog_relevance_v3.sql` is applied to the owner-designated
+staging project `lhnbxjvqllohlbtdncyg`. All 589 private candidates now have v3
+assessments, and the exact reviewed 60-candidate shortlist was queued. The queue
+contains **154 candidates: the existing 94 plus 60 new candidates**.
 
-Staging application requires migration `0038_catalog_relevance_v3.sql`. Data access
-works, but the available service credentials do not provide schema administration;
-the Supabase CLI has no management login and browser control could not start.
-The owner has been asked to enable CLI or connector access. This is an access
-requirement, not another request for database-population approval.
+The authenticated preflight matched all three prerequisite function bodies and
+permissions to migrations 0032/0033. The reviewed migration checksum matched, and
+0038 was applied in one explicit transaction. Hosted function bodies now match
+0038 exactly; execution remains restricted to the existing service role and owner.
+No general migration push or remote-history repair was used.
+
+Readback at `2026-09-09T10:35:05.823Z` verified every assessment's version, score,
+tier, route and reasons; the exact 60 manifest IDs; all 589 assessment audit rows
+and 60 queue audit rows; and preservation of source and screening fields. The 94
+previously queued candidates remain queued. Anonymous candidate reads return
+HTTP 401 / PostgreSQL `42501`. Public products, formulations and published
+rulesets remain at zero. Queueing does not establish verified food eligibility.
+
+- Assessment run: `ff4e2eb2-c29f-4d25-b4d0-d4769abc1d94`
+- Shortlist run: `cbe3d737-2f9c-4fd9-be2a-8d85da6fc78f`
+- Saved local evidence: `data/catalog-imports/category-v3/staging-readback.json`
+  and `staging-verification.json` (ignored; contains private candidate records).
 
 ## Policy changes
 
@@ -37,7 +49,7 @@ each shortlist must match its candidates' stored policy version. Unknown version
 and mixed-version batches are rejected. Both versions retain the existing source,
 quality, state, size, audit and idempotency requirements.
 
-## Read-only staging evidence
+## Selection evidence
 
 The snapshot contains 589 candidates. Under v3:
 
@@ -48,7 +60,9 @@ The snapshot contains 589 candidates. Under v3:
 - The bounded 60-candidate shortlist has 27 processed-cereal products,
   23 cracker products and 10 snack products across six brands.
 
-These are **dry-run outcomes**, not persisted queue counts or verified foods.
+The repeated staging dry runs matched both original selection hashes before
+application. The counts above are now persisted and verified; candidates still
+require independent evidence and the existing approval gates.
 The exact saved source snapshot and 60-item manifest are in the ignored local
 folder `data/catalog-imports/category-v3/`.
 
@@ -69,33 +83,24 @@ The isolated local PostgreSQL instance applied migrations through 0038.
 All **20 pgTAP files / 301 assertions pass**, including unchanged v2 tests and
 11 new v3 assertions covering version mismatches, assessment/queue replay,
 evidence manifest creation, and absence of public product or rules publication.
-All test fixtures rolled back. Full CI results are recorded on the follow-up PR.
+All test fixtures rolled back. Implementation commit
+`8721b5b79a9a7f1c440e4848364dc220062c97e8` passed all three CI jobs in
+[run 34303284627](https://github.com/ahartman0831/SnackCheck/actions/runs/34303284627),
+including WebKit, all eight real-database browser cases, generated types, private
+storage, a clean schema reset and backup/restore.
 
 The initial full local stack hit the known Colima analytics socket mount problem;
 the database-only stack provided actual PostgreSQL verification. Full-stack
-browser, storage, reset and restore checks remain in Ubuntu CI.
+browser, storage, reset and restore checks passed in Ubuntu CI.
 
-## Exact next staging operation
+## Next evidence step
 
-Use only the owner-designated project `lhnbxjvqllohlbtdncyg`. Do not use a general
-`supabase db push`: older individually applied migrations have incomplete remote
-history. Apply the exact reviewed migration 0038 transactionally through SQL
-administration after confirming its three prerequisite functions exist.
+Continue bounded permitted independent-evidence collection for queued candidates.
+Keep source conflicts and uncertain identity/formulation matches in review.
+An Open Food Facts collection run needs a configured identifying contact/user agent;
+paid model calls and publication are separate gates. This operation did not create
+evidence, promote candidates, or publish a ruleset.
 
-Then load the existing staging environment privately and perform, in order:
-
-1. Repeat the relevance dry run and compare its selection hash with this report.
-   Investigate drift before applying. Apply with
-   `APPLY_CLASSROOM_RELEVANCE_TO_STAGING` and record the run ID.
-2. Repeat the shortlist dry run with `--target-count 60` and compare its exact
-   60 IDs and selection hash with `shortlist-manifest.json`. Apply with
-   `QUEUE_CATALOG_SHORTLIST_TO_STAGING` and record the run ID.
-3. Read back version, scores, routes and all queued IDs; verify the audit entries,
-   anonymous denial, and unchanged zero public products/published rules.
-4. Continue bounded permitted independent-evidence collection. Keep source
-   conflicts and uncertain identity/formulation matches in review. No candidate
-   promotion or ruleset publication is authorized by this queue operation.
-
-Stop before a dependent operation if the migration is unavailable, a hash changes,
-or a database eligibility guard rejects the selection. Do not substitute a v2
-label on v3 assessments to work around the schema requirement.
+For any future staging schema work, continue using only the owner-designated project
+and exact reviewed SQL. Older individually applied migrations have incomplete remote
+history, so a general `supabase db push` requires separate reconciliation first.

@@ -1,10 +1,13 @@
-# Catalog follow-up — September 8, 2026
+# Catalog follow-up — September 9, 2026
 
-The next catalog policy is implemented and locally tested. It identifies a bounded
-60-candidate shortlist from staging while preserving the existing evidence queue.
-Migration 0038 and hosted reassessment/queuing await schema-administration access;
-no hosted changes are claimed. See [catalog category v3](catalog-category-v3.md)
-for exact dry-run hashes, migration details and verification.
+**COMPLETE / VERIFIED IN STAGING:** migration 0038 is applied, all 589 private
+candidates have v3 relevance assessments, and the exact reviewed 60 candidates
+were queued. The queue now contains 154 candidates, preserving the prior 94.
+Readback verified every assessment, exact candidate IDs, all 649 audit entries,
+unchanged source/screening fields and anonymous access denial. Public products,
+formulations and published rulesets remain at zero. Implementation CI is green,
+including WebKit and the full database suite. See
+[catalog category v3](catalog-category-v3.md) for hashes, run IDs and verification.
 
 ---
 
